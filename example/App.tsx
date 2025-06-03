@@ -4,7 +4,8 @@ import { Button, Text, View } from 'react-native';
 export default function App() {
   const state = {
     title: "Hello",
-    subtitle: "This is working"
+    subtitle: "This is working",
+    date: Date.now()
   }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>

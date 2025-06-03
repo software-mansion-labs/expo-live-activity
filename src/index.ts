@@ -3,7 +3,7 @@ import ExpoLiveActivityModule from './ExpoLiveActivityModule';
 export type LiveActivityState = {
   title: string,
   subtitle: string,
-  // date: string
+  date: number
 };
 
 export function hello(): string {

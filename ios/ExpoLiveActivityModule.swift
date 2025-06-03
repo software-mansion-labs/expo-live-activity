@@ -14,8 +14,8 @@ public class ExpoLiveActivityModule: Module {
         @Field
         var subtitle: String
 
-        // @Field
-        // var date: Date
+         @Field
+         var date: Double
     }
     
     public func definition() -> ModuleDefinition {
@@ -33,7 +33,7 @@ public class ExpoLiveActivityModule: Module {
                         let counterState = LiveActivityAttributes(name: "Counter")
                         let initialState = LiveActivityAttributes.ContentState(
                             emoji: "🤩", title: state.title, subtitle: state.subtitle,
-                            date: .now)
+                            date: Date(timeIntervalSince1970: state.date/1000))
                         let activity = try Activity.request(
                             attributes: counterState,
                             content: .init(state: initialState, staleDate: nil), pushType: nil)
@@ -47,7 +47,6 @@ public class ExpoLiveActivityModule: Module {
                 // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
-            //          return ""
         }
     }
 }
