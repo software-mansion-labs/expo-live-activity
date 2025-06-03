@@ -1,0 +1,86 @@
+//
+//  LiveActivityLiveActivity.swift
+//  LiveActivity
+//
+//  Created by Anna Olak on 02/06/2025.
+//
+
+import ActivityKit
+import WidgetKit
+import SwiftUI
+
+struct LiveActivityAttributes: ActivityAttributes {
+  public struct ContentState: Codable, Hashable {
+    var emoji: String
+    var title: String
+    var subtitle: String
+    var date: Date
+  }
+  
+  var name: String
+}
+
+struct LiveActivityLiveActivity: Widget {
+  var body: some WidgetConfiguration {
+    ActivityConfiguration(for: LiveActivityAttributes.self) { context in
+      // Lock screen/banner UI goes here
+      VStack {
+        Text(context.state.title)
+          .font(.title2)
+        Text("\(context.state.subtitle) \(context.state.emoji)")
+          .font(.body)
+        Text(context.state.date, style: .date)
+          .font(.footnote)
+      }
+      .activityBackgroundTint(Color.cyan)
+      .activitySystemActionForegroundColor(Color.black)
+      
+    } dynamicIsland: { context in
+      DynamicIsland {
+        // Expanded UI goes here.  Compose the expanded UI through
+        // various regions, like leading/trailing/center/bottom
+        DynamicIslandExpandedRegion(.leading) {
+          Text("Leading")
+        }
+        DynamicIslandExpandedRegion(.trailing) {
+          Text("Trailing")
+        }
+        DynamicIslandExpandedRegion(.bottom) {
+          Text("Bottom \(context.state.emoji)")
+          // more content
+        }
+      } compactLeading: {
+        Text("L")
+      } compactTrailing: {
+        Text("T \(context.state.emoji)")
+      } minimal: {
+        Text(context.state.emoji)
+      }
+      .widgetURL(URL(string: "http://www.apple.com"))
+      .keylineTint(Color.red)
+    }
+  }
+}
+
+extension LiveActivityAttributes {
+  fileprivate static var preview: LiveActivityAttributes {
+    LiveActivityAttributes(name: "World")
+  }
+}
+
+extension LiveActivityAttributes.ContentState {
+  fileprivate static var smiley: LiveActivityAttributes.ContentState {
+    LiveActivityAttributes.ContentState(emoji: "😊", title: "Title!", subtitle: "This is great.", date: .distantFuture)
+  }
+  
+  fileprivate static var starEyes: LiveActivityAttributes.ContentState {
+    LiveActivityAttributes.ContentState(emoji: "🤩", title: "Title!", subtitle: "This is great.", date: .distantFuture)
+  }
+}
+
+#Preview("Notification", as: .content, using: LiveActivityAttributes.preview) {
+  LiveActivityLiveActivity()
+} contentStates: {
+  LiveActivityAttributes.ContentState.smiley
+  LiveActivityAttributes.ContentState.starEyes
+}
