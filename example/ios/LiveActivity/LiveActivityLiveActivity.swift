@@ -24,37 +24,60 @@ struct LiveActivityLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       // Lock screen/banner UI goes here
-      VStack {
-        Text(context.state.title)
-          .font(.title2)
-        Text("\(context.state.subtitle) \(context.state.emoji)")
-          .font(.body)
-        Text(context.state.date, style: .date)
-          .font(.footnote)
-      }
-      .activityBackgroundTint(Color.cyan)
-      .activitySystemActionForegroundColor(Color.black)
+      LiveActivityView(contentState: context.state)
+        .activityBackgroundTint(Color.cyan.opacity(0.7))
+        .activitySystemActionForegroundColor(Color.black)
       
     } dynamicIsland: { context in
       DynamicIsland {
         // Expanded UI goes here.  Compose the expanded UI through
         // various regions, like leading/trailing/center/bottom
         DynamicIslandExpandedRegion(.leading) {
-          Text("Leading")
+          VStack {
+            Text(context.state.title)
+              .font(.title3)
+          }
+          .padding(.top, 5)
         }
         DynamicIslandExpandedRegion(.trailing) {
-          Text("Trailing")
+          Text(context.state.emoji)
         }
         DynamicIslandExpandedRegion(.bottom) {
-          Text("Bottom \(context.state.emoji)")
-          // more content
+          VStack {
+            HStack {
+              Text(context.state.subtitle)
+              Spacer()
+            }
+            ProgressView(timerInterval: Date.now...context.state.date)
+          }
+          .padding(.bottom, 5)
         }
       } compactLeading: {
-        Text("L")
-      } compactTrailing: {
-        Text("T \(context.state.emoji)")
-      } minimal: {
         Text(context.state.emoji)
+      } compactTrailing: {
+        //        Text(timerInterval: Date.now...context.state.date)
+        //          .frame(width: 40)
+        //          .multilineTextAlignment(.trailing)
+        ProgressView(
+          timerInterval: Date.now...context.state.date,
+          countsDown: false,
+          label: { EmptyView() },
+          currentValueLabel: {
+            Text(timerInterval: Date.now...context.state.date)
+              .background {
+                RoundedRectangle(cornerRadius: 20)
+                  .foregroundStyle(.black.opacity(0.8))
+              }
+          })
+        .progressViewStyle(.circular)
+      } minimal: {
+        ProgressView(
+          timerInterval: Date.now...context.state.date,
+          countsDown: false,
+          label: { EmptyView() },
+          currentValueLabel: { EmptyView() }
+        )
+        .progressViewStyle(.circular)
       }
       .widgetURL(URL(string: "http://www.apple.com"))
       .keylineTint(Color.red)
@@ -82,5 +105,5 @@ extension LiveActivityAttributes.ContentState {
   LiveActivityLiveActivity()
 } contentStates: {
   LiveActivityAttributes.ContentState.smiley
-  LiveActivityAttributes.ContentState.starEyes
+  //  LiveActivityAttributes.ContentState.starEyes
 }

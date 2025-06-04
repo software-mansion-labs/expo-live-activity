@@ -3,9 +3,9 @@ import { Button, Text, View } from 'react-native';
 
 export default function App() {
   const state = {
-    title: "Hello",
-    subtitle: "This is working",
-    date: Date.now()
+    title: "Title longer",
+    subtitle: "This is a subtitle",
+    date: Date.now() + 5*60*1000
   }
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
