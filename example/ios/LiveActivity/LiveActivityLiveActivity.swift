@@ -11,7 +11,6 @@ import SwiftUI
 
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
-    var emoji: String
     var title: String
     var subtitle: String
     var date: Date
@@ -40,7 +39,9 @@ struct LiveActivityLiveActivity: Widget {
           .padding(.top, 5)
         }
         DynamicIslandExpandedRegion(.trailing) {
-          Text(context.state.emoji)
+          Image("cat3")
+            .resizable()
+            .scaledToFit()
         }
         DynamicIslandExpandedRegion(.bottom) {
           VStack {
@@ -53,7 +54,9 @@ struct LiveActivityLiveActivity: Widget {
           .padding(.bottom, 5)
         }
       } compactLeading: {
-        Text(context.state.emoji)
+        Image("cat3")
+          .resizable()
+          .scaledToFit()
       } compactTrailing: {
         //        Text(timerInterval: Date.now...context.state.date)
         //          .frame(width: 40)
@@ -93,11 +96,11 @@ extension LiveActivityAttributes {
 
 extension LiveActivityAttributes.ContentState {
   fileprivate static var smiley: LiveActivityAttributes.ContentState {
-    LiveActivityAttributes.ContentState(emoji: "😊", title: "Title!", subtitle: "This is great.", date: .distantFuture)
+    LiveActivityAttributes.ContentState(title: "Title!", subtitle: "This is great.", date: .distantFuture)
   }
   
   fileprivate static var starEyes: LiveActivityAttributes.ContentState {
-    LiveActivityAttributes.ContentState(emoji: "🤩", title: "Title!", subtitle: "This is great.", date: .distantFuture)
+    LiveActivityAttributes.ContentState(title: "Title!", subtitle: "This is great.", date: .distantFuture)
   }
 }
 

@@ -32,7 +32,7 @@ public class ExpoLiveActivityModule: Module {
                     do {
                         let counterState = LiveActivityAttributes(name: "Counter")
                         let initialState = LiveActivityAttributes.ContentState(
-                            emoji: "🤩", title: state.title, subtitle: state.subtitle,
+                            title: state.title, subtitle: state.subtitle,
                             date: Date(timeIntervalSince1970: state.date/1000))
                         let activity = try Activity.request(
                             attributes: counterState,

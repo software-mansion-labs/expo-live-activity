@@ -23,7 +23,7 @@ struct LiveActivityView: View {
             .font(.body)
         }
         Spacer()
-        Text(contentState.emoji)
+        Image("cat3")
       }
       ProgressView(timerInterval: Date.now...contentState.date)
     }
