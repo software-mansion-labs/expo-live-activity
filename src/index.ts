@@ -6,10 +6,6 @@ export type LiveActivityState = {
   date: number
 };
 
-export function hello(): string {
-  return ExpoLiveActivityModule.hello();
-}
-
 export function startActivity(state: LiveActivityState): string {
   return ExpoLiveActivityModule.startActivity(state);
 }

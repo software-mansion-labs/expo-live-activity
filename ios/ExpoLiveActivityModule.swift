@@ -21,10 +21,6 @@ public class ExpoLiveActivityModule: Module {
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
 
-        Function("hello") { () -> String in
-            return "Hello world! 👋"
-        }
-
         Function("startActivity") { (state: LiveActivityState) -> String in
             print("Starting activity")
             if #available(iOS 16.2, *) {
@@ -63,7 +59,7 @@ public class ExpoLiveActivityModule: Module {
                 } else {
                     print("Didn't find activity with ID \(activityId)")
                 }
-            }else {
+            } else {
                 // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
