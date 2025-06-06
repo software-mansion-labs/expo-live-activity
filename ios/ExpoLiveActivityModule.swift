@@ -48,5 +48,25 @@ public class ExpoLiveActivityModule: Module {
                 throw ModuleErrors.unsupported
             }
         }
+        
+        Function("stopActivity") { (activityId: String, state: LiveActivityState) -> Void in
+            if #available(iOS 16.2, *) {
+                print("Attempting to stop")
+                let endState = LiveActivityAttributes.ContentState(
+                    title: state.title, subtitle: state.subtitle,
+                    date: Date(timeIntervalSince1970: state.date/1000))
+                if let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == activityId }) {
+                    Task {
+                        print("Stopping activity with id: \(activityId)")
+                        await activity.end(ActivityContent(state: endState, staleDate: nil), dismissalPolicy: .immediate)
+                    }
+                } else {
+                    print("Didn't find activity with ID \(activityId)")
+                }
+            }else {
+                // Fallback on earlier versions
+                throw ModuleErrors.unsupported
+            }
+        }
     }
 }
