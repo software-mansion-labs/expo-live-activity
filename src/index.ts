@@ -13,3 +13,7 @@ export function startActivity(state: LiveActivityState): string {
 export function stopActivity(id: String, state: LiveActivityState): string {
   return ExpoLiveActivityModule.stopActivity(id, state);
 }
+
+export function updateActivity(id: String, state: LiveActivityState): string {
+  return ExpoLiveActivityModule.updateActivity(id, state);
+}

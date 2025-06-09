@@ -24,7 +24,7 @@ struct LiveActivityLiveActivity: Widget {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       // Lock screen/banner UI goes here
       LiveActivityView(contentState: context.state)
-        .activityBackgroundTint(Color.cyan.opacity(0.7))
+        .activityBackgroundTint(Color.cyan)
         .activitySystemActionForegroundColor(Color.black)
       
     } dynamicIsland: { context in
@@ -58,19 +58,12 @@ struct LiveActivityLiveActivity: Widget {
           .resizable()
           .scaledToFit()
       } compactTrailing: {
-        //        Text(timerInterval: Date.now...context.state.date)
-        //          .frame(width: 40)
-        //          .multilineTextAlignment(.trailing)
         ProgressView(
           timerInterval: Date.now...context.state.date,
           countsDown: false,
           label: { EmptyView() },
           currentValueLabel: {
-            Text(timerInterval: Date.now...context.state.date)
-              .background {
-                RoundedRectangle(cornerRadius: 20)
-                  .foregroundStyle(.black.opacity(0.8))
-              }
+            EmptyView()
           })
         .progressViewStyle(.circular)
       } minimal: {
