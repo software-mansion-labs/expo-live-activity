@@ -22,84 +22,66 @@ struct LiveActivityAttributes: ActivityAttributes {
 struct LiveActivityLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      // Lock screen/banner UI goes here
       LiveActivityView(contentState: context.state)
         .activityBackgroundTint(Color.cyan)
         .activitySystemActionForegroundColor(Color.black)
       
     } dynamicIsland: { context in
       DynamicIsland {
-        // Expanded UI goes here.  Compose the expanded UI through
-        // various regions, like leading/trailing/center/bottom
         DynamicIslandExpandedRegion(.leading) {
-          VStack {
-            Text(context.state.title)
-              .font(.title3)
-          }
-          .padding(.top, 5)
+          dynamicIslandExpandedLeading(title: context.state.title)
         }
         DynamicIslandExpandedRegion(.trailing) {
-          Image("cat3")
-            .resizable()
-            .scaledToFit()
+          resizableImage(imageName: "cat3")
         }
         DynamicIslandExpandedRegion(.bottom) {
-          VStack {
-            HStack {
-              Text(context.state.subtitle)
-              Spacer()
-            }
-            ProgressView(timerInterval: Date.now...context.state.date)
-          }
-          .padding(.bottom, 5)
+          dynamicIslandExpandedBottom(subtitle: context.state.subtitle, endDate: context.state.date)
         }
       } compactLeading: {
-        Image("cat3")
-          .resizable()
-          .scaledToFit()
+        resizableImage(imageName: "cat3")
       } compactTrailing: {
-        ProgressView(
-          timerInterval: Date.now...context.state.date,
-          countsDown: false,
-          label: { EmptyView() },
-          currentValueLabel: {
-            EmptyView()
-          })
-        .progressViewStyle(.circular)
+        circularTimer(endDate: context.state.date)
       } minimal: {
-        ProgressView(
-          timerInterval: Date.now...context.state.date,
-          countsDown: false,
-          label: { EmptyView() },
-          currentValueLabel: { EmptyView() }
-        )
-        .progressViewStyle(.circular)
+        circularTimer(endDate: context.state.date)
       }
-      .widgetURL(URL(string: "http://www.apple.com"))
-      .keylineTint(Color.red)
     }
   }
-}
-
-extension LiveActivityAttributes {
-  fileprivate static var preview: LiveActivityAttributes {
-    LiveActivityAttributes(name: "World")
-  }
-}
-
-extension LiveActivityAttributes.ContentState {
-  fileprivate static var smiley: LiveActivityAttributes.ContentState {
-    LiveActivityAttributes.ContentState(title: "Title!", subtitle: "This is great.", date: .distantFuture)
-  }
   
-  fileprivate static var starEyes: LiveActivityAttributes.ContentState {
-    LiveActivityAttributes.ContentState(title: "Title!", subtitle: "This is great.", date: .distantFuture)
+  private func dynamicIslandExpandedLeading(title: String) -> some View {
+    VStack {
+      Text(title)
+        .font(.title3)
+    }
+    .padding(.top, 5)
+  }  
+  private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
+    Image(imageName)
+      .resizable()
+      .scaledToFit()
+  }    
+  private func dynamicIslandExpandedBottom(subtitle: String, endDate: Date) -> some View {
+    VStack {
+      HStack {
+        Text(subtitle)
+        Spacer()
+      }
+      ProgressView(timerInterval: Date.now...endDate)
+    }
+    .padding(.bottom, 5)
+  }    
+  private func circularTimer(endDate: Date) -> some View {
+    ProgressView(
+      timerInterval: Date.now...endDate,
+      countsDown: false,
+      label: { EmptyView() },
+      currentValueLabel: {
+        EmptyView()
+      })
+    .progressViewStyle(.circular)
   }
-}
-
-#Preview("Notification", as: .content, using: LiveActivityAttributes.preview) {
-  LiveActivityLiveActivity()
-} contentStates: {
-  LiveActivityAttributes.ContentState.smiley
-  //  LiveActivityAttributes.ContentState.starEyes
+  private func resizableImage(imageName: String) -> some View {
+    Image(imageName)
+      .resizable()
+      .scaledToFit()
+  }
 }
