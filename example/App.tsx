@@ -78,13 +78,7 @@ export default function App() {
       />
       <Text style={styles.label}>Set Live Activity timer:</Text>
       <View style={styles.timerControlsContainer}>
-        <RNDateTimePicker
-          value={date}
-          mode="time"
-          onChange={(event, date) => {
-            date && setDate(date);
-          }}
-        />
+        <RNDateTimePicker value={date} mode="time" onChange={(event, date) => { date && setDate(date) }} minimumDate={ new Date(Date.now() + 60 * 1000)} />
       </View>
 
       <View style={styles.buttonsContainer}>
