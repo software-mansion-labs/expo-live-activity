@@ -13,6 +13,7 @@ struct LiveActivityAttributes: ActivityAttributes {
         var title: String
         var subtitle: String
         var date: Date
+        var imageName: String
     }
     
     var name: String

@@ -15,6 +15,7 @@ export default function App() {
   const [activityId, setActivityID] = useState<String | null>();
   const [title, onChangeTitle] = useState("");
   const [subtitle, onChangeSubtitle] = useState("");
+  const [imageName, onChangeImageName] = useState("live_activity_image");
   const [date, setDate] = useState(new Date());
 
   const startActivity = () => {
@@ -23,6 +24,7 @@ export default function App() {
       title: title,
       subtitle: subtitle,
       date: date.getTime(),
+      imageName: imageName,
     };
     const id = LiveActivity.startActivity(state);
     console.log(id);
@@ -34,6 +36,7 @@ export default function App() {
       title: title,
       subtitle: subtitle,
       date: Date.now(),
+      imageName: imageName,
     };
     activityId && LiveActivity.stopActivity(activityId, state);
     setActivityID(null);
@@ -44,6 +47,7 @@ export default function App() {
       title: title,
       subtitle: subtitle,
       date: date.getTime(),
+      imageName: imageName,
     };
     activityId && LiveActivity.updateActivity(activityId, state);
   };
@@ -64,9 +68,23 @@ export default function App() {
         placeholder="Live activity title"
         value={subtitle}
       />
+      <Text style={styles.label}>Set Live Activity image:</Text>
+      <TextInput
+        style={styles.input}
+        onChangeText={onChangeImageName}
+        autoCapitalize="none"
+        placeholder="Live activity image"
+        value={imageName}
+      />
       <Text style={styles.label}>Set Live Activity timer:</Text>
       <View style={styles.timerControlsContainer}>
-        <RNDateTimePicker value={date} mode="time" onChange={(event, date) => { date && setDate(date) }} />
+        <RNDateTimePicker
+          value={date}
+          mode="time"
+          onChange={(event, date) => {
+            date && setDate(date);
+          }}
+        />
       </View>
 
       <View style={styles.buttonsContainer}>
