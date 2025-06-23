@@ -14,10 +14,13 @@ public class ExpoLiveActivityModule: Module {
         @Field
         var subtitle: String
 
-         @Field
-         var date: Double
+        @Field
+        var date: Double
+
+        @Field
+        var imageName: String
     }
-    
+
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
 
@@ -28,8 +31,10 @@ public class ExpoLiveActivityModule: Module {
                     do {
                         let counterState = LiveActivityAttributes(name: "Counter")
                         let initialState = LiveActivityAttributes.ContentState(
-                            title: state.title, subtitle: state.subtitle,
-                            date: Date(timeIntervalSince1970: state.date/1000))
+                            title: state.title,
+                            subtitle: state.subtitle,
+                            date: Date(timeIntervalSince1970: state.date / 1000),
+                            imageName: state.imageName)
                         let activity = try Activity.request(
                             attributes: counterState,
                             content: .init(state: initialState, staleDate: nil), pushType: nil)
@@ -44,17 +49,23 @@ public class ExpoLiveActivityModule: Module {
                 throw ModuleErrors.unsupported
             }
         }
-        
+
         Function("stopActivity") { (activityId: String, state: LiveActivityState) -> Void in
             if #available(iOS 16.2, *) {
                 print("Attempting to stop")
                 let endState = LiveActivityAttributes.ContentState(
-                    title: state.title, subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date/1000))
-                if let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == activityId }) {
+                    title: state.title,
+                    subtitle: state.subtitle,
+                    date: Date(timeIntervalSince1970: state.date / 1000),
+                    imageName: state.imageName)
+                if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+                    $0.id == activityId
+                }) {
                     Task {
                         print("Stopping activity with id: \(activityId)")
-                        await activity.end(ActivityContent(state: endState, staleDate: nil), dismissalPolicy: .immediate)
+                        await activity.end(
+                            ActivityContent(state: endState, staleDate: nil),
+                            dismissalPolicy: .immediate)
                     }
                 } else {
                     print("Didn't find activity with ID \(activityId)")
@@ -64,14 +75,18 @@ public class ExpoLiveActivityModule: Module {
                 throw ModuleErrors.unsupported
             }
         }
-        
+
         Function("updateActivity") { (activityId: String, state: LiveActivityState) -> Void in
             if #available(iOS 16.2, *) {
                 print("Attempting to update")
                 let newState = LiveActivityAttributes.ContentState(
-                    title: state.title, subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date/1000))
-                if let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == activityId }) {
+                    title: state.title,
+                    subtitle: state.subtitle,
+                    date: Date(timeIntervalSince1970: state.date / 1000),
+                    imageName: state.imageName)
+                if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+                    $0.id == activityId
+                }) {
                     Task {
                         print("Updating activity with id: \(activityId)")
                         await activity.update(ActivityContent(state: newState, staleDate: nil))
