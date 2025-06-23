@@ -16,8 +16,15 @@ export function getWidgetFiles(
   moduleFileName: string,
   attributesFileName: string
 ) {
-  const widgetsPath = "../ios-files"
-  const imageAssetsPath = "./assets/live_activity" 
+  let packagePath
+  try {
+    packagePath = path.dirname(require.resolve("expo-live-activity/package.json"));
+  } catch {
+    console.log("Building for example app")
+  }
+  const widgetsPath = path.join(packagePath ? packagePath : "..", "/ios-files");
+  console.log(`Widgets path: ${widgetsPath}`);
+  const imageAssetsPath = "./assets/live_activity";
   const widgetFiles: WidgetFiles = {
     swiftFiles: [],
     entitlementFiles: [],
