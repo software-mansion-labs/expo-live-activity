@@ -1,6 +1,6 @@
 # expo-live-activity
 
-`expo-live-activity` is a React Native module designed for use with Expo to manage and display live activities on iOS devices. This module leverages the exciting new Live Activities feature introduced in iOS 16, allowing developers to deliver timely updates right on the lock screen.
+`expo-live-activity` is a React Native module designed for use with Expo to manage and display live activities on iOS devices. This module leverages the Live Activities feature introduced in iOS 16, allowing developers to deliver timely updates right on the lock screen.
 
 ## Features
 - Start, update, and stop live activities directly from your React Native application.
@@ -33,6 +33,7 @@ The module comes with a built-in config plugin that creates target in ios with a
    ```
 
 2. **Assets configuration**:
+
    Place images intended for live activities in the `assets/live-activity` folder. The plugin manages these assets automatically.
 
 
