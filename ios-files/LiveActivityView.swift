@@ -27,7 +27,7 @@ struct LiveActivityView: View {
           .resizable()
           .scaledToFit()
       }
-      ProgressView(timerInterval: Date.now...contentState.date)
+      ProgressView(timerInterval: Date.now...max(Date.now, contentState.date))
     }
     .padding()
     

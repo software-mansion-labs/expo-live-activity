@@ -6,8 +6,8 @@
 //
 
 import ActivityKit
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
@@ -16,7 +16,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     var date: Date
     var imageName: String
   }
-  
+
   var name: String
 }
 
@@ -26,7 +26,7 @@ struct LiveActivityLiveActivity: Widget {
       LiveActivityView(contentState: context.state)
         .activityBackgroundTint(Color.cyan)
         .activitySystemActionForegroundColor(Color.black)
-      
+
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.leading) {
@@ -47,37 +47,38 @@ struct LiveActivityLiveActivity: Widget {
       }
     }
   }
-  
+
   private func dynamicIslandExpandedLeading(title: String) -> some View {
     VStack {
       Text(title)
         .font(.title3)
     }
     .padding(.top, 5)
-  }  
+  }
   private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
     Image(imageName)
       .resizable()
       .scaledToFit()
-  }    
+  }
   private func dynamicIslandExpandedBottom(subtitle: String, endDate: Date) -> some View {
     VStack {
       HStack {
         Text(subtitle)
         Spacer()
       }
-      ProgressView(timerInterval: Date.now...endDate)
+      ProgressView(timerInterval: Date.now...max(Date.now, endDate))
     }
     .padding(.bottom, 5)
-  }    
+  }
   private func circularTimer(endDate: Date) -> some View {
     ProgressView(
-      timerInterval: Date.now...endDate,
+      timerInterval: Date.now...max(Date.now, endDate),
       countsDown: false,
       label: { EmptyView() },
       currentValueLabel: {
         EmptyView()
-      })
+      }
+    )
     .progressViewStyle(.circular)
   }
   private func resizableImage(imageName: String) -> some View {
