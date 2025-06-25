@@ -1,4 +1,5 @@
 import ExpoLiveActivityModule from './ExpoLiveActivityModule';
+import { Platform } from 'react-native';
 
 export type LiveActivityState = {
   title: string,
@@ -6,14 +7,43 @@ export type LiveActivityState = {
   date: number
 };
 
+/**
+ * Starts a live activity. Throws an error if invoked on non-iOS platforms.
+ * @param {LiveActivityState} state The state for the live activity.
+ * @returns {string} The identifier of the started activity.
+ * @throws {Error} If not on iOS.
+ */
 export function startActivity(state: LiveActivityState): string {
+  if (Platform.OS !== 'ios') {
+    throw new Error('startActivity is only available on iOS');
+  }
   return ExpoLiveActivityModule.startActivity(state);
 }
 
-export function stopActivity(id: String, state: LiveActivityState): string {
+/**
+ * Stops a live activity. Throws an error if invoked on non-iOS platforms.
+ * @param {string} id The identifier of the activity to stop.
+ * @param {LiveActivityState} state The updated state for the live activity.
+ * @returns {string} The identifier of the stopped activity.
+ * @throws {Error} If not on iOS.
+ */
+export function stopActivity(id: string, state: LiveActivityState): string {
+  if (Platform.OS !== 'ios') {
+    throw new Error('stopActivity is only available on iOS');
+  }
   return ExpoLiveActivityModule.stopActivity(id, state);
 }
 
-export function updateActivity(id: String, state: LiveActivityState): string {
+/**
+ * Updates a live activity. Throws an error if invoked on non-iOS platforms.
+ * @param {string} id The identifier of the activity to update.
+ * @param {LiveActivityState} state The updated state for the live activity.
+ * @returns {string} The identifier of the updated activity.
+ * @throws {Error} If not on iOS.
+ */
+export function updateActivity(id: string, state: LiveActivityState): string {
+  if (Platform.OS !== 'ios') {
+    throw new Error('updateActivity is only available on iOS');
+  }
   return ExpoLiveActivityModule.updateActivity(id, state);
 }

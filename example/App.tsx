@@ -12,7 +12,7 @@ import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 export default function App() {
-  const [activityId, setActivityID] = useState<String | null>();
+  const [activityId, setActivityID] = useState<string | null>();
   const [title, onChangeTitle] = useState("");
   const [subtitle, onChangeSubtitle] = useState("");
   const [imageName, onChangeImageName] = useState("live_activity_image");
