@@ -1,4 +1,3 @@
-import { requireNativeModule } from 'expo';
+import { requireOptionalNativeModule } from "expo";
 
-// This call loads the native module object from the JSI.
-export default requireNativeModule('ExpoLiveActivity');
+export default requireOptionalNativeModule("ExpoLiveActivity");
