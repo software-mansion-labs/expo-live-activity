@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Keyboard,
+  Switch
 } from "react-native";
 import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
@@ -16,6 +17,7 @@ export default function App() {
   const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
+  const [timerAsText, setTimerAsText] = useState(false);
 
   let backgroundColor = "001A72";
   let titleColor = "EBEBF0";
@@ -39,6 +41,7 @@ export default function App() {
       subtitleColor: subtitleColor,
       progressViewTint: progressViewTint,
       progressViewLabelColor: progessViewLabelColor,
+      timeAsText: timerAsText,
     };
     const id = LiveActivity.startActivity(state, styles);
     console.log(id);
@@ -103,6 +106,15 @@ export default function App() {
           minimumDate={new Date(Date.now() + 60 * 1000)}
         />
       </View>
+      <View style={styles.timerCheckboxContainer}>
+        <Text style={styles.label}>{"Timer shown as text:"}</Text>
+        <View style={styles.switch} >
+          <Switch
+              onValueChange={() => setTimerAsText(previousState => !previousState)}
+              value={timerAsText}
+          />
+        </View>
+      </View>
 
       <View style={styles.buttonsContainer}>
         <Button
@@ -154,4 +166,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
+  timerCheckboxContainer: {
+    alignItems: "flex-start",
+    width: "90%",
+    justifyContent: "center",
+  },
+  switch: {
+    padding: 10
+  }
 });

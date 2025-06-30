@@ -15,7 +15,7 @@ public class ExpoLiveActivityModule: Module {
         var subtitle: String
 
         @Field
-        var date: Double
+        var date: Double?
 
         @Field
         var imageName: String
@@ -39,6 +39,9 @@ public class ExpoLiveActivityModule: Module {
         
         @Field
         var progressViewLabelColor: String?
+        
+        @Field
+        var timeAsText: Bool?
     }
 
     public func definition() -> ModuleDefinition {
@@ -55,12 +58,13 @@ public class ExpoLiveActivityModule: Module {
                             titleColor: styles?.titleColor ?? "EBEBF0",
                             subtitleColor: styles?.subtitleColor ?? "FFFFFF75",
                             progressViewTint: styles?.progressViewTint ?? "38ACDD",
-                            progressViewLabelColor: styles?.progressViewLabelColor ?? "#0000FF"
+                            progressViewLabelColor: styles?.progressViewLabelColor ?? "#0000FF",
+                            timeAsText: styles?.timeAsText ?? true
                         )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,
                             subtitle: state.subtitle,
-                            date: Date(timeIntervalSince1970: state.date / 1000),
+                            date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
                             imageName: state.imageName,
                             dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(
@@ -83,7 +87,7 @@ public class ExpoLiveActivityModule: Module {
                 let endState = LiveActivityAttributes.ContentState(
                     title: state.title,
                     subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date / 1000),
+                    date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
                     imageName: state.imageName,
                     dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
@@ -109,7 +113,7 @@ public class ExpoLiveActivityModule: Module {
                 let newState = LiveActivityAttributes.ContentState(
                     title: state.title,
                     subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date / 1000),
+                    date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
                     imageName: state.imageName,
                     dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {

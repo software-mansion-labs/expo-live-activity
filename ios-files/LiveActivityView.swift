@@ -36,9 +36,11 @@ struct LiveActivityView: View {
       }
       .padding(.bottom, 16)
       
-      ProgressView(timerInterval: Date.now...max(Date.now, contentState.date))
-        .tint(Color(hex: attributes.progressViewTint))
-        .foregroundStyle(Color(hex: attributes.progressViewLabelColor))
+      if let date = contentState.date {
+        ProgressView(timerInterval: Date.now...max(Date.now, date))
+          .tint(Color(hex: attributes.progressViewTint))
+          .foregroundStyle(Color(hex: attributes.progressViewLabelColor))
+      }
     }
     .padding(24)
   }

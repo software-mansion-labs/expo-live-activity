@@ -1,11 +1,11 @@
 import ExpoLiveActivityModule from './ExpoLiveActivityModule';
 
 export type LiveActivityState = {
-  title: string,
-  subtitle: string,
-  date: number,
-  imageName: string,
-  dynamicIslandImageName: string,
+  title: string
+  subtitle?: string
+  date?: number
+  imageName?: string
+  dynamicIslandImageName?: string
 };
 
 export type LiveActivityStyles = {
@@ -14,6 +14,7 @@ export type LiveActivityStyles = {
   subtitleColor: string
   progressViewTint: string
   progressViewLabelColor: string
+  timerAsText?: boolean
 };
 
 export function startActivity(state: LiveActivityState, styles: LiveActivityStyles): string {

@@ -13,7 +13,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String
-    var date: Date
+    var date: Date?
     var imageName: String
     var dynamicIslandImageName: String
   }
@@ -24,6 +24,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var subtitleColor: String
   var progressViewTint: String
   var progressViewLabelColor: String
+  var timeAsText: Bool
 }
 
 struct LiveActivityLiveActivity: Widget {
@@ -44,19 +45,37 @@ struct LiveActivityLiveActivity: Widget {
           
         }
         DynamicIslandExpandedRegion(.bottom) {
-          dynamicIslandExpandedBottom(endDate: context.state.date, progressViewTint: context.attributes.progressViewTint)
+          if let date = context.state.date {
+            dynamicIslandExpandedBottom(endDate: date, progressViewTint: context.attributes.progressViewTint)
+          }
         }
       } compactLeading: {
         resizableImage(imageName: context.state.dynamicIslandImageName)
           .frame(maxWidth: 23, maxHeight: 23)
       } compactTrailing: {
-        circularTimer(endDate: context.state.date)
-          .tint(Color(hex: context.attributes.progressViewTint))
+        if let date = context.state.date {
+          compactTimer(endDate: date, timerAsText: context.attributes.timeAsText, progressViewTint: context.attributes.progressViewTint)
+        }
       } minimal: {
-        circularTimer(endDate: context.state.date)
-          .tint(Color(hex: context.attributes.progressViewTint))
+        if let date = context.state.date {
+          compactTimer(endDate: date, timerAsText: context.attributes.timeAsText, progressViewTint: context.attributes.progressViewTint)
+        }
       }
     }
+  }
+  
+  @ViewBuilder
+  private func compactTimer(endDate: Date, timerAsText: Bool, progressViewTint: String) -> some View {
+      if timerAsText {
+        Text(timerInterval: Date.now...max(Date.now, endDate))
+          .font(.system(size: 15))
+          .fontWeight(.semibold)
+          .frame(maxWidth: 60)
+          .multilineTextAlignment(.trailing)
+      } else {
+        circularTimer(endDate: endDate)
+          .tint(Color(hex: progressViewTint))
+      }
   }
 
   private func dynamicIslandExpandedLeading(title: String, subtitle: String) -> some View {
@@ -70,8 +89,8 @@ struct LiveActivityLiveActivity: Widget {
         .minimumScaleFactor(0.8)
         .foregroundStyle(.white.opacity(0.75))
     }
-    .padding(.top, 5)
   }
+  
   private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
     VStack {
       Spacer()
