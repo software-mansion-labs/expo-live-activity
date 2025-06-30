@@ -6,17 +6,22 @@ import {
   View,
   Text,
   Keyboard,
-  Pressable,
 } from "react-native";
 import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 export default function App() {
   const [activityId, setActivityID] = useState<String | null>();
-  const [title, onChangeTitle] = useState("");
-  const [subtitle, onChangeSubtitle] = useState("");
-  const [imageName, onChangeImageName] = useState("live_activity_image");
+  const [title, onChangeTitle] = useState("Title");
+  const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
+  const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
+
+  let backgroundColor = "001A72"
+  let titleColor = "EBEBF0"
+  let subtitleColor = "#FFFFFF75"
+  let progressViewTint = "38ACDD"
+  let progessViewLabelColor = "#FFFFFF"
 
   const startActivity = () => {
     Keyboard.dismiss();
@@ -26,7 +31,15 @@ export default function App() {
       date: date.getTime(),
       imageName: imageName,
     };
-    const id = LiveActivity.startActivity(state);
+
+    const styles = {
+      backgroundColor: backgroundColor,
+      titleColor: titleColor,
+      subtitleColor: subtitleColor,
+      progressViewTint: progressViewTint,
+      progressViewLabelColor: progessViewLabelColor
+    }
+    const id = LiveActivity.startActivity(state, styles);
     console.log(id);
     setActivityID(id);
   };
@@ -78,7 +91,14 @@ export default function App() {
       />
       <Text style={styles.label}>Set Live Activity timer:</Text>
       <View style={styles.timerControlsContainer}>
-        <RNDateTimePicker value={date} mode="time" onChange={(event, date) => { date && setDate(date) }} minimumDate={ new Date(Date.now() + 60 * 1000)} />
+        <RNDateTimePicker
+          value={date}
+          mode="time"
+          onChange={(event, date) => {
+            date && setDate(date);
+          }}
+          minimumDate={new Date(Date.now() + 60 * 1000)}
+        />
       </View>
 
       <View style={styles.buttonsContainer}>

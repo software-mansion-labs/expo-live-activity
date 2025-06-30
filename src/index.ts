@@ -6,8 +6,16 @@ export type LiveActivityState = {
   date: number
 };
 
-export function startActivity(state: LiveActivityState): string {
-  return ExpoLiveActivityModule.startActivity(state);
+export type LiveActivityStyles = {
+  backgroundColor: string
+  titleColor: string
+  subtitleColor: string
+  progressViewTint: string
+  progressViewLabelColor: string
+};
+
+export function startActivity(state: LiveActivityState, styles: LiveActivityStyles): string {
+  return ExpoLiveActivityModule.startActivity(state, styles);
 }
 
 export function stopActivity(id: String, state: LiveActivityState): string {

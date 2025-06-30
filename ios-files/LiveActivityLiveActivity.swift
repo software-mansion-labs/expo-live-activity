@@ -18,13 +18,18 @@ struct LiveActivityAttributes: ActivityAttributes {
   }
 
   var name: String
+  var backgroundColor: String
+  var titleColor: String
+  var subtitleColor: String
+  var progressViewTint: String
+  var progressViewLabelColor: String
 }
 
 struct LiveActivityLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      LiveActivityView(contentState: context.state)
-        .activityBackgroundTint(Color.cyan)
+      LiveActivityView(contentState: context.state, attributes: context.attributes)
+        .activityBackgroundTint(Color(hex: context.attributes.backgroundColor))
         .activitySystemActionForegroundColor(Color.black)
 
     } dynamicIsland: { context in
@@ -86,4 +91,40 @@ struct LiveActivityLiveActivity: Widget {
       .resizable()
       .scaledToFit()
   }
+}
+
+extension Color {
+    init(hex: String) {
+      var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
+
+      if (cString.hasPrefix("#")) {
+          cString.remove(at: cString.startIndex)
+      }
+
+      if ((cString.count) != 6 && (cString.count) != 8) {
+        self.init(.white)
+        return
+      }
+
+      var rgbValue: UInt64 = 0
+      Scanner(string: cString).scanHexInt64(&rgbValue)
+      
+      if ((cString.count) == 8) {
+        self.init(
+          .sRGB,
+          red: Double((rgbValue >> 24) & 0xff) / 255,
+          green: Double((rgbValue >> 16) & 0xff) / 255,
+          blue: Double((rgbValue >> 08) & 0xff) / 255,
+          opacity: Double((rgbValue >> 00) & 0xff) / 255,
+        )
+      } else {
+        self.init(
+          .sRGB,
+          red: Double((rgbValue >> 16) & 0xff) / 255,
+          green: Double((rgbValue >> 08) & 0xff) / 255,
+          blue: Double((rgbValue >> 00) & 0xff) / 255,
+          opacity: 1
+        )
+      }
+    }
 }

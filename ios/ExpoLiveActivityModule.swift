@@ -20,16 +20,40 @@ public class ExpoLiveActivityModule: Module {
         @Field
         var imageName: String
     }
+    
+    struct LiveActivityStyles: Record {
+        @Field
+        var backgroundColor: String?
+        
+        @Field
+        var titleColor: String?
+        
+        @Field
+        var subtitleColor: String?
+        
+        @Field
+        var progressViewTint: String?
+        
+        @Field
+        var progressViewLabelColor: String?
+    }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
 
-        Function("startActivity") { (state: LiveActivityState) -> String in
+        Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
             print("Starting activity")
             if #available(iOS 16.2, *) {
                 if ActivityAuthorizationInfo().areActivitiesEnabled {
                     do {
-                        let counterState = LiveActivityAttributes(name: "Counter")
+                        let counterState = LiveActivityAttributes(
+                            name: "ExpoLiveActivity",
+                            backgroundColor: styles?.backgroundColor ?? "#001A72",
+                            titleColor: styles?.titleColor ?? "EBEBF0",
+                            subtitleColor: styles?.subtitleColor ?? "FFFFFF75",
+                            progressViewTint: styles?.progressViewTint ?? "38ACDD",
+                            progressViewLabelColor: styles?.progressViewLabelColor ?? "#0000FF"
+                        )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,
                             subtitle: state.subtitle,
@@ -45,7 +69,6 @@ public class ExpoLiveActivityModule: Module {
                 }
                 throw ModuleErrors.liveActivitiesNotEnabled
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
@@ -71,7 +94,6 @@ public class ExpoLiveActivityModule: Module {
                     print("Didn't find activity with ID \(activityId)")
                 }
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
@@ -95,7 +117,6 @@ public class ExpoLiveActivityModule: Module {
                     print("Didn't find activity with ID \(activityId)")
                 }
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
