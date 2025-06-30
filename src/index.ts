@@ -3,7 +3,9 @@ import ExpoLiveActivityModule from './ExpoLiveActivityModule';
 export type LiveActivityState = {
   title: string,
   subtitle: string,
-  date: number
+  date: number,
+  imageName: string,
+  dynamicIslandImageName: string,
 };
 
 export type LiveActivityStyles = {

@@ -22,7 +22,7 @@ struct LiveActivityView: View {
             .font(.title2)
             .foregroundStyle(Color(hex: attributes.titleColor))
             .fontWeight(.semibold)
-          Text("\(contentState.subtitle)")
+          Text(contentState.subtitle)
             .font(.title3)
             .foregroundStyle(Color(hex: attributes.subtitleColor))
         }

@@ -14,6 +14,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     var subtitle: String
     var date: Date
     var imageName: String
+    var dynamicIslandImageName: String
   }
 
   var name: String

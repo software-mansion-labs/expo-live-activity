@@ -19,6 +19,9 @@ public class ExpoLiveActivityModule: Module {
 
         @Field
         var imageName: String
+
+        @Field
+        var dynamicIslandImageName: String
     }
     
     struct LiveActivityStyles: Record {
@@ -58,7 +61,8 @@ public class ExpoLiveActivityModule: Module {
                             title: state.title,
                             subtitle: state.subtitle,
                             date: Date(timeIntervalSince1970: state.date / 1000),
-                            imageName: state.imageName)
+                            imageName: state.imageName,
+                            dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(
                             attributes: counterState,
                             content: .init(state: initialState, staleDate: nil), pushType: nil)
@@ -80,7 +84,8 @@ public class ExpoLiveActivityModule: Module {
                     title: state.title,
                     subtitle: state.subtitle,
                     date: Date(timeIntervalSince1970: state.date / 1000),
-                    imageName: state.imageName)
+                    imageName: state.imageName,
+                    dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
                     $0.id == activityId
                 }) {
@@ -105,7 +110,8 @@ public class ExpoLiveActivityModule: Module {
                     title: state.title,
                     subtitle: state.subtitle,
                     date: Date(timeIntervalSince1970: state.date / 1000),
-                    imageName: state.imageName)
+                    imageName: state.imageName,
+                    dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
                     $0.id == activityId
                 }) {

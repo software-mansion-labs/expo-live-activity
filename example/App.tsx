@@ -17,11 +17,11 @@ export default function App() {
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
 
-  let backgroundColor = "001A72"
-  let titleColor = "EBEBF0"
-  let subtitleColor = "#FFFFFF75"
-  let progressViewTint = "38ACDD"
-  let progessViewLabelColor = "#FFFFFF"
+  let backgroundColor = "001A72";
+  let titleColor = "EBEBF0";
+  let subtitleColor = "#FFFFFF75";
+  let progressViewTint = "38ACDD";
+  let progessViewLabelColor = "#FFFFFF";
 
   const startActivity = () => {
     Keyboard.dismiss();
@@ -30,6 +30,7 @@ export default function App() {
       subtitle: subtitle,
       date: date.getTime(),
       imageName: imageName,
+      dynamicIslandImageName: "logo",
     };
 
     const styles = {
@@ -37,8 +38,8 @@ export default function App() {
       titleColor: titleColor,
       subtitleColor: subtitleColor,
       progressViewTint: progressViewTint,
-      progressViewLabelColor: progessViewLabelColor
-    }
+      progressViewLabelColor: progessViewLabelColor,
+    };
     const id = LiveActivity.startActivity(state, styles);
     console.log(id);
     setActivityID(id);
@@ -50,6 +51,7 @@ export default function App() {
       subtitle: subtitle,
       date: Date.now(),
       imageName: imageName,
+      dynamicIslandImageName: "logo",
     };
     activityId && LiveActivity.stopActivity(activityId, state);
     setActivityID(null);
@@ -61,6 +63,7 @@ export default function App() {
       subtitle: subtitle,
       date: date.getTime(),
       imageName: imageName,
+      dynamicIslandImageName: "logo",
     };
     activityId && LiveActivity.updateActivity(activityId, state);
   };
