@@ -8,10 +8,9 @@ export type LiveActivityState = {
 };
 
 /**
- * Starts a live activity. Throws an error if invoked on non-iOS platforms.
  * @param {LiveActivityState} state The state for the live activity.
  * @returns {string} The identifier of the started activity.
- * @throws {Error} If not on iOS.
+ * @throws {Error} when function is called on platform different than iOS.
  */
 export function startActivity(state: LiveActivityState): string {
   if (Platform.OS !== 'ios') {
@@ -21,7 +20,6 @@ export function startActivity(state: LiveActivityState): string {
 }
 
 /**
- * Stops a live activity. Throws an error if invoked on non-iOS platforms.
  * @param {string} id The identifier of the activity to stop.
  * @param {LiveActivityState} state The updated state for the live activity.
  * @returns {string} The identifier of the stopped activity.
@@ -35,7 +33,6 @@ export function stopActivity(id: string, state: LiveActivityState): string {
 }
 
 /**
- * Updates a live activity. Throws an error if invoked on non-iOS platforms.
  * @param {string} id The identifier of the activity to update.
  * @param {LiveActivityState} state The updated state for the live activity.
  * @returns {string} The identifier of the updated activity.
