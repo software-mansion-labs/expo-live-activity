@@ -32,7 +32,7 @@ export default function App() {
       subtitle: subtitle,
       date: date.getTime(),
       imageName: imageName,
-      dynamicIslandImageName: "logo",
+      dynamicIslandImageName: "logo-island",
     };
 
     const styles = {
@@ -54,7 +54,7 @@ export default function App() {
       subtitle: subtitle,
       date: Date.now(),
       imageName: imageName,
-      dynamicIslandImageName: "logo",
+      dynamicIslandImageName: "logo-island",
     };
     activityId && LiveActivity.stopActivity(activityId, state);
     setActivityID(null);
