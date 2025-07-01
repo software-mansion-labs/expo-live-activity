@@ -18,6 +18,9 @@ export default function App() {
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
   const [timerAsText, setTimerAsText] = useState(false);
+  const [passSubtitle, setPassSubtitle] = useState(true);
+  const [passImage, setPassImage] = useState(true);
+  const [passDate, setPassDate] = useState(true);
 
   let backgroundColor = "001A72";
   let titleColor = "EBEBF0";
@@ -29,9 +32,9 @@ export default function App() {
     Keyboard.dismiss();
     const state = {
       title: title,
-      subtitle: subtitle,
-      date: date.getTime(),
-      imageName: imageName,
+      subtitle: passSubtitle ? subtitle : undefined,
+      date: passDate ? date.getTime() : undefined,
+      imageName: passImage ? imageName : undefined,
       dynamicIslandImageName: "logo-island",
     };
 
@@ -80,23 +83,44 @@ export default function App() {
         placeholder="Live activity title"
         value={title}
       />
-      <Text style={styles.label}>Set Live Activity subtitle:</Text>
+      <View style={styles.labelWithSwitch}>
+        <Text style={styles.label}>Set Live Activity subtitle:</Text>
+        <Switch
+              onValueChange={() => setPassSubtitle(previousState => !previousState)}
+              value={passSubtitle}
+          />
+      </View>
       <TextInput
-        style={styles.input}
+        style={passSubtitle ? styles.input : styles.diabledInput}
         onChangeText={onChangeSubtitle}
         placeholder="Live activity title"
         value={subtitle}
+        editable={passSubtitle}
       />
-      <Text style={styles.label}>Set Live Activity image:</Text>
+      <View style={styles.labelWithSwitch}>
+        <Text style={styles.label}>Set Live Activity image:</Text>
+        <Switch
+              onValueChange={() => setPassImage(previousState => !previousState)}
+              value={passImage}
+          />
+      </View>
       <TextInput
-        style={styles.input}
+        style={passImage ? styles.input : styles.diabledInput}
         onChangeText={onChangeImageName}
         autoCapitalize="none"
         placeholder="Live activity image"
         value={imageName}
+        editable={passImage}
       />
-      <Text style={styles.label}>Set Live Activity timer:</Text>
-      <View style={styles.timerControlsContainer}>
+      <View style={styles.labelWithSwitch}>
+        <Text style={styles.label}>Set Live Activity timer:</Text>
+        <Switch
+              onValueChange={() => setPassDate(previousState => !previousState)}
+              value={passDate}
+          />
+      </View>
+        <View style={styles.timerControlsContainer}>
+      { passDate && (
         <RNDateTimePicker
           value={date}
           mode="time"
@@ -105,15 +129,14 @@ export default function App() {
           }}
           minimumDate={new Date(Date.now() + 60 * 1000)}
         />
+      )}
       </View>
-      <View style={styles.timerCheckboxContainer}>
+      <View style={styles.labelWithSwitch}>
         <Text style={styles.label}>{"Timer shown as text:"}</Text>
-        <View style={styles.switch} >
           <Switch
               onValueChange={() => setTimerAsText(previousState => !previousState)}
               value={timerAsText}
           />
-        </View>
       </View>
 
       <View style={styles.buttonsContainer}>
@@ -146,16 +169,22 @@ const styles = StyleSheet.create({
   timerControlsContainer: {
     flexDirection: "row",
     marginTop: 15,
+    marginBottom: 15,
     width: "90%",
     alignItems: "center",
     justifyContent: "center",
   },
   buttonsContainer: {
-    padding: 20,
+    padding: 30,
   },
   label: {
     width: "90%",
     fontSize: 17,
+  },
+  labelWithSwitch: {
+    flexDirection: 'row',
+    width: "90%",
+    paddingEnd: 15,
   },
   input: {
     height: 45,
@@ -163,6 +192,17 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     borderColor: "gray",
+    borderRadius: 10,
+    padding: 10,
+  },
+  diabledInput: {
+    height: 45,
+    width: "90%",
+    margin: 12,
+    borderWidth: 1,
+    borderColor: "#DEDEDE",
+    backgroundColor: "#ECECEC",
+    color: "gray",
     borderRadius: 10,
     padding: 10,
   },
