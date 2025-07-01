@@ -69,7 +69,7 @@ export default function App() {
       subtitle: subtitle,
       date: date.getTime(),
       imageName: imageName,
-      dynamicIslandImageName: "logo",
+      dynamicIslandImageName: "logo-island",
     };
     activityId && LiveActivity.updateActivity(activityId, state);
   };
