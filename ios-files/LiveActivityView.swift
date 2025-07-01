@@ -14,6 +14,10 @@ struct LiveActivityView: View {
   let contentState: LiveActivityAttributes.ContentState
   let attributes: LiveActivityAttributes
   
+  var progressViewTint: Color? {
+    attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil
+  }
+  
   var body: some View {
     VStack(alignment: .leading) {
       HStack(alignment: .center) {
@@ -54,11 +58,11 @@ struct LiveActivityView: View {
       if let date = contentState.date {
         if let progressViewLabelColor = attributes.progressViewLabelColor {
           ProgressView(timerInterval: Date.now...max(Date.now, date))
-            .tint(attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil)
+            .tint(progressViewTint)
             .foregroundStyle(Color(hex: progressViewLabelColor))
         } else {
           ProgressView(timerInterval: Date.now...max(Date.now, date))
-            .tint(attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil)
+            .tint(progressViewTint)
         }
       }
     }

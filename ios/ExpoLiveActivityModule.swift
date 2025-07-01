@@ -41,13 +41,19 @@ public class ExpoLiveActivityModule: Module {
         var progressViewLabelColor: String?
         
         @Field
-        var timeAsText: Bool?
+        var timerType: DynamicIslandTimerType?
+    }
+    
+    enum DynamicIslandTimerType: String, Enumerable {
+        case circular
+        case digital
     }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
 
         Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
+            var date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
             print("Starting activity")
             if #available(iOS 16.2, *) {
                 if ActivityAuthorizationInfo().areActivitiesEnabled {
@@ -59,12 +65,12 @@ public class ExpoLiveActivityModule: Module {
                             subtitleColor: styles?.subtitleColor,
                             progressViewTint: styles?.progressViewTint,
                             progressViewLabelColor: styles?.progressViewLabelColor,
-                            timeAsText: styles?.timeAsText ?? false
+                            timeAsText: styles?.timerType == .digital
                         )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,
                             subtitle: state.subtitle,
-                            date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
+                            date: date,
                             imageName: state.imageName,
                             dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(

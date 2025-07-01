@@ -1,5 +1,7 @@
 import ExpoLiveActivityModule from './ExpoLiveActivityModule';
 
+export type DynamicIslandTimerType = 'circular' | 'digital'
+
 export type LiveActivityState = {
   title: string
   subtitle?: string
@@ -14,7 +16,7 @@ export type LiveActivityStyles = {
   subtitleColor?: string
   progressViewTint?: string
   progressViewLabelColor?: string
-  timerAsText?: boolean
+  timerType: DynamicIslandTimerType
 };
 
 export function startActivity(state: LiveActivityState, styles?: LiveActivityStyles): string {

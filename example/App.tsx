@@ -17,7 +17,7 @@ export default function App() {
   const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
-  const [timerAsText, setTimerAsText] = useState(false);
+  const [timerType, setTimerType] = useState<LiveActivity.DynamicIslandTimerType>("circular");
   const [passSubtitle, setPassSubtitle] = useState(true);
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
@@ -44,7 +44,7 @@ export default function App() {
       subtitleColor: subtitleColor,
       progressViewTint: progressViewTint,
       progressViewLabelColor: progessViewLabelColor,
-      timeAsText: timerAsText,
+      timerType: timerType,
     };
     const id = LiveActivity.startActivity(state, styles);
     console.log(id);
@@ -134,8 +134,8 @@ export default function App() {
       <View style={styles.labelWithSwitch}>
         <Text style={styles.label}>{"Timer shown as text:"}</Text>
           <Switch
-              onValueChange={() => setTimerAsText(previousState => !previousState)}
-              value={timerAsText}
+              onValueChange={(previousState) => previousState ? setTimerType("digital") : setTimerType("circular")}
+              value={timerType == "digital"}
           />
       </View>
 
