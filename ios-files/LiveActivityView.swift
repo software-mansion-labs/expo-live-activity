@@ -18,28 +18,48 @@ struct LiveActivityView: View {
     VStack(alignment: .leading) {
       HStack(alignment: .center) {
         VStack(alignment: .leading, spacing: 2) {
-          Text(contentState.title)
-            .font(.title2)
-            .foregroundStyle(Color(hex: attributes.titleColor))
-            .fontWeight(.semibold)
-          Text(contentState.subtitle)
-            .font(.title3)
-            .foregroundStyle(Color(hex: attributes.subtitleColor))
+          if let titleColor = attributes.titleColor {
+            Text(contentState.title)
+              .font(.title2)
+              .foregroundStyle(Color(hex: titleColor))
+              .fontWeight(.semibold)
+          } else {
+            Text(contentState.title)
+              .font(.title2)
+              .fontWeight(.semibold)
+          }
+          
+          if let subtitle = contentState.subtitle {
+            if let subtitleColor = attributes.subtitleColor {
+              Text(subtitle)
+                .font(.title3)
+                .foregroundStyle(Color(hex: subtitleColor))
+            } else {
+              Text(subtitle)
+                .font(.title3)
+            }
+          }
         }
         
         Spacer()
         
-        Image(contentState.imageName)
-          .resizable()
-          .scaledToFit()
-          .frame(width: 64, height: 64)
+        if let imageName = contentState.imageName {  
+          Image(imageName)
+            .resizable()
+            .scaledToFit()
+            .frame(maxHeight: 64)
+        }
       }
-      .padding(.bottom, 16)
       
       if let date = contentState.date {
-        ProgressView(timerInterval: Date.now...max(Date.now, date))
-          .tint(Color(hex: attributes.progressViewTint))
-          .foregroundStyle(Color(hex: attributes.progressViewLabelColor))
+        if let progressViewLabelColor = attributes.progressViewLabelColor {
+          ProgressView(timerInterval: Date.now...max(Date.now, date))
+            .tint(attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil)
+            .foregroundStyle(Color(hex: progressViewLabelColor))
+        } else {
+          ProgressView(timerInterval: Date.now...max(Date.now, date))
+            .tint(attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil)
+        }
       }
     }
     .padding(24)

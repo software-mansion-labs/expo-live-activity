@@ -9,15 +9,15 @@ export type LiveActivityState = {
 };
 
 export type LiveActivityStyles = {
-  backgroundColor: string
-  titleColor: string
-  subtitleColor: string
-  progressViewTint: string
-  progressViewLabelColor: string
+  backgroundColor?: string
+  titleColor?: string
+  subtitleColor?: string
+  progressViewTint?: string
+  progressViewLabelColor?: string
   timerAsText?: boolean
 };
 
-export function startActivity(state: LiveActivityState, styles: LiveActivityStyles): string {
+export function startActivity(state: LiveActivityState, styles?: LiveActivityStyles): string {
   return ExpoLiveActivityModule.startActivity(state, styles);
 }
 

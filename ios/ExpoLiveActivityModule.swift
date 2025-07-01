@@ -12,16 +12,16 @@ public class ExpoLiveActivityModule: Module {
         var title: String
 
         @Field
-        var subtitle: String
+        var subtitle: String?
 
         @Field
         var date: Double?
 
         @Field
-        var imageName: String
+        var imageName: String?
 
         @Field
-        var dynamicIslandImageName: String
+        var dynamicIslandImageName: String?
     }
     
     struct LiveActivityStyles: Record {
@@ -54,12 +54,12 @@ public class ExpoLiveActivityModule: Module {
                     do {
                         let counterState = LiveActivityAttributes(
                             name: "ExpoLiveActivity",
-                            backgroundColor: styles?.backgroundColor ?? "#001A72",
-                            titleColor: styles?.titleColor ?? "EBEBF0",
-                            subtitleColor: styles?.subtitleColor ?? "FFFFFF75",
-                            progressViewTint: styles?.progressViewTint ?? "38ACDD",
-                            progressViewLabelColor: styles?.progressViewLabelColor ?? "#0000FF",
-                            timeAsText: styles?.timeAsText ?? true
+                            backgroundColor: styles?.backgroundColor,
+                            titleColor: styles?.titleColor,
+                            subtitleColor: styles?.subtitleColor,
+                            progressViewTint: styles?.progressViewTint,
+                            progressViewLabelColor: styles?.progressViewLabelColor,
+                            timeAsText: styles?.timeAsText ?? false
                         )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,
