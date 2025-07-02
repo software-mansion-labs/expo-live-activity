@@ -12,64 +12,117 @@ import WidgetKit
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
-    var subtitle: String
-    var date: Date
-    var imageName: String
+    var subtitle: String?
+    var date: Date?
+    var imageName: String?
+    var dynamicIslandImageName: String?
   }
 
   var name: String
+  var backgroundColor: String?
+  var titleColor: String?
+  var subtitleColor: String?
+  var progressViewTint: String?
+  var progressViewLabelColor: String?
+  var timerType: DynamicIslandTimerType
+  
+  enum DynamicIslandTimerType: String, Codable {
+      case circular
+      case digital
+  }
 }
 
 struct LiveActivityLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
-      LiveActivityView(contentState: context.state)
-        .activityBackgroundTint(Color.cyan)
+      LiveActivityView(contentState: context.state, attributes: context.attributes)
+        .activityBackgroundTint(context.attributes.backgroundColor != nil ? Color(hex: context.attributes.backgroundColor!) : nil)
         .activitySystemActionForegroundColor(Color.black)
 
     } dynamicIsland: { context in
       DynamicIsland {
-        DynamicIslandExpandedRegion(.leading) {
-          dynamicIslandExpandedLeading(title: context.state.title)
+        DynamicIslandExpandedRegion(.leading, priority: 1) {
+          dynamicIslandExpandedLeading(title: context.state.title, subtitle: context.state.subtitle)
+            .dynamicIsland(verticalPlacement: .belowIfTooWide)
+            .padding(.leading, 5)
         }
         DynamicIslandExpandedRegion(.trailing) {
-          resizableImage(imageName: context.state.imageName)
+          if let imageName = context.state.imageName {
+            dynamicIslandExpandedTrailing(imageName: imageName)
+              .padding(.trailing, 5)
+          }
         }
         DynamicIslandExpandedRegion(.bottom) {
-          dynamicIslandExpandedBottom(subtitle: context.state.subtitle, endDate: context.state.date)
+          if let date = context.state.date {
+            dynamicIslandExpandedBottom(endDate: date, progressViewTint: context.attributes.progressViewTint)
+              .padding(.horizontal, 5)
+          }
         }
       } compactLeading: {
-        resizableImage(imageName: context.state.imageName)
+        if let dynamicIslandImageName = context.state.dynamicIslandImageName {
+          resizableImage(imageName: dynamicIslandImageName)
+            .frame(maxWidth: 23, maxHeight: 23)
+        }
       } compactTrailing: {
-        circularTimer(endDate: context.state.date)
+        if let date = context.state.date {
+          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
+        }
       } minimal: {
-        circularTimer(endDate: context.state.date)
+        if let date = context.state.date {
+          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
+        }
       }
     }
+  }
+  
+  @ViewBuilder
+  private func compactTimer(endDate: Date, timerType: LiveActivityAttributes.DynamicIslandTimerType, progressViewTint: String?) -> some View {
+    if timerType == .digital {
+        Text(timerInterval: Date.now...max(Date.now, endDate))
+          .font(.system(size: 15))
+          .minimumScaleFactor(0.8)
+          .fontWeight(.semibold)
+          .frame(maxWidth: 60)
+          .multilineTextAlignment(.trailing)
+      } else {
+        circularTimer(endDate: endDate)
+          .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
+      }
   }
 
-  private func dynamicIslandExpandedLeading(title: String) -> some View {
-    VStack {
+  private func dynamicIslandExpandedLeading(title: String, subtitle: String?) -> some View {
+    VStack(alignment: .leading) {
+      Spacer()
       Text(title)
-        .font(.title3)
-    }
-    .padding(.top, 5)
-  }
-  private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
-    Image(imageName)
-      .resizable()
-      .scaledToFit()
-  }
-  private func dynamicIslandExpandedBottom(subtitle: String, endDate: Date) -> some View {
-    VStack {
-      HStack {
+        .font(.title2)
+        .foregroundStyle(.white)
+        .fontWeight(.semibold)
+      if let subtitle {
         Text(subtitle)
-        Spacer()
+          .font(.title3)
+          .minimumScaleFactor(0.8)
+          .foregroundStyle(.white.opacity(0.75))
       }
-      ProgressView(timerInterval: Date.now...max(Date.now, endDate))
+      Spacer()
     }
-    .padding(.bottom, 5)
   }
+  
+  private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
+    VStack {
+      Spacer()
+      resizableImage(imageName: imageName)
+        .frame(maxHeight: 64)
+      Spacer()
+    }
+  }
+  
+  private func dynamicIslandExpandedBottom(endDate: Date, progressViewTint: String?) -> some View {
+    ProgressView(timerInterval: Date.now...max(Date.now, endDate))
+      .foregroundStyle(.white)
+      .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
+      .padding(.top, 5)
+  }
+  
   private func circularTimer(endDate: Date) -> some View {
     ProgressView(
       timerInterval: Date.now...max(Date.now, endDate),
