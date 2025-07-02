@@ -53,7 +53,7 @@ public class ExpoLiveActivityModule: Module {
         Name("ExpoLiveActivity")
 
         Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
-            var date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
+            let date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
             print("Starting activity")
             if #available(iOS 16.2, *) {
                 if ActivityAuthorizationInfo().areActivitiesEnabled {
@@ -65,7 +65,7 @@ public class ExpoLiveActivityModule: Module {
                             subtitleColor: styles?.subtitleColor,
                             progressViewTint: styles?.progressViewTint,
                             progressViewLabelColor: styles?.progressViewLabelColor,
-                            timeAsText: styles?.timerType == .digital
+                            timerType: styles?.timerType == .digital ? .digital : .circular
                         )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,

@@ -23,5 +23,10 @@ struct LiveActivityAttributes: ActivityAttributes {
   var subtitleColor: String?
   var progressViewTint: String?
   var progressViewLabelColor: String?
-  var timeAsText: Bool
+  var timerType: DynamicIslandTimerType
+  
+  enum DynamicIslandTimerType: String, Codable {
+      case circular
+      case digital
+  }
 }

@@ -24,7 +24,12 @@ struct LiveActivityAttributes: ActivityAttributes {
   var subtitleColor: String?
   var progressViewTint: String?
   var progressViewLabelColor: String?
-  var timeAsText: Bool
+  var timerType: DynamicIslandTimerType
+  
+  enum DynamicIslandTimerType: String, Codable {
+      case circular
+      case digital
+  }
 }
 
 struct LiveActivityLiveActivity: Widget {
@@ -60,19 +65,19 @@ struct LiveActivityLiveActivity: Widget {
         }
       } compactTrailing: {
         if let date = context.state.date {
-          compactTimer(endDate: date, timerAsText: context.attributes.timeAsText, progressViewTint: context.attributes.progressViewTint)
+          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
         }
       } minimal: {
         if let date = context.state.date {
-          compactTimer(endDate: date, timerAsText: context.attributes.timeAsText, progressViewTint: context.attributes.progressViewTint)
+          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
         }
       }
     }
   }
   
   @ViewBuilder
-  private func compactTimer(endDate: Date, timerAsText: Bool, progressViewTint: String?) -> some View {
-      if timerAsText {
+  private func compactTimer(endDate: Date, timerType: LiveActivityAttributes.DynamicIslandTimerType, progressViewTint: String?) -> some View {
+    if timerType == .digital {
         Text(timerInterval: Date.now...max(Date.now, endDate))
           .font(.system(size: 15))
           .minimumScaleFactor(0.8)
