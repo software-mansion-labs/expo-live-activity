@@ -125,33 +125,36 @@ export default function App() {
         value={imageName}
         editable={passImage}
       />
-      <View style={styles.labelWithSwitch}>
-        <Text style={styles.label}>Set Live Activity timer:</Text>
-        <Switch
-              onValueChange={() => setPassDate(previousState => !previousState)}
-              value={passDate}
-          />
-      </View>
-        <View style={styles.timerControlsContainer}>
-      { Platform.OS === "ios" && passDate && (
-        <RNDateTimePicker
-          value={date}
-          mode="time"
-          onChange={(event, date) => {
-            date && setDate(date);
-          }}
-          minimumDate={new Date(Date.now() + 60 * 1000)}
-        />
-      )}
-      </View>
-      <View style={styles.labelWithSwitch}>
-        <Text style={styles.label}>{"Timer shown as text:"}</Text>
+      { Platform.OS === "ios" && (
+        <>
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Set Live Activity timer:</Text>
           <Switch
-              onValueChange={(previousState) => previousState ? setTimerType("digital") : setTimerType("circular")}
-              value={timerType == "digital"}
+                onValueChange={() => setPassDate(previousState => !previousState)}
+                value={passDate}
+            />
+        </View>
+          <View style={styles.timerControlsContainer}>
+        { passDate && (
+          <RNDateTimePicker
+            value={date}
+            mode="time"
+            onChange={(event, date) => {
+              date && setDate(date);
+            }}
+            minimumDate={new Date(Date.now() + 60 * 1000)}
           />
-      </View>
-
+        )}
+        </View>
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>{"Timer shown as text:"}</Text>
+            <Switch
+                onValueChange={(previousState) => previousState ? setTimerType("digital") : setTimerType("circular")}
+                value={timerType == "digital"}
+            />
+        </View>
+        </>
+      )}
       <View style={styles.buttonsContainer}>
         <Button
           title="Start Activity"
@@ -178,10 +181,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-  },
-  inputs: {
-    alignItems: "flex-start",
-    width: "90%",
+    
   },
   timerControlsContainer: {
     flexDirection: "row",
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 45,
-    width: "100%",
+    width: "90%",
     marginVertical: 12,
     borderWidth: 1,
     borderColor: "gray",
@@ -228,7 +228,4 @@ const styles = StyleSheet.create({
     width: "90%",
     justifyContent: "center",
   },
-  switch: {
-    padding: 10
-  }
 });
