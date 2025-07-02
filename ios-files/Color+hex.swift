@@ -1,9 +1,3 @@
-//
-//  Color+hex.swift
-//  expoliveactivityexample
-//
-//  Created by Anna Olak on 02/07/2025.
-//
 import SwiftUI
 
 extension Color {
