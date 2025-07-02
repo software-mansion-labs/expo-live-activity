@@ -71,7 +71,7 @@ The `styles` object should include:
    subtitleColor?: string;
    progressViewTint?: string;
    progressViewLabelColor?: string;
-   timerType: DynamicIslandTimerType; // "circular" | "digital" - defines timer appereance on the dynamic island
+   timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appereance on the dynamic island
 };
 ```
 
