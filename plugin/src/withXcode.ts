@@ -14,18 +14,12 @@ export const withXcode: ConfigPlugin<{
   targetName: string;
   bundleIdentifier: string;
   deploymentTarget: string;
-  // widgetsFolder: string;
-  moduleFileName: string;
-  attributesFileName: string;
 }> = (
   config,
   {
     targetName,
     bundleIdentifier,
     deploymentTarget,
-    // widgetsFolder,
-    moduleFileName,
-    attributesFileName,
   }
 ) => {
   return withXcodeProject(config, (config) => {
@@ -41,10 +35,7 @@ export const withXcode: ConfigPlugin<{
     const targetPath = path.join(platformProjectRoot, targetName);
 
     const widgetFiles = getWidgetFiles(
-      // widgetsPath,
       targetPath,
-      moduleFileName,
-      attributesFileName
     );
 
     console.log("Finished running withFiles")

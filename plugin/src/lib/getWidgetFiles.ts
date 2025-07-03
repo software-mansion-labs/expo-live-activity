@@ -11,10 +11,7 @@ export type WidgetFiles = {
 };
 
 export function getWidgetFiles(
-  // widgetsPath: string, // to zmieniamy, bo u nas to będzie "config.modRequest.projectRoot/[tu może coś jeszcze być]/node_modules/nasz-moduł/iosViews"
   targetPath: string,
-  moduleFileName: string,
-  attributesFileName: string
 ) {
   let packagePath
   try {
@@ -22,9 +19,9 @@ export function getWidgetFiles(
   } catch {
     console.log("Building for example app")
   }
-  const widgetsPath = path.join(packagePath ? packagePath : "..", "/ios-files");
-  console.log(`Widgets path: ${widgetsPath}`);
+  const liveActivityFilesPath = path.join(packagePath ? packagePath : "..", "/ios-files");
   const imageAssetsPath = "./assets/live_activity";
+
   const widgetFiles: WidgetFiles = {
     swiftFiles: [],
     entitlementFiles: [],
@@ -33,23 +30,19 @@ export function getWidgetFiles(
     intentFiles: [],
     otherFiles: [],
   };
-  console.log(`Getting widget files`)
+
   if (!fs.existsSync(targetPath)) {
-    console.log(`Making directory at: ${targetPath}`)
     fs.mkdirSync(targetPath, { recursive: true });
   }
 
-  if (fs.lstatSync(widgetsPath).isDirectory()) {
-    const files = fs.readdirSync(widgetsPath);
-    console.log(`Files: ${files}`)
+  if (fs.lstatSync(liveActivityFilesPath).isDirectory()) {
+    const files = fs.readdirSync(liveActivityFilesPath);
 
     files.forEach((file) => {
       const fileExtension = file.split(".").pop();
 
       if (fileExtension === "swift") {
-        if (file !== moduleFileName) {
-          widgetFiles.swiftFiles.push(file);
-        }
+        widgetFiles.swiftFiles.push(file);
       } else if (fileExtension === "entitlements") {
         widgetFiles.entitlementFiles.push(file);
       } else if (fileExtension === "plist") {
@@ -73,29 +66,25 @@ export function getWidgetFiles(
     ...widgetFiles.intentFiles,
     ...widgetFiles.otherFiles,
   ].forEach((file) => {
-    const source = path.join(widgetsPath, file);
+    const source = path.join(liveActivityFilesPath, file);
     copyFileSync(source, targetPath);
   });
 
   // Copy assets directory
-  const imagesXcassetsSource = path.join(widgetsPath, "Assets.xcassets");
+  const imagesXcassetsSource = path.join(liveActivityFilesPath, "Assets.xcassets");
   copyFolderRecursiveSync(imagesXcassetsSource, targetPath);
 
   // Move images to assets directory
-  console.log(`Images Path: ${imageAssetsPath}`)
   if (fs.lstatSync(imageAssetsPath).isDirectory()) {
     const imagesXcassetsTarget = path.join(targetPath, "Assets.xcassets");
-    console.log(`Assets Target: ${imagesXcassetsTarget}`)
 
     const files = fs.readdirSync(imageAssetsPath);
-    console.log(`Images: ${files}`)
+
     files.forEach((file) => {
       if (path.extname(file).match(/\.(png|jpg|jpeg)$/)) {
         const source = path.join(imageAssetsPath, file);
-        console.log(`Source: ${source}`)
         const imageSetDir = path.join(imagesXcassetsTarget, `${path.basename(file, path.extname(file))}.imageset`);
 
-        console.log(`imageSetDir: ${source}`)
         // Create the .imageset directory if it doesn't exist
         if (!fs.existsSync(imageSetDir)) {
           fs.mkdirSync(imageSetDir, { recursive: true });
@@ -121,10 +110,8 @@ export function getWidgetFiles(
         
         fs.writeFileSync(
           path.join(imageSetDir, 'Contents.json'),
-          JSON.stringify(contentsJson, null, 2) // beautify the JSON output
+          JSON.stringify(contentsJson, null, 2)
         );
-
-        console.log(`Processed ${file} into ${imageSetDir}`);
       }
     })
   }

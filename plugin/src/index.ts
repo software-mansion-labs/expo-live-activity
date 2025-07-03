@@ -9,12 +9,9 @@ const withWidgetsAndLiveActivities: ConfigPlugin = (
   config
 ) => {
   const deploymentTarget = "16.2";
-  const moduleFileName = "ExpoNativeConfigurationModule.swift"
-  const attributesFileName = "LiveActivityAttributes.swift"
-
   const targetName = `${IOSConfig.XcodeUtils.sanitizedName(
     config.name
-  )}LiveActivity`; // Widgets => LiveActivity
+  )}LiveActivity`;
   const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
 
   config.ios = {
@@ -33,9 +30,6 @@ const withWidgetsAndLiveActivities: ConfigPlugin = (
         targetName,
         bundleIdentifier,
         deploymentTarget,
-        // widgetsFolder,
-        moduleFileName,
-        attributesFileName,
       },
     ],
     [withWidgetExtensionEntitlements, { targetName }],
