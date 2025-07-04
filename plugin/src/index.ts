@@ -4,6 +4,7 @@ import { withPodfile } from "./withPodfile";
 
 import { withXcode } from "./withXcode";
 import { withWidgetExtensionEntitlements } from "./withWidgetExtensionEntitlements";
+import { withPushNotifications } from "./withPushNotifications";
 
 const withWidgetsAndLiveActivities: ConfigPlugin = (
   config
@@ -42,6 +43,8 @@ const withWidgetsAndLiveActivities: ConfigPlugin = (
     [withPodfile, { targetName }],
     [withConfig, { targetName, bundleIdentifier }],
   ]);
+
+  config = withPushNotifications(config)
 
   return config;
 };
