@@ -20,7 +20,6 @@ export const withWidgetExtensionEntitlements: ConfigPlugin<{
 
     fs.mkdirSync(path.dirname(filePath), { recursive: true });
     fs.writeFileSync(filePath, plist.build({}));
-    console.log("Finishing running withWidgetExtensionEntitlements")
     return config;
   });
 };

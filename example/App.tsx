@@ -6,29 +6,54 @@ import {
   View,
   Text,
   Keyboard,
-  Pressable,
+  Switch,
+  Platform,
 } from "react-native";
 import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 export default function App() {
-  const [activityId, setActivityID] = useState<String | null>();
-  const [title, onChangeTitle] = useState("");
-  const [subtitle, onChangeSubtitle] = useState("");
-  const [imageName, onChangeImageName] = useState("live_activity_image");
+  const [activityId, setActivityID] = useState<string | null>();
+  const [title, onChangeTitle] = useState("Title");
+  const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
+  const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
+  const [timerType, setTimerType] = useState<LiveActivity.DynamicIslandTimerType>("circular");
+  const [passSubtitle, setPassSubtitle] = useState(true);
+  const [passImage, setPassImage] = useState(true);
+  const [passDate, setPassDate] = useState(true);
+
+  let backgroundColor = "001A72";
+  let titleColor = "EBEBF0";
+  let subtitleColor = "#FFFFFF75";
+  let progressViewTint = "38ACDD";
+  let progessViewLabelColor = "#FFFFFF";
 
   const startActivity = () => {
     Keyboard.dismiss();
     const state = {
       title: title,
-      subtitle: subtitle,
-      date: date.getTime(),
-      imageName: imageName,
+      subtitle: passSubtitle ? subtitle : undefined,
+      date: passDate ? date.getTime() : undefined,
+      imageName: passImage ? imageName : undefined,
+      dynamicIslandImageName: "logo-island",
     };
-    const id = LiveActivity.startActivity(state);
-    console.log(id);
-    setActivityID(id);
+
+    const styles = {
+      backgroundColor: backgroundColor,
+      titleColor: titleColor,
+      subtitleColor: subtitleColor,
+      progressViewTint: progressViewTint,
+      progressViewLabelColor: progessViewLabelColor,
+      timerType: timerType,
+    };
+    try {
+      const id = LiveActivity.startActivity(state, styles);
+      console.log(id);
+      setActivityID(id);
+    } catch (e) {
+      console.error("Starting activity failed! " + e);
+    }
   };
 
   const stopActivity = () => {
@@ -37,9 +62,14 @@ export default function App() {
       subtitle: subtitle,
       date: Date.now(),
       imageName: imageName,
+      dynamicIslandImageName: "logo-island",
     };
-    activityId && LiveActivity.stopActivity(activityId, state);
-    setActivityID(null);
+    try {
+      activityId && LiveActivity.stopActivity(activityId, state);
+      setActivityID(null);
+    } catch (e) {
+      console.error("Stopping activity failed! " + e);
+    }
   };
 
   const updateActivity = () => {
@@ -48,8 +78,13 @@ export default function App() {
       subtitle: subtitle,
       date: date.getTime(),
       imageName: imageName,
+      dynamicIslandImageName: "logo-island",
     };
-    activityId && LiveActivity.updateActivity(activityId, state);
+    try {
+      activityId && LiveActivity.updateActivity(activityId, state);
+    } catch (e) {
+      console.error("Updating activity failed! " + e);
+    }
   };
 
   return (
@@ -61,26 +96,65 @@ export default function App() {
         placeholder="Live activity title"
         value={title}
       />
-      <Text style={styles.label}>Set Live Activity subtitle:</Text>
+      <View style={styles.labelWithSwitch}>
+        <Text style={styles.label}>Set Live Activity subtitle:</Text>
+        <Switch
+              onValueChange={() => setPassSubtitle(previousState => !previousState)}
+              value={passSubtitle}
+          />
+      </View>
       <TextInput
-        style={styles.input}
+        style={passSubtitle ? styles.input : styles.diabledInput}
         onChangeText={onChangeSubtitle}
         placeholder="Live activity title"
         value={subtitle}
+        editable={passSubtitle}
       />
-      <Text style={styles.label}>Set Live Activity image:</Text>
+      <View style={styles.labelWithSwitch}>
+        <Text style={styles.label}>Set Live Activity image:</Text>
+        <Switch
+              onValueChange={() => setPassImage(previousState => !previousState)}
+              value={passImage}
+          />
+      </View>
       <TextInput
-        style={styles.input}
+        style={passImage ? styles.input : styles.diabledInput}
         onChangeText={onChangeImageName}
         autoCapitalize="none"
         placeholder="Live activity image"
         value={imageName}
+        editable={passImage}
       />
-      <Text style={styles.label}>Set Live Activity timer:</Text>
-      <View style={styles.timerControlsContainer}>
-        <RNDateTimePicker value={date} mode="time" onChange={(event, date) => { date && setDate(date) }} minimumDate={ new Date(Date.now() + 60 * 1000)} />
-      </View>
-
+      { Platform.OS === "ios" && (
+        <>
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Set Live Activity timer:</Text>
+          <Switch
+                onValueChange={() => setPassDate(previousState => !previousState)}
+                value={passDate}
+            />
+        </View>
+          <View style={styles.timerControlsContainer}>
+        { passDate && (
+          <RNDateTimePicker
+            value={date}
+            mode="time"
+            onChange={(event, date) => {
+              date && setDate(date);
+            }}
+            minimumDate={new Date(Date.now() + 60 * 1000)}
+          />
+        )}
+        </View>
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>{"Timer shown as text:"}</Text>
+            <Switch
+                onValueChange={(previousState) => previousState ? setTimerType("digital") : setTimerType("circular")}
+                value={timerType == "digital"}
+            />
+        </View>
+        </>
+      )}
       <View style={styles.buttonsContainer}>
         <Button
           title="Start Activity"
@@ -107,28 +181,51 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    
   },
   timerControlsContainer: {
     flexDirection: "row",
     marginTop: 15,
+    marginBottom: 15,
     width: "90%",
     alignItems: "center",
     justifyContent: "center",
   },
   buttonsContainer: {
-    padding: 20,
+    padding: 30,
   },
   label: {
     width: "90%",
     fontSize: 17,
   },
+  labelWithSwitch: {
+    flexDirection: 'row',
+    width: "90%",
+    paddingEnd: 15,
+  },
   input: {
     height: 45,
     width: "90%",
-    margin: 12,
+    marginVertical: 12,
     borderWidth: 1,
     borderColor: "gray",
     borderRadius: 10,
     padding: 10,
+  },
+  diabledInput: {
+    height: 45,
+    width: "90%",
+    margin: 12,
+    borderWidth: 1,
+    borderColor: "#DEDEDE",
+    backgroundColor: "#ECECEC",
+    color: "gray",
+    borderRadius: 10,
+    padding: 10,
+  },
+  timerCheckboxContainer: {
+    alignItems: "flex-start",
+    width: "90%",
+    justifyContent: "center",
   },
 });

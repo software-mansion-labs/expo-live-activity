@@ -12,29 +12,67 @@ public class ExpoLiveActivityModule: Module {
         var title: String
 
         @Field
-        var subtitle: String
+        var subtitle: String?
 
         @Field
-        var date: Double
+        var date: Double?
 
         @Field
-        var imageName: String
+        var imageName: String?
+
+        @Field
+        var dynamicIslandImageName: String?
+    }
+    
+    struct LiveActivityStyles: Record {
+        @Field
+        var backgroundColor: String?
+        
+        @Field
+        var titleColor: String?
+        
+        @Field
+        var subtitleColor: String?
+        
+        @Field
+        var progressViewTint: String?
+        
+        @Field
+        var progressViewLabelColor: String?
+        
+        @Field
+        var timerType: DynamicIslandTimerType?
+    }
+    
+    enum DynamicIslandTimerType: String, Enumerable {
+        case circular
+        case digital
     }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
 
-        Function("startActivity") { (state: LiveActivityState) -> String in
+        Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
+            let date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
             print("Starting activity")
             if #available(iOS 16.2, *) {
                 if ActivityAuthorizationInfo().areActivitiesEnabled {
                     do {
-                        let counterState = LiveActivityAttributes(name: "Counter")
+                        let counterState = LiveActivityAttributes(
+                            name: "ExpoLiveActivity",
+                            backgroundColor: styles?.backgroundColor,
+                            titleColor: styles?.titleColor,
+                            subtitleColor: styles?.subtitleColor,
+                            progressViewTint: styles?.progressViewTint,
+                            progressViewLabelColor: styles?.progressViewLabelColor,
+                            timerType: styles?.timerType == .digital ? .digital : .circular
+                        )
                         let initialState = LiveActivityAttributes.ContentState(
                             title: state.title,
                             subtitle: state.subtitle,
-                            date: Date(timeIntervalSince1970: state.date / 1000),
-                            imageName: state.imageName)
+                            date: date,
+                            imageName: state.imageName,
+                            dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(
                             attributes: counterState,
                             content: .init(state: initialState, staleDate: nil), pushType: nil)
@@ -45,7 +83,6 @@ public class ExpoLiveActivityModule: Module {
                 }
                 throw ModuleErrors.liveActivitiesNotEnabled
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
@@ -56,8 +93,9 @@ public class ExpoLiveActivityModule: Module {
                 let endState = LiveActivityAttributes.ContentState(
                     title: state.title,
                     subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date / 1000),
-                    imageName: state.imageName)
+                    date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
+                    imageName: state.imageName,
+                    dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
                     $0.id == activityId
                 }) {
@@ -71,7 +109,6 @@ public class ExpoLiveActivityModule: Module {
                     print("Didn't find activity with ID \(activityId)")
                 }
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
@@ -82,8 +119,9 @@ public class ExpoLiveActivityModule: Module {
                 let newState = LiveActivityAttributes.ContentState(
                     title: state.title,
                     subtitle: state.subtitle,
-                    date: Date(timeIntervalSince1970: state.date / 1000),
-                    imageName: state.imageName)
+                    date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
+                    imageName: state.imageName,
+                    dynamicIslandImageName: state.dynamicIslandImageName)
                 if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
                     $0.id == activityId
                 }) {
@@ -95,7 +133,6 @@ public class ExpoLiveActivityModule: Module {
                     print("Didn't find activity with ID \(activityId)")
                 }
             } else {
-                // Fallback on earlier versions
                 throw ModuleErrors.unsupported
             }
         }
