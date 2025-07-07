@@ -48,6 +48,10 @@ public class ExpoLiveActivityModule: Module {
         case circular
         case digital
     }
+    
+    func sendPushToken(pushTokenString: String) {
+        print("Sending token: \(pushTokenString)")
+    }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
@@ -75,7 +79,19 @@ public class ExpoLiveActivityModule: Module {
                             dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(
                             attributes: counterState,
-                            content: .init(state: initialState, staleDate: nil), pushType: nil)
+                            content: .init(state: initialState, staleDate: nil),
+                            pushType: .token)
+                        
+                        
+                        Task {
+                            for await pushToken in activity.pushTokenUpdates {
+                                      let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+                                      
+                                      print("New push token: \(pushTokenString)")
+                                      
+                                      sendPushToken(pushTokenString: pushTokenString)
+                            }
+                        }
                         return activity.id
                     } catch (let error) {
                         print("Error with live activity: \(error)")
