@@ -49,12 +49,17 @@ public class ExpoLiveActivityModule: Module {
         case digital
     }
     
-    func sendPushToken(pushTokenString: String) {
-        print("Sending token: \(pushTokenString)")
+    func sendPushToken(activityID: String, activityPushToken: String) {
+        sendEvent("onTokenReceived", [
+            "activityID": activityID,
+            "activityPushToken": activityPushToken
+          ])
     }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
+        
+        Events("onTokenReceived")
 
         Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
             let date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
@@ -87,9 +92,7 @@ public class ExpoLiveActivityModule: Module {
                             for await pushToken in activity.pushTokenUpdates {
                                       let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
                                       
-                                      print("New push token: \(pushTokenString)")
-                                      
-                                      sendPushToken(pushTokenString: pushTokenString)
+                                sendPushToken(activityID: activity.id, activityPushToken: pushTokenString)
                             }
                         }
                         return activity.id

@@ -9,7 +9,7 @@ import {
   Switch,
   Platform,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 export default function App() {
@@ -28,6 +28,17 @@ export default function App() {
   let subtitleColor = "#FFFFFF75";
   let progressViewTint = "38ACDD";
   let progessViewLabelColor = "#FFFFFF";
+
+  useEffect(() => {
+    const subscription = LiveActivity.addActivityTokenListener(({ 
+      activityID: newActivityID,
+      activityPushToken: newToken
+    }) => {
+      console.log(`Activity id: ${newActivityID}, token: ${newToken}`)
+    });
+
+    return () => subscription.remove();
+  }, []);
 
   const startActivity = () => {
     Keyboard.dismiss();

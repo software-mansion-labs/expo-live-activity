@@ -1,5 +1,6 @@
 import ExpoLiveActivityModule from "./ExpoLiveActivityModule";
 import { Platform } from "react-native";
+import { EventSubscription } from 'expo-modules-core';
 
 export type DynamicIslandTimerType = 'circular' | 'digital'
 
@@ -18,6 +19,15 @@ export type LiveActivityStyles = {
   progressViewTint?: string;
   progressViewLabelColor?: string;
   timerType: DynamicIslandTimerType;
+};
+
+export type ActivityTokenReceivedEvent = {
+  activityID: string;
+  activityPushToken: string;
+};
+
+export type LiveActivityModuleEvents = {
+  onTokenReceived: (params: ActivityTokenReceivedEvent) => void;
 };
 
 /**
@@ -56,4 +66,8 @@ export function updateActivity(id: string, state: LiveActivityState): string {
     throw new Error("updateActivity is only available on iOS");
   }
   return ExpoLiveActivityModule.updateActivity(id, state);
+}
+
+export function addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription {
+  return ExpoLiveActivityModule.addListener('onTokenReceived', listener);
 }
