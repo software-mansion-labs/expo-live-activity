@@ -30,7 +30,7 @@ The module comes with a built-in config plugin that creates a target in iOS with
    }
    ```
 2. **Assets configuration:**
-   Place images intended for live activities in the `assets/live-activity` folder. The plugin manages these assets automatically.
+   Place images intended for live activities in the `assets/liveActivity` folder. The plugin manages these assets automatically.
 
 ### Step 3: Usage in Your React Native App
 Import the functionalities provided by the `expo-live-activity` module in your JavaScript or TypeScript files:

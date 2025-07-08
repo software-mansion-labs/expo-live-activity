@@ -20,7 +20,7 @@ export function getWidgetFiles(
     console.log("Building for example app")
   }
   const liveActivityFilesPath = path.join(packagePath ? packagePath : "..", "/ios-files");
-  const imageAssetsPath = "./assets/live_activity";
+  const imageAssetsPath = "./assets/liveActivity";
 
   const widgetFiles: WidgetFiles = {
     swiftFiles: [],
