@@ -21,15 +21,15 @@ extension Color {
           .sRGB,
           red: Double((rgbValue >> 24) & 0xff) / 255,
           green: Double((rgbValue >> 16) & 0xff) / 255,
-          blue: Double((rgbValue >> 08) & 0xff) / 255,
-          opacity: Double((rgbValue >> 00) & 0xff) / 255,
+          blue: Double((rgbValue >> 8) & 0xff) / 255,
+          opacity: Double((rgbValue >> 0) & 0xff) / 255
         )
       } else {
         self.init(
           .sRGB,
           red: Double((rgbValue >> 16) & 0xff) / 255,
-          green: Double((rgbValue >> 08) & 0xff) / 255,
-          blue: Double((rgbValue >> 00) & 0xff) / 255,
+          green: Double((rgbValue >> 8) & 0xff) / 255,
+          blue: Double((rgbValue >> 0) & 0xff) / 255,
           opacity: 1
         )
       }
