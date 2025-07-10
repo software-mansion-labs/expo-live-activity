@@ -18,7 +18,7 @@ export type LiveActivityStyles = {
   subtitleColor?: string;
   progressViewTint?: string;
   progressViewLabelColor?: string;
-  timerType: DynamicIslandTimerType;
+  timerType?: DynamicIslandTimerType;
 };
 
 export type ActivityTokenReceivedEvent = {
