@@ -3,6 +3,7 @@ import { View, Text, Button } from 'react-native';
 import { createStaticNavigation, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CreateLiveActivityScreen from './screens/CreateLiveActivityScreen';
+import { LiveActivityProvider } from 'expo-live-activity';
 
 function HomeScreen() {
   const navigation = useNavigation();
@@ -26,5 +27,9 @@ const RootStack = createNativeStackNavigator({
 const Navigation = createStaticNavigation(RootStack);
 
 export default function App() {
-  return <Navigation />;
+  return (
+    <LiveActivityProvider>
+      <Navigation />
+    </LiveActivityProvider>
+  );
 }

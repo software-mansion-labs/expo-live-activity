@@ -1,4 +1,4 @@
-import * as LiveActivity from "expo-live-activity";
+import { useLiveActivity, DynamicIslandTimerType } from 'expo-live-activity';
 import {
   Button,
   StyleSheet,
@@ -20,11 +20,12 @@ export default function CreateLiveActivityScreen
   const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
-  const [timerType, setTimerType] = useState<LiveActivity.DynamicIslandTimerType>("circular");
+  const [timerType, setTimerType] = useState<DynamicIslandTimerType>("circular");
   const [passSubtitle, setPassSubtitle] = useState(true);
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
 
+  const liveActivity = useLiveActivity();
   const navigation = useNavigation();
 
   let backgroundColor = "001A72";
@@ -34,7 +35,7 @@ export default function CreateLiveActivityScreen
   let progessViewLabelColor = "#FFFFFF";
 
   useEffect(() => {
-    const subscription = LiveActivity.addActivityTokenListener(({ 
+    const subscription = liveActivity.addActivityTokenListener(({ 
       activityID: newActivityID,
       activityPushToken: newToken
     }) => {
@@ -63,13 +64,13 @@ export default function CreateLiveActivityScreen
       timerType: timerType,
     };
     try {
-      const id = LiveActivity.startActivity(state, styles);
+      const id = liveActivity.startActivity(state, styles);
       console.log(id);
       setActivityID(id);
     } catch (e) {
       console.error("Starting activity failed! " + e);
     }
-    // navigation.goBack()
+    navigation.goBack()
   };
 
   const stopActivity = () => {
@@ -81,7 +82,7 @@ export default function CreateLiveActivityScreen
       dynamicIslandImageName: "logo-island",
     };
     try {
-      activityId && LiveActivity.stopActivity(activityId, state);
+      activityId && liveActivity.stopActivity(activityId, state);
       setActivityID(null);
     } catch (e) {
       console.error("Stopping activity failed! " + e);
@@ -97,7 +98,7 @@ export default function CreateLiveActivityScreen
       dynamicIslandImageName: "logo-island",
     };
     try {
-      activityId && LiveActivity.updateActivity(activityId, state);
+      activityId && liveActivity.updateActivity(activityId, state);
     } catch (e) {
       console.error("Updating activity failed! " + e);
     }
