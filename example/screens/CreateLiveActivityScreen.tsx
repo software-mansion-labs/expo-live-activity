@@ -1,4 +1,4 @@
-import { useLiveActivity, DynamicIslandTimerType } from 'expo-live-activity';
+import * as LiveActivity from "expo-live-activity";
 import {
   Button,
   StyleSheet,
@@ -9,7 +9,7 @@ import {
   Switch,
   Platform,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from '@react-navigation/native';
 
@@ -20,12 +20,11 @@ export default function CreateLiveActivityScreen
   const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
-  const [timerType, setTimerType] = useState<DynamicIslandTimerType>("circular");
+  const [timerType, setTimerType] = useState<LiveActivity.DynamicIslandTimerType>("circular");
   const [passSubtitle, setPassSubtitle] = useState(true);
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
 
-  const liveActivity = useLiveActivity();
   const navigation = useNavigation();
 
   let backgroundColor = "001A72";
@@ -53,7 +52,7 @@ export default function CreateLiveActivityScreen
       timerType: timerType,
     };
     try {
-      const id = liveActivity.startActivity(state, styles);
+      const id = LiveActivity.startActivity(state, styles);
       console.log(id);
       setActivityID(id);
     } catch (e) {
@@ -71,7 +70,7 @@ export default function CreateLiveActivityScreen
       dynamicIslandImageName: "logo-island",
     };
     try {
-      activityId && liveActivity.stopActivity(activityId, state);
+      activityId && LiveActivity.stopActivity(activityId, state);
       setActivityID(null);
     } catch (e) {
       console.error("Stopping activity failed! " + e);
@@ -87,7 +86,7 @@ export default function CreateLiveActivityScreen
       dynamicIslandImageName: "logo-island",
     };
     try {
-      activityId && liveActivity.updateActivity(activityId, state);
+      activityId && LiveActivity.updateActivity(activityId, state);
     } catch (e) {
       console.error("Updating activity failed! " + e);
     }
