@@ -34,17 +34,6 @@ export default function CreateLiveActivityScreen
   let progressViewTint = "38ACDD";
   let progessViewLabelColor = "#FFFFFF";
 
-  useEffect(() => {
-    const subscription = liveActivity.addActivityTokenListener(({ 
-      activityID: newActivityID,
-      activityPushToken: newToken
-    }) => {
-      console.log(`Activity id: ${newActivityID}, token: ${newToken}`)
-    });
-
-    return () => subscription.remove();
-  }, []);
-
   const startActivity = () => {
     Keyboard.dismiss();
     const state = {
