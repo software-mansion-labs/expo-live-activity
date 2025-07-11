@@ -45,10 +45,9 @@ export function startActivity(state: LiveActivityState, styles?: LiveActivitySty
 /**
  * @param {string} id The identifier of the activity to stop.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @returns {string} The identifier of the stopped activity.
  * @throws {Error} When function is called on platform different than iOS.
  */
-export function stopActivity(id: string, state: LiveActivityState): string {
+export function stopActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
     throw new Error("stopActivity is only available on iOS");
   }
@@ -58,10 +57,9 @@ export function stopActivity(id: string, state: LiveActivityState): string {
 /**
  * @param {string} id The identifier of the activity to update.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @returns {string} The identifier of the updated activity.
  * @throws {Error} When function is called on platform different than iOS.
  */
-export function updateActivity(id: string, state: LiveActivityState): string {
+export function updateActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
     throw new Error("updateActivity is only available on iOS");
   }
@@ -69,5 +67,8 @@ export function updateActivity(id: string, state: LiveActivityState): string {
 }
 
 export function addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription {
+  if (Platform.OS !== "ios") {
+    throw new Error("updateActivity is only available on iOS");
+  }
   return ExpoLiveActivityModule.addListener('onTokenReceived', listener);
 }
