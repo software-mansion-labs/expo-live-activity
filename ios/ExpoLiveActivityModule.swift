@@ -50,6 +50,7 @@ public class ExpoLiveActivityModule: Module {
     }
     
     func sendPushToken(activityID: String, activityPushToken: String) {
+        print("New token")
         sendEvent("onTokenReceived", [
             "activityID": activityID,
             "activityPushToken": activityPushToken
@@ -89,6 +90,7 @@ public class ExpoLiveActivityModule: Module {
                         
                         
                         Task {
+                            print("Added task")
                             for await pushToken in activity.pushTokenUpdates {
                                       let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
                                       

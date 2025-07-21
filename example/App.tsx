@@ -30,6 +30,7 @@ const Navigation = createStaticNavigation(RootStack);
 export default function App() {
 
   useEffect(() => {
+    console.log("Adding subscription")
       const subscription = LiveActivity.addActivityTokenListener(({ 
         activityID: newActivityID,
         activityPushToken: newToken

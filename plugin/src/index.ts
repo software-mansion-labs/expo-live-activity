@@ -6,8 +6,13 @@ import { withXcode } from "./withXcode";
 import { withWidgetExtensionEntitlements } from "./withWidgetExtensionEntitlements";
 import { withPushNotifications } from "./withPushNotifications";
 
-const withWidgetsAndLiveActivities: ConfigPlugin = (
-  config
+const withWidgetsAndLiveActivities: ConfigPlugin<{
+  enablePushNotificationsEntitlement?: boolean;
+}> = (
+  config,
+  {
+    enablePushNotificationsEntitlement = false
+  } = {}
 ) => {
   const deploymentTarget = "16.2";
   const targetName = `${IOSConfig.XcodeUtils.sanitizedName(
@@ -38,7 +43,10 @@ const withWidgetsAndLiveActivities: ConfigPlugin = (
     [withConfig, { targetName, bundleIdentifier }],
   ]);
 
-  config = withPushNotifications(config)
+  if (enablePushNotificationsEntitlement) {
+    console.log("Add push notifications")
+    config = withPushNotifications(config)
+  }
 
   return config;
 };
