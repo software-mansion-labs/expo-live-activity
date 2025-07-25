@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "expo.modules.liveactivity.exampleTest"
+      "bundleIdentifier": "com.swmansion.expoliveactivity.example"
     },
     "android": {
       "adaptiveIcon": {
