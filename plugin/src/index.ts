@@ -1,17 +1,15 @@
-import { ConfigPlugin, IOSConfig, withPlugins } from "expo/config-plugins";
+import { IOSConfig, withPlugins } from "expo/config-plugins";
+import type { LiveActivityConfigPlugin } from "./types";
 import { withConfig } from "./withConfig";
 import { withPodfile } from "./withPodfile";
-
 import { withXcode } from "./withXcode";
 import { withWidgetExtensionEntitlements } from "./withWidgetExtensionEntitlements";
 import { withPushNotifications } from "./withPushNotifications";
 
-const withWidgetsAndLiveActivities: ConfigPlugin = (
-  config
-) => {
+const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) => {
   const deploymentTarget = "16.2";
   const targetName = `${IOSConfig.XcodeUtils.sanitizedName(
-    config.name
+    config.name,
   )}LiveActivity`;
   const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
 
@@ -38,7 +36,9 @@ const withWidgetsAndLiveActivities: ConfigPlugin = (
     [withConfig, { targetName, bundleIdentifier }],
   ]);
 
-  config = withPushNotifications(config)
+  if (props?.enablePushNotifications) {
+    config = withPushNotifications(config);
+  }
 
   return config;
 };
