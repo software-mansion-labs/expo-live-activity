@@ -1,3 +1,4 @@
+import type { LiveActivityState, LiveActivityStyles } from "expo-live-activity";
 import * as LiveActivity from "expo-live-activity";
 import {
   Button,
@@ -13,47 +14,38 @@ import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import { useNavigation } from "@react-navigation/native";
 
+const dynamicIslandImageName = "logo-island";
+const toggle = (previousState: boolean) => !previousState;
+
 export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>();
   const [title, onChangeTitle] = useState("Title");
   const [subtitle, onChangeSubtitle] = useState("This is a subtitle");
   const [imageName, onChangeImageName] = useState("logo");
   const [date, setDate] = useState(new Date());
-  const [timerType, setTimerType] =
-    useState<LiveActivity.DynamicIslandTimerType>("circular");
+  const [isTimerTypeDigital, setTimerTypeDigital] = useState(false);
   const [passSubtitle, setPassSubtitle] = useState(true);
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
 
   const navigation = useNavigation();
 
-  let backgroundColor = "001A72";
-  let titleColor = "EBEBF0";
-  let subtitleColor = "#FFFFFF75";
-  let progressViewTint = "38ACDD";
-  let progessViewLabelColor = "#FFFFFF";
-
   const startActivity = () => {
     Keyboard.dismiss();
-    const state = {
-      title: title,
+
+    const state: LiveActivityState = {
+      title,
       subtitle: passSubtitle ? subtitle : undefined,
       date: passDate ? date.getTime() : undefined,
       imageName: passImage ? imageName : undefined,
-      dynamicIslandImageName: "logo-island",
+      dynamicIslandImageName,
     };
 
-    const styles = {
-      backgroundColor: backgroundColor,
-      titleColor: titleColor,
-      subtitleColor: subtitleColor,
-      progressViewTint: progressViewTint,
-      progressViewLabelColor: progessViewLabelColor,
-      timerType: timerType,
-    };
     try {
-      const id = LiveActivity.startActivity(state, styles);
-      console.log(id);
+      const id = LiveActivity.startActivity(state, {
+        ...activityStyles,
+        timerType: isTimerTypeDigital ? "digital" : "circular",
+      });
       setActivityID(id);
     } catch (e) {
       console.error("Starting activity failed! " + e);
@@ -62,12 +54,12 @@ export default function CreateLiveActivityScreen() {
   };
 
   const stopActivity = () => {
-    const state = {
-      title: title,
-      subtitle: subtitle,
+    const state: LiveActivityState = {
+      title,
+      subtitle,
       date: Date.now(),
-      imageName: imageName,
-      dynamicIslandImageName: "logo-island",
+      imageName,
+      dynamicIslandImageName,
     };
     try {
       activityId && LiveActivity.stopActivity(activityId, state);
@@ -78,12 +70,12 @@ export default function CreateLiveActivityScreen() {
   };
 
   const updateActivity = () => {
-    const state = {
-      title: title,
-      subtitle: subtitle,
+    const state: LiveActivityState = {
+      title,
+      subtitle,
       date: date.getTime(),
-      imageName: imageName,
-      dynamicIslandImageName: "logo-island",
+      imageName,
+      dynamicIslandImageName,
     };
     try {
       activityId && LiveActivity.updateActivity(activityId, state);
@@ -104,9 +96,7 @@ export default function CreateLiveActivityScreen() {
       <View style={styles.labelWithSwitch}>
         <Text style={styles.label}>Set Live Activity subtitle:</Text>
         <Switch
-          onValueChange={() =>
-            setPassSubtitle((previousState) => !previousState)
-          }
+          onValueChange={() => setPassSubtitle(toggle)}
           value={passSubtitle}
         />
       </View>
@@ -119,10 +109,7 @@ export default function CreateLiveActivityScreen() {
       />
       <View style={styles.labelWithSwitch}>
         <Text style={styles.label}>Set Live Activity image:</Text>
-        <Switch
-          onValueChange={() => setPassImage((previousState) => !previousState)}
-          value={passImage}
-        />
+        <Switch onValueChange={() => setPassImage(toggle)} value={passImage} />
       </View>
       <TextInput
         style={passImage ? styles.input : styles.diabledInput}
@@ -137,9 +124,7 @@ export default function CreateLiveActivityScreen() {
           <View style={styles.labelWithSwitch}>
             <Text style={styles.label}>Set Live Activity timer:</Text>
             <Switch
-              onValueChange={() =>
-                setPassDate((previousState) => !previousState)
-              }
+              onValueChange={() => setPassDate(toggle)}
               value={passDate}
             />
           </View>
@@ -156,14 +141,10 @@ export default function CreateLiveActivityScreen() {
             )}
           </View>
           <View style={styles.labelWithSwitch}>
-            <Text style={styles.label}>{"Timer shown as text:"}</Text>
+            <Text style={styles.label}>Timer shown as text:</Text>
             <Switch
-              onValueChange={(previousState) =>
-                previousState
-                  ? setTimerType("digital")
-                  : setTimerType("circular")
-              }
-              value={timerType == "digital"}
+              onValueChange={setTimerTypeDigital}
+              value={isTimerTypeDigital}
             />
           </View>
         </>
@@ -188,6 +169,14 @@ export default function CreateLiveActivityScreen() {
     </View>
   );
 }
+
+const activityStyles: LiveActivityStyles = {
+  backgroundColor: "001A72",
+  titleColor: "EBEBF0",
+  subtitleColor: "#FFFFFF75",
+  progressViewTint: "38ACDD",
+  progressViewLabelColor: "#FFFFFF",
+};
 
 const styles = StyleSheet.create({
   container: {
