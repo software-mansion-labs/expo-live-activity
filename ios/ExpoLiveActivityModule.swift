@@ -48,9 +48,18 @@ public class ExpoLiveActivityModule: Module {
         case circular
         case digital
     }
+    
+    func sendPushToken(activityID: String, activityPushToken: String) {
+        sendEvent("onTokenReceived", [
+            "activityID": activityID,
+            "activityPushToken": activityPushToken
+          ])
+    }
 
     public func definition() -> ModuleDefinition {
         Name("ExpoLiveActivity")
+        
+        Events("onTokenReceived")
 
         Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles? ) -> String in
             let date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
@@ -75,7 +84,17 @@ public class ExpoLiveActivityModule: Module {
                             dynamicIslandImageName: state.dynamicIslandImageName)
                         let activity = try Activity.request(
                             attributes: counterState,
-                            content: .init(state: initialState, staleDate: nil), pushType: nil)
+                            content: .init(state: initialState, staleDate: nil),
+                            pushType: .token)
+                        
+                        
+                        Task {
+                            for await pushToken in activity.pushTokenUpdates {
+                                      let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+                                      
+                                sendPushToken(activityID: activity.id, activityPushToken: pushTokenString)
+                            }
+                        }
                         return activity.id
                     } catch (let error) {
                         print("Error with live activity: \(error)")
