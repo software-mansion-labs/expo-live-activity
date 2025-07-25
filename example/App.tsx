@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { View, Text, Button } from 'react-native';
-import { createStaticNavigation, useNavigation } from '@react-navigation/native';
+import { createStaticNavigation, StaticParamList, useNavigation } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import CreateLiveActivityScreen from './screens/CreateLiveActivityScreen';
 import { useState, useEffect } from "react";
@@ -26,6 +26,14 @@ const RootStack = createNativeStackNavigator({
 });
 
 const Navigation = createStaticNavigation(RootStack);
+
+type RootStackParamList = StaticParamList<typeof RootStack>;
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
 
 export default function App() {
 
