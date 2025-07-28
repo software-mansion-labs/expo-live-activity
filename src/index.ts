@@ -32,8 +32,9 @@ export type LiveActivityModuleEvents = {
 
 /**
  * @param {LiveActivityState} state The state for the live activity.
+ * @param {LiveActivityStyles} styles Live activity styling object.
  * @returns {string} The identifier of the started activity.
- * @throws {Error} When function is called on platform different than iOS.
+ * @throws {Error} When function is called on a platform different from iOS.
  */
 export function startActivity(state: LiveActivityState, styles?: LiveActivityStyles): string {
   if (Platform.OS !== "ios") {
@@ -45,7 +46,7 @@ export function startActivity(state: LiveActivityState, styles?: LiveActivitySty
 /**
  * @param {string} id The identifier of the activity to stop.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @throws {Error} When function is called on platform different than iOS.
+ * @throws {Error} When function is called on a platform different from iOS.
  */
 export function stopActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
@@ -57,7 +58,7 @@ export function stopActivity(id: string, state: LiveActivityState) {
 /**
  * @param {string} id The identifier of the activity to update.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @throws {Error} When function is called on platform different than iOS.
+ * @throws {Error} When function is called on a platform different from iOS.
  */
 export function updateActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
