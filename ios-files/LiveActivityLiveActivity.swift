@@ -25,10 +25,10 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewTint: String?
   var progressViewLabelColor: String?
   var timerType: DynamicIslandTimerType
-  
+
   enum DynamicIslandTimerType: String, Codable {
-      case circular
-      case digital
+    case circular
+    case digital
   }
 }
 
@@ -36,7 +36,9 @@ struct LiveActivityLiveActivity: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityView(contentState: context.state, attributes: context.attributes)
-        .activityBackgroundTint(context.attributes.backgroundColor != nil ? Color(hex: context.attributes.backgroundColor!) : nil)
+        .activityBackgroundTint(
+          context.attributes.backgroundColor != nil ? Color(hex: context.attributes.backgroundColor!) : nil
+        )
         .activitySystemActionForegroundColor(Color.black)
 
     } dynamicIsland: { context in
@@ -65,29 +67,41 @@ struct LiveActivityLiveActivity: Widget {
         }
       } compactTrailing: {
         if let date = context.state.date {
-          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
+          compactTimer(
+            endDate: date,
+            timerType: context.attributes.timerType,
+            progressViewTint: context.attributes.progressViewTint
+          )
         }
       } minimal: {
         if let date = context.state.date {
-          compactTimer(endDate: date, timerType: context.attributes.timerType, progressViewTint: context.attributes.progressViewTint)
+          compactTimer(
+            endDate: date,
+            timerType: context.attributes.timerType,
+            progressViewTint: context.attributes.progressViewTint
+          )
         }
       }
     }
   }
-  
+
   @ViewBuilder
-  private func compactTimer(endDate: Date, timerType: LiveActivityAttributes.DynamicIslandTimerType, progressViewTint: String?) -> some View {
+  private func compactTimer(
+    endDate: Date,
+    timerType: LiveActivityAttributes.DynamicIslandTimerType,
+    progressViewTint: String?
+  ) -> some View {
     if timerType == .digital {
-        Text(timerInterval: Date.now...max(Date.now, endDate))
-          .font(.system(size: 15))
-          .minimumScaleFactor(0.8)
-          .fontWeight(.semibold)
-          .frame(maxWidth: 60)
-          .multilineTextAlignment(.trailing)
-      } else {
-        circularTimer(endDate: endDate)
-          .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
-      }
+      Text(timerInterval: Date.now...max(Date.now, endDate))
+        .font(.system(size: 15))
+        .minimumScaleFactor(0.8)
+        .fontWeight(.semibold)
+        .frame(maxWidth: 60)
+        .multilineTextAlignment(.trailing)
+    } else {
+      circularTimer(endDate: endDate)
+        .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
+    }
   }
 
   private func dynamicIslandExpandedLeading(title: String, subtitle: String?) -> some View {
@@ -106,7 +120,7 @@ struct LiveActivityLiveActivity: Widget {
       Spacer()
     }
   }
-  
+
   private func dynamicIslandExpandedTrailing(imageName: String) -> some View {
     VStack {
       Spacer()
@@ -115,14 +129,14 @@ struct LiveActivityLiveActivity: Widget {
       Spacer()
     }
   }
-  
+
   private func dynamicIslandExpandedBottom(endDate: Date, progressViewTint: String?) -> some View {
     ProgressView(timerInterval: Date.now...max(Date.now, endDate))
       .foregroundStyle(.white)
       .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
       .padding(.top, 5)
   }
-  
+
   private func circularTimer(endDate: Date) -> some View {
     ProgressView(
       timerInterval: Date.now...max(Date.now, endDate),

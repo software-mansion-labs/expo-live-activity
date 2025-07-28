@@ -5,8 +5,8 @@
 //  Created by Anna Olak on 03/06/2025.
 //
 
-import Foundation
 import ActivityKit
+import Foundation
 
 struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
@@ -24,9 +24,9 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewTint: String?
   var progressViewLabelColor: String?
   var timerType: DynamicIslandTimerType
-  
+
   enum DynamicIslandTimerType: String, Codable {
-      case circular
-      case digital
+    case circular
+    case digital
   }
 }
