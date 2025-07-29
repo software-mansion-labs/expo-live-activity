@@ -1,5 +1,5 @@
 //
-//  LiveActivityLiveActivity.swift
+//  LiveActivityWidget.swift
 //  LiveActivity
 //
 //  Created by Anna Olak on 02/06/2025.
@@ -32,7 +32,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-struct LiveActivityLiveActivity: Widget {
+struct LiveActivityWidget: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityView(contentState: context.state, attributes: context.attributes)
