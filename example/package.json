@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
+    "clean": "rm -rf .expo ios",
     "start": "expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
