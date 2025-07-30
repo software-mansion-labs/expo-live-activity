@@ -10,38 +10,39 @@ import WidgetKit
 
 #if canImport(ActivityKit)
 
+  struct ConditionalForegroundViewModifier: ViewModifier {
+    let color: String?
+
+    func body(content: Content) -> some View {
+      if let color = color {
+        content.foregroundStyle(Color(hex: color))
+      } else {
+        content
+      }
+    }
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
 
     var progressViewTint: Color? {
-      attributes.progressViewTint != nil ? Color(hex: attributes.progressViewTint!) : nil
+      attributes.progressViewTint.map { Color(hex: $0) }
     }
 
     var body: some View {
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
           VStack(alignment: .leading, spacing: 2) {
-            if let titleColor = attributes.titleColor {
-              Text(contentState.title)
-                .font(.title2)
-                .foregroundStyle(Color(hex: titleColor))
-                .fontWeight(.semibold)
-            } else {
-              Text(contentState.title)
-                .font(.title2)
-                .fontWeight(.semibold)
-            }
+            Text(contentState.title)
+              .font(.title2)
+              .fontWeight(.semibold)
+              .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
 
             if let subtitle = contentState.subtitle {
-              if let subtitleColor = attributes.subtitleColor {
-                Text(subtitle)
-                  .font(.title3)
-                  .foregroundStyle(Color(hex: subtitleColor))
-              } else {
-                Text(subtitle)
-                  .font(.title3)
-              }
+              Text(subtitle)
+                .font(.title3)
+                .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
             }
           }
 
@@ -56,14 +57,9 @@ import WidgetKit
         }
 
         if let date = contentState.date {
-          if let progressViewLabelColor = attributes.progressViewLabelColor {
-            ProgressView(timerInterval: createTimerInterval(date: date))
-              .tint(progressViewTint)
-              .foregroundStyle(Color(hex: progressViewLabelColor))
-          } else {
-            ProgressView(timerInterval: createTimerInterval(date: date))
-              .tint(progressViewTint)
-          }
+          ProgressView(timerInterval: createTimerInterval(date: date))
+            .tint(progressViewTint)
+            .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         }
       }
       .padding(24)
