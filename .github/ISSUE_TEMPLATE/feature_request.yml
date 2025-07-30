@@ -25,7 +25,7 @@ body:
       description: How would you like this feature to work? Describe your ideal solution.
       placeholder: Describe the solution you'd like
     validations:
-      required: true
+      required: false
   - type: textarea
     id: alternatives
     attributes:
@@ -34,18 +34,6 @@ body:
       placeholder: Describe alternatives you've considered
     validations:
       required: false
-  - type: textarea
-    id: use-case
-    attributes:
-      label: Use Case
-      description: Provide a specific use case or example of how this feature would be used
-      placeholder: |
-        Example:
-        1. User wants to...
-        2. They would use this feature by...
-        3. The expected outcome is...
-    validations:
-      required: true
   - type: input
     id: library-version
     attributes:
