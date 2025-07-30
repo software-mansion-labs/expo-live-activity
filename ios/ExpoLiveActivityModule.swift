@@ -89,10 +89,12 @@ public class ExpoLiveActivityModule: Module {
               imageName: state.imageName,
               dynamicIslandImageName: state.dynamicIslandImageName
             )
+            let pushNotificationsEnabled =
+              Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications")
             let activity = try Activity.request(
               attributes: counterState,
               content: .init(state: initialState, staleDate: nil),
-              pushType: .token
+              pushType: pushNotificationsEnabled == nil ? nil : .token
             )
 
             Task {
