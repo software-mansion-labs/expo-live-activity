@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+  - Questions and discussions
+    url: https://github.com/expo/expo-live-activity/discussions
+    about: Use this section to ask questions and discuss topics that are not related to bug reports or feature requests.
+    
