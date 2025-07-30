@@ -59,13 +59,16 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
+  func toContentStateDate(date: Double?) -> Date? {
+    return date.map { Date(timeIntervalSince1970: $0 / 1000) }
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
     Events("onTokenReceived")
 
     Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles?) -> String in
-      let date = state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil
       print("Starting activity")
       if #available(iOS 16.2, *) {
         if ActivityAuthorizationInfo().areActivitiesEnabled {
@@ -82,7 +85,7 @@ public class ExpoLiveActivityModule: Module {
             let initialState = LiveActivityAttributes.ContentState(
               title: state.title,
               subtitle: state.subtitle,
-              date: date,
+              date: toContentStateDate(date: state.date),
               imageName: state.imageName,
               dynamicIslandImageName: state.dynamicIslandImageName
             )
@@ -116,7 +119,7 @@ public class ExpoLiveActivityModule: Module {
         let endState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
+          date: toContentStateDate(date: state.date),
           imageName: state.imageName,
           dynamicIslandImageName: state.dynamicIslandImageName
         )
@@ -144,7 +147,7 @@ public class ExpoLiveActivityModule: Module {
         let newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: state.date != nil ? Date(timeIntervalSince1970: state.date! / 1000) : nil,
+          date: toContentStateDate(date: state.date),
           imageName: state.imageName,
           dynamicIslandImageName: state.dynamicIslandImageName
         )

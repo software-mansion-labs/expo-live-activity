@@ -13,7 +13,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
-    var date: Date?
+    var date: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
   }
@@ -30,6 +30,10 @@ struct LiveActivityAttributes: ActivityAttributes {
     case circular
     case digital
   }
+}
+
+func createTimerInterval(date: Double) -> ClosedRange<Date> {
+  return Date.now...max(Date.now, Date(timeIntervalSince1970: date / 1000))
 }
 
 struct LiveActivityWidget: Widget {
@@ -87,12 +91,12 @@ struct LiveActivityWidget: Widget {
 
   @ViewBuilder
   private func compactTimer(
-    endDate: Date,
+    endDate: Double,
     timerType: LiveActivityAttributes.DynamicIslandTimerType,
     progressViewTint: String?
   ) -> some View {
     if timerType == .digital {
-      Text(timerInterval: Date.now...max(Date.now, endDate))
+      Text(timerInterval: createTimerInterval(date: endDate))
         .font(.system(size: 15))
         .minimumScaleFactor(0.8)
         .fontWeight(.semibold)
@@ -130,16 +134,16 @@ struct LiveActivityWidget: Widget {
     }
   }
 
-  private func dynamicIslandExpandedBottom(endDate: Date, progressViewTint: String?) -> some View {
-    ProgressView(timerInterval: Date.now...max(Date.now, endDate))
+  private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View {
+    ProgressView(timerInterval: createTimerInterval(date: endDate))
       .foregroundStyle(.white)
       .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
       .padding(.top, 5)
   }
 
-  private func circularTimer(endDate: Date) -> some View {
+  private func circularTimer(endDate: Double) -> some View {
     ProgressView(
-      timerInterval: Date.now...max(Date.now, endDate),
+      timerInterval: createTimerInterval(date: endDate),
       countsDown: false,
       label: { EmptyView() },
       currentValueLabel: {

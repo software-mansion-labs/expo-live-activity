@@ -57,11 +57,11 @@ import WidgetKit
 
         if let date = contentState.date {
           if let progressViewLabelColor = attributes.progressViewLabelColor {
-            ProgressView(timerInterval: Date.now...max(Date.now, date))
+            ProgressView(timerInterval: createTimerInterval(date: date))
               .tint(progressViewTint)
               .foregroundStyle(Color(hex: progressViewLabelColor))
           } else {
-            ProgressView(timerInterval: Date.now...max(Date.now, date))
+            ProgressView(timerInterval: createTimerInterval(date: date))
               .tint(progressViewTint)
           }
         }
