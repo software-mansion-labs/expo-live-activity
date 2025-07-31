@@ -73,7 +73,7 @@ public class ExpoLiveActivityModule: Module {
       if #available(iOS 16.2, *) {
         if ActivityAuthorizationInfo().areActivitiesEnabled {
           do {
-            let counterState = LiveActivityAttributes(
+            let attributes = LiveActivityAttributes(
               name: "ExpoLiveActivity",
               backgroundColor: styles?.backgroundColor,
               titleColor: styles?.titleColor,
@@ -92,7 +92,7 @@ public class ExpoLiveActivityModule: Module {
             let pushNotificationsEnabled =
               Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications")
             let activity = try Activity.request(
-              attributes: counterState,
+              attributes: attributes,
               content: .init(state: initialState, staleDate: nil),
               pushType: pushNotificationsEnabled == nil ? nil : .token
             )
