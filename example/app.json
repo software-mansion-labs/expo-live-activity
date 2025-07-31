@@ -14,7 +14,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "expo.modules.liveactivity.example"
+      "bundleIdentifier": "com.swmansion.expoliveactivity.example"
     },
     "android": {
       "adaptiveIcon": {
@@ -27,6 +27,13 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["../app.plugin.js"]
+    "plugins": [
+      [
+        "../app.plugin.js",
+        {
+          "enablePushNotifications": true
+        }
+      ]
+    ]
   }
 }

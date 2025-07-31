@@ -6,6 +6,7 @@
 - Start, update, and stop live activities directly from your React Native application.
 - Easy integration with a comprehensive API.
 - Custom image support within live activities with a pre-configured path.
+- Listen and handle changes in push notification tokens associated with a live activity.
 
 ## Platform compatibility
 **Note:** This module is intended for use on **iOS devices only**. When methods are invoked on platforms other than iOS, they will throw an error, ensuring that they are used in the correct context.
@@ -41,14 +42,19 @@ import * as LiveActivity from "expo-live-activity";
 ## API
 `expo-live-activity` module exports three primary functions to manage live activities:
 
-- **`startActivity(state, styles)`**:
+### Managing Live Activities
+- **`startActivity(state: LiveActivityState, styles?: LiveActivityStyles)`**:
   Start a new live activity. Takes a `state` configuration object for initial activity state and an optional `styles` object to customize appearance. It returns the `ID` of the created live activity, which should be stored for future reference.
 
-- **`updateActivity(activityId, state)`**:
+- **`updateActivity(id: string, state: LiveActivityState)`**:
   Update an existing live activity. The `state` object should contain updated information. The `activityId` indicates which activity should be updated.
 
-- **`stopActivity(activityId, state)`**:
+- **`stopActivity(id: string, state: LiveActivityState)`**:
   Terminate an ongoing live activity. The `state` object should contain the final state of the activity. The `activityId` indicates which activity should be stopped.
+
+### Handling Push Notification Tokens
+- **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription)`**:
+  Subscribe to changes in the push notification token associated with live activities.
 
 ### State Object Structure
 The `state` object should include:
@@ -76,6 +82,7 @@ The `styles` object should include:
 ```
 
 ## Example Usage
+Managing a live activity:
 ```javascript
 const state = {
   title: "Title",
@@ -98,3 +105,17 @@ const activityId = LiveActivity.startActivity(state, styles);
 // Store activityId for future reference
 ```
 This will initiate a live activity with the specified title, subtitle, image from your configured assets folder and a time to which there will be a countdown in a progress view.
+
+Subscribing to push token changes:
+```javascript
+useEffect(() => {
+  const subscription = LiveActivity.addActivityTokenListener(({ 
+    activityID: newActivityID,
+    activityPushToken: newToken
+  }) => {
+    // Send token to a remote server to update live activity with push notifications
+  });
+
+  return () => subscription.remove();
+}, []);
+```
