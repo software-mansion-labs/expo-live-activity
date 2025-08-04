@@ -42,6 +42,34 @@ Import the functionalities provided by the `expo-live-activity` module in your J
 import * as LiveActivity from "expo-live-activity";
 ```
 
+## Push notifications
+By default, updating live activity is possible only via API. There is also a way to update live activity using push notifications. To enable that feature, add `"enablePushNotifications": true`. Then, the notification payload should be looking like this:
+
+```json
+{
+    "aps":{
+        "event":"update",
+        "content-state":{
+            "title":"Hello",
+            "subtitle":"World",
+            "date":1754064245000
+        },
+        "timestamp":1754063621319
+    }
+}
+```
+
+Where `date` value is a timestamp in milliseconds corresponding to the target point of the counter displayed in live activity view.
+
+## Image support
+Live activity view also supports image display. There are two dedicated fields for that:
+- `imageName`
+- `dynamicIslandImageName`
+Currently, it's possible to set them only via API, but we plan on to add that feature to push notifications as well. The value of each field can be:
+- a string which maps to an asset name
+- a URL to remote image
+The latter requires adding "App Groups" capability to both "main app" and "live activity" targets.
+
 ## API
 `expo-live-activity` module exports three primary functions to manage live activities:
 
