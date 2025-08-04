@@ -49,9 +49,7 @@ import WidgetKit
           Spacer()
 
           if let imageName = contentState.imageName {
-            Image(imageName)
-              .resizable()
-              .scaledToFit()
+            resizableImage(imageName: imageName)
               .frame(maxHeight: 64)
           }
         }

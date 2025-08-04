@@ -32,8 +32,28 @@ struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
+func dynamicImage(assetNameOrPath: String) -> Image {
+  if let container = FileManager.default.containerURL(
+    forSecurityApplicationGroupIdentifier: "group.expoLiveActivity.sharedData"
+  ) {
+    let contentsOfFile = container.appendingPathComponent(assetNameOrPath).path
+
+    if let uiImage = UIImage(contentsOfFile: contentsOfFile) {
+      return Image(uiImage: uiImage)
+    }
+  }
+
+  return Image(assetNameOrPath)
+}
+
+func resizableImage(imageName: String) -> some View {
+  dynamicImage(assetNameOrPath: imageName)
+    .resizable()
+    .scaledToFit()
+}
+
 func createTimerInterval(date: Double) -> ClosedRange<Date> {
-  return Date.now...max(Date.now, Date(timeIntervalSince1970: date / 1000))
+  Date.now...max(Date.now, Date(timeIntervalSince1970: date / 1000))
 }
 
 struct LiveActivityWidget: Widget {
@@ -151,10 +171,5 @@ struct LiveActivityWidget: Widget {
       }
     )
     .progressViewStyle(.circular)
-  }
-  private func resizableImage(imageName: String) -> some View {
-    Image(imageName)
-      .resizable()
-      .scaledToFit()
   }
 }
