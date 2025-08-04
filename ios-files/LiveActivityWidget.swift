@@ -32,30 +32,6 @@ struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-func dynamicImage(assetNameOrPath: String) -> Image {
-  if let container = FileManager.default.containerURL(
-    forSecurityApplicationGroupIdentifier: "group.expoLiveActivity.sharedData"
-  ) {
-    let contentsOfFile = container.appendingPathComponent(assetNameOrPath).path
-
-    if let uiImage = UIImage(contentsOfFile: contentsOfFile) {
-      return Image(uiImage: uiImage)
-    }
-  }
-
-  return Image(assetNameOrPath)
-}
-
-func resizableImage(imageName: String) -> some View {
-  dynamicImage(assetNameOrPath: imageName)
-    .resizable()
-    .scaledToFit()
-}
-
-func createTimerInterval(date: Double) -> ClosedRange<Date> {
-  Date.now...max(Date.now, Date(timeIntervalSince1970: date / 1000))
-}
-
 struct LiveActivityWidget: Widget {
   var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
@@ -116,7 +92,7 @@ struct LiveActivityWidget: Widget {
     progressViewTint: String?
   ) -> some View {
     if timerType == .digital {
-      Text(timerInterval: createTimerInterval(date: endDate))
+      Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
         .font(.system(size: 15))
         .minimumScaleFactor(0.8)
         .fontWeight(.semibold)
@@ -155,7 +131,7 @@ struct LiveActivityWidget: Widget {
   }
 
   private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View {
-    ProgressView(timerInterval: createTimerInterval(date: endDate))
+    ProgressView(timerInterval: Date.toTimerInterval(miliseconds: endDate))
       .foregroundStyle(.white)
       .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
       .padding(.top, 5)
@@ -163,7 +139,7 @@ struct LiveActivityWidget: Widget {
 
   private func circularTimer(endDate: Double) -> some View {
     ProgressView(
-      timerInterval: createTimerInterval(date: endDate),
+      timerInterval: Date.toTimerInterval(miliseconds: endDate),
       countsDown: false,
       label: { EmptyView() },
       currentValueLabel: {

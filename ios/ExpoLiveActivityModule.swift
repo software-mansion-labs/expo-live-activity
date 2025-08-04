@@ -63,30 +63,6 @@ public class ExpoLiveActivityModule: Module {
     return date.map { Date(timeIntervalSince1970: $0 / 1000) }
   }
 
-  func resolveImage(from string: String) async throws -> String {
-    if let url = URL(string: string), url.scheme?.hasPrefix("http") == true,
-      let container = FileManager.default.containerURL(
-        forSecurityApplicationGroupIdentifier: "group.expoLiveActivity.sharedData"
-      )
-    {
-      let data = try await downloadImage(from: url)
-      let filename = UUID().uuidString + ".png"
-      let fileURL = container.appendingPathComponent(filename)
-      print("fileURL: \(fileURL)")
-      try data.write(to: fileURL)
-      let lastPathComponent = fileURL.lastPathComponent
-      print("lastPathComponent: \(lastPathComponent)")
-      return lastPathComponent
-    } else {
-      return string
-    }
-  }
-
-  func downloadImage(from url: URL) async throws -> Data {
-    let (data, _) = try await URLSession.shared.data(from: url)
-    return data
-  }
-
   func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
       print("imageName: \(name)")
