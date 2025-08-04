@@ -63,6 +63,18 @@ public class ExpoLiveActivityModule: Module {
     return date.map { Date(timeIntervalSince1970: $0 / 1000) }
   }
 
+  func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
+    if let name = state.imageName {
+      print("imageName: \(name)")
+      newState.imageName = try await resolveImage(from: name)
+    }
+
+    if let name = state.dynamicIslandImageName {
+      print("dynamicIslandImageName: \(name)")
+      newState.dynamicIslandImageName = try await resolveImage(from: name)
+    }
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
@@ -73,7 +85,7 @@ public class ExpoLiveActivityModule: Module {
       if #available(iOS 16.2, *) {
         if ActivityAuthorizationInfo().areActivitiesEnabled {
           do {
-            let counterState = LiveActivityAttributes(
+            let attributes = LiveActivityAttributes(
               name: "ExpoLiveActivity",
               backgroundColor: styles?.backgroundColor,
               titleColor: styles?.titleColor,
@@ -86,13 +98,11 @@ public class ExpoLiveActivityModule: Module {
               title: state.title,
               subtitle: state.subtitle,
               date: toContentStateDate(date: state.date),
-              imageName: state.imageName,
-              dynamicIslandImageName: state.dynamicIslandImageName
             )
             let pushNotificationsEnabled =
               Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications")
             let activity = try Activity.request(
-              attributes: counterState,
+              attributes: attributes,
               content: .init(state: initialState, staleDate: nil),
               pushType: pushNotificationsEnabled == nil ? nil : .token
             )
@@ -104,6 +114,13 @@ public class ExpoLiveActivityModule: Module {
                 sendPushToken(activityID: activity.id, activityPushToken: pushTokenString)
               }
             }
+
+            Task {
+              var newState = activity.content.state
+              try await updateImages(state: state, newState: &newState)
+              await activity.update(ActivityContent(state: newState, staleDate: nil))
+            }
+
             return activity.id
           } catch (let error) {
             print("Error with live activity: \(error)")
@@ -118,20 +135,19 @@ public class ExpoLiveActivityModule: Module {
     Function("stopActivity") { (activityId: String, state: LiveActivityState) -> Void in
       if #available(iOS 16.2, *) {
         print("Attempting to stop")
-        let endState = LiveActivityAttributes.ContentState(
+        var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           date: toContentStateDate(date: state.date),
-          imageName: state.imageName,
-          dynamicIslandImageName: state.dynamicIslandImageName
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
         }) {
           Task {
             print("Stopping activity with id: \(activityId)")
+            try await updateImages(state: state, newState: &newState)
             await activity.end(
-              ActivityContent(state: endState, staleDate: nil),
+              ActivityContent(state: newState, staleDate: nil),
               dismissalPolicy: .immediate
             )
           }
@@ -146,18 +162,17 @@ public class ExpoLiveActivityModule: Module {
     Function("updateActivity") { (activityId: String, state: LiveActivityState) -> Void in
       if #available(iOS 16.2, *) {
         print("Attempting to update")
-        let newState = LiveActivityAttributes.ContentState(
+        var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           date: toContentStateDate(date: state.date),
-          imageName: state.imageName,
-          dynamicIslandImageName: state.dynamicIslandImageName
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
         }) {
           Task {
             print("Updating activity with id: \(activityId)")
+            try await updateImages(state: state, newState: &newState)
             await activity.update(ActivityContent(state: newState, staleDate: nil))
           }
         } else {

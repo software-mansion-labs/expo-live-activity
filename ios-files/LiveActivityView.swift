@@ -49,15 +49,13 @@ import WidgetKit
           Spacer()
 
           if let imageName = contentState.imageName {
-            Image(imageName)
-              .resizable()
-              .scaledToFit()
+            resizableImage(imageName: imageName)
               .frame(maxHeight: 64)
           }
         }
 
         if let date = contentState.date {
-          ProgressView(timerInterval: createTimerInterval(date: date))
+          ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
             .tint(progressViewTint)
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         }
