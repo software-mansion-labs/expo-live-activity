@@ -37,7 +37,7 @@ struct LiveActivityWidget: Widget {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityView(contentState: context.state, attributes: context.attributes)
         .activityBackgroundTint(
-          context.attributes.backgroundColor != nil ? Color(hex: context.attributes.backgroundColor!) : nil
+          context.attributes.backgroundColor.map { Color(hex: $0) }
         )
         .activitySystemActionForegroundColor(Color.black)
 
@@ -100,7 +100,7 @@ struct LiveActivityWidget: Widget {
         .multilineTextAlignment(.trailing)
     } else {
       circularTimer(endDate: endDate)
-        .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
+        .tint(progressViewTint.map { Color(hex: $0) })
     }
   }
 
@@ -133,7 +133,7 @@ struct LiveActivityWidget: Widget {
   private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View {
     ProgressView(timerInterval: Date.toTimerInterval(miliseconds: endDate))
       .foregroundStyle(.white)
-      .tint(progressViewTint != nil ? Color(hex: progressViewTint!) : nil)
+      .tint(progressViewTint.map { Color(hex: $0) })
       .padding(.top, 5)
   }
 
