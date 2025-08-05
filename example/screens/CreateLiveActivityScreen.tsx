@@ -1,4 +1,4 @@
-import type { LiveActivityState, LiveActivityStyles } from "expo-live-activity";
+import type { LiveActivityState, LiveActivityConfig } from "expo-live-activity";
 import * as LiveActivity from "expo-live-activity";
 import {
   Button,
@@ -43,7 +43,7 @@ export default function CreateLiveActivityScreen() {
 
     try {
       const id = LiveActivity.startActivity(state, {
-        ...activityStyles,
+        ...activityConfig,
         timerType: isTimerTypeDigital ? "digital" : "circular",
       });
       setActivityID(id);
@@ -170,12 +170,13 @@ export default function CreateLiveActivityScreen() {
   );
 }
 
-const activityStyles: LiveActivityStyles = {
+const activityConfig: LiveActivityConfig = {
   backgroundColor: "001A72",
   titleColor: "EBEBF0",
   subtitleColor: "#FFFFFF75",
   progressViewTint: "38ACDD",
   progressViewLabelColor: "#FFFFFF",
+  deepLinkUrl: "/dashboard",
 };
 
 const styles = StyleSheet.create({

@@ -12,12 +12,13 @@ export type LiveActivityState = {
   dynamicIslandImageName?: string;
 };
 
-export type LiveActivityStyles = {
+export type LiveActivityConfig = {
   backgroundColor?: string;
   titleColor?: string;
   subtitleColor?: string;
   progressViewTint?: string;
   progressViewLabelColor?: string;
+  deepLinkUrl?: string;
   timerType?: DynamicIslandTimerType;
 };
 
@@ -32,15 +33,15 @@ export type LiveActivityModuleEvents = {
 
 /**
  * @param {LiveActivityState} state The state for the live activity.
- * @param {LiveActivityStyles} styles Live activity styling object.
+ * @param {LiveActivityConfig} config Live activity config object.
  * @returns {string} The identifier of the started activity.
  * @throws {Error} When function is called on a platform different from iOS.
  */
-export function startActivity(state: LiveActivityState, styles?: LiveActivityStyles): string {
+export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): string {
   if (Platform.OS !== "ios") {
     throw new Error("startActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.startActivity(state, styles);
+  return ExpoLiveActivityModule.startActivity(state, config);
 }
 
 /**

@@ -74,8 +74,8 @@ The latter requires adding "App Groups" capability to both "main app" and "live 
 `expo-live-activity` module exports three primary functions to manage live activities:
 
 ### Managing Live Activities
-- **`startActivity(state: LiveActivityState, styles?: LiveActivityStyles)`**:
-  Start a new live activity. Takes a `state` configuration object for initial activity state and an optional `styles` object to customize appearance. It returns the `ID` of the created live activity, which should be stored for future reference.
+- **`startActivity(state: LiveActivityState, config?: LiveActivityConfig)`**:
+  Start a new live activity. Takes a `state` configuration object for initial activity state and an optional `config` object to customize appearance or behavior. It returns the `ID` of the created live activity, which should be stored for future reference.
 
 - **`updateActivity(id: string, state: LiveActivityState)`**:
   Update an existing live activity. The `state` object should contain updated information. The `activityId` indicates which activity should be updated.
@@ -86,6 +86,9 @@ The latter requires adding "App Groups" capability to both "main app" and "live 
 ### Handling Push Notification Tokens
 - **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription)`**:
   Subscribe to changes in the push notification token associated with live activities.
+
+### Deep linking
+When starting a new live activity, it's possible to pass `deepLinkUrl` field in `config` object. This can be any string that you can handle in your main app target. 
 
 ### State Object Structure
 The `state` object should include:
@@ -99,8 +102,8 @@ The `state` object should include:
 };
 ```
 
-### Styles Object Structure
-The `styles` object should include:
+### Config Object Structure
+The `config` object should include:
 ```typescript
 {
    backgroundColor?: string;
@@ -108,6 +111,7 @@ The `styles` object should include:
    subtitleColor?: string;
    progressViewTint?: string;
    progressViewLabelColor?: string;
+   deepLinkUrl?: string;
    timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appereance on the dynamic island
 };
 ```
@@ -123,16 +127,17 @@ const state = {
   dynamicIslandImageName: "dynamic_island_image"
 };
 
-const styles = {
+const config = {
   backgroundColor: "#FFFFFF",
   titleColor: "#000000",
   subtitleColor: "#333333",
   progressViewTint: "#4CAF50",
   progressViewLabelColor: "#FFFFFF",
+  deepLinkUrl: "/dashboard",
   timerType: "circular"
 };
 
-const activityId = LiveActivity.startActivity(state, styles);
+const activityId = LiveActivity.startActivity(state, config);
 // Store activityId for future reference
 ```
 This will initiate a live activity with the specified title, subtitle, image from your configured assets folder and a time to which there will be a countdown in a progress view.

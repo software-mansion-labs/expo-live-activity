@@ -24,7 +24,7 @@ public class ExpoLiveActivityModule: Module {
     var dynamicIslandImageName: String?
   }
 
-  struct LiveActivityStyles: Record {
+  struct LiveActivityConfig: Record {
     @Field
     var backgroundColor: String?
 
@@ -39,6 +39,9 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var progressViewLabelColor: String?
+    
+    @Field
+    var deepLinkUrl: String?
 
     @Field
     var timerType: DynamicIslandTimerType?
@@ -80,19 +83,21 @@ public class ExpoLiveActivityModule: Module {
 
     Events("onTokenReceived")
 
-    Function("startActivity") { (state: LiveActivityState, styles: LiveActivityStyles?) -> String in
+    Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       print("Starting activity")
       if #available(iOS 16.2, *) {
         if ActivityAuthorizationInfo().areActivitiesEnabled {
           do {
+            let config = maybeConfig ?? LiveActivityConfig()
             let attributes = LiveActivityAttributes(
               name: "ExpoLiveActivity",
-              backgroundColor: styles?.backgroundColor,
-              titleColor: styles?.titleColor,
-              subtitleColor: styles?.subtitleColor,
-              progressViewTint: styles?.progressViewTint,
-              progressViewLabelColor: styles?.progressViewLabelColor,
-              timerType: styles?.timerType == .digital ? .digital : .circular
+              backgroundColor: config.backgroundColor,
+              titleColor: config.titleColor,
+              subtitleColor: config.subtitleColor,
+              progressViewTint: config.progressViewTint,
+              progressViewLabelColor: config.progressViewLabelColor,
+              deepLinkUrl: config.deepLinkUrl,
+              timerType: config.timerType == .digital ? .digital : .circular
             )
             let initialState = LiveActivityAttributes.ContentState(
               title: state.title,

@@ -24,6 +24,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var subtitleColor: String?
   var progressViewTint: String?
   var progressViewLabelColor: String?
+  var deepLinkUrl: String?
   var timerType: DynamicIslandTimerType
 
   enum DynamicIslandTimerType: String, Codable {
@@ -40,30 +41,34 @@ struct LiveActivityWidget: Widget {
           context.attributes.backgroundColor.map { Color(hex: $0) }
         )
         .activitySystemActionForegroundColor(Color.black)
-
+        .applyWidgetURL(from: context.attributes.deepLinkUrl)
     } dynamicIsland: { context in
       DynamicIsland {
         DynamicIslandExpandedRegion(.leading, priority: 1) {
           dynamicIslandExpandedLeading(title: context.state.title, subtitle: context.state.subtitle)
             .dynamicIsland(verticalPlacement: .belowIfTooWide)
             .padding(.leading, 5)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
         DynamicIslandExpandedRegion(.trailing) {
           if let imageName = context.state.imageName {
             dynamicIslandExpandedTrailing(imageName: imageName)
               .padding(.trailing, 5)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
         DynamicIslandExpandedRegion(.bottom) {
           if let date = context.state.date {
             dynamicIslandExpandedBottom(endDate: date, progressViewTint: context.attributes.progressViewTint)
               .padding(.horizontal, 5)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
       } compactLeading: {
         if let dynamicIslandImageName = context.state.dynamicIslandImageName {
           resizableImage(imageName: dynamicIslandImageName)
             .frame(maxWidth: 23, maxHeight: 23)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } compactTrailing: {
         if let date = context.state.date {
@@ -71,7 +76,7 @@ struct LiveActivityWidget: Widget {
             endDate: date,
             timerType: context.attributes.timerType,
             progressViewTint: context.attributes.progressViewTint
-          )
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
         if let date = context.state.date {
@@ -79,7 +84,7 @@ struct LiveActivityWidget: Widget {
             endDate: date,
             timerType: context.attributes.timerType,
             progressViewTint: context.attributes.progressViewTint
-          )
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       }
     }
