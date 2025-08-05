@@ -105,11 +105,11 @@ public class ExpoLiveActivityModule: Module {
               date: toContentStateDate(date: state.date),
             )
             let pushNotificationsEnabled =
-              Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications")
+              Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
             let activity = try Activity.request(
               attributes: attributes,
               content: .init(state: initialState, staleDate: nil),
-              pushType: pushNotificationsEnabled == nil ? nil : .token
+              pushType: pushNotificationsEnabled == true ? .token : nil
             )
 
             Task {
