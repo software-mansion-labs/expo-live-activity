@@ -86,3 +86,10 @@ export function addActivityTokenListener(listener: (event: ActivityTokenReceived
   }
   return ExpoLiveActivityModule.addListener('onTokenReceived', listener);
 }
+
+export function observePushToStart() {
+  if (Platform.OS !== "ios") {
+    throw new Error("updateActivity is only available on iOS");
+  }
+  return ExpoLiveActivityModule.observePushToStart();
+}

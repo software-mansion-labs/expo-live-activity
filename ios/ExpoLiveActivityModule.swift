@@ -72,11 +72,26 @@ public class ExpoLiveActivityModule: Module {
       newState.dynamicIslandImageName = try await resolveImage(from: name)
     }
   }
+    
+    func observePushToStartToken() {
+        if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
+            Task {
+                for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
+                    let token = data.reduce("") { $0 + String(format: "%02x", $1) }
+                       print("## TOKEN: \(token)")
+                }
+            }
+        }
+    }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
     Events("onTokenReceived")
+      
+    Function("observePushToStart") { () -> Void in
+        observePushToStartToken()
+    }
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       print("Starting activity")

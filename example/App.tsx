@@ -13,5 +13,9 @@ export default function App() {
     return () => subscription?.remove();
   }, []);
 
+  useEffect(() => {
+    LiveActivity.observePushToStart()
+  }, []);
+
   return <Navigation />;
 }
