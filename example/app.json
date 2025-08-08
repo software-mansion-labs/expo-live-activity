@@ -28,13 +28,12 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "../app.plugin.js"
-      // [
-      //   "../app.plugin.js",
-      //   {
-      //     "enablePushNotifications": true
-      //   }
-      // ]
+      [
+        "../app.plugin.js",
+        {
+          "enablePushNotifications": true
+        }
+      ]
     ]
   }
 }

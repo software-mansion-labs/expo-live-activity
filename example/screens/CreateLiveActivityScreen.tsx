@@ -10,7 +10,7 @@ import {
   Switch,
   Platform,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const dynamicIslandImageName = "logo-island";
@@ -26,6 +26,17 @@ export default function CreateLiveActivityScreen() {
   const [passSubtitle, setPassSubtitle] = useState(true);
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
+
+  useEffect(() => {
+  const subscription = LiveActivity.addActivityTokenListener(({ 
+    activityID: newActivityID,
+    activityPushToken: newToken
+  }) => {
+    console.log(`Activity token: ${newToken}`)
+  });
+
+  return () => subscription.remove();
+}, []);
 
 
   const startActivity = () => {
