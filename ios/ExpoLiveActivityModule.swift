@@ -62,10 +62,6 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
-  func toContentStateDate(date: Double?) -> Date? {
-    return date.map { Date(timeIntervalSince1970: $0 / 1000) }
-  }
-
   func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
       newState.imageName = try await resolveImage(from: name)
@@ -100,7 +96,7 @@ public class ExpoLiveActivityModule: Module {
             let initialState = LiveActivityAttributes.ContentState(
               title: state.title,
               subtitle: state.subtitle,
-              date: toContentStateDate(date: state.date),
+              date: state.date,
             )
             let pushNotificationsEnabled =
               Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
@@ -141,7 +137,7 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: toContentStateDate(date: state.date),
+          date: state.date,
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
@@ -168,7 +164,7 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: toContentStateDate(date: state.date),
+          date: state.date,
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
