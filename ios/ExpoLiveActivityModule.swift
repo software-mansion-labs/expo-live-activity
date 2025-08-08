@@ -65,12 +65,10 @@ public class ExpoLiveActivityModule: Module {
 
   func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
-      print("imageName: \(name)")
       newState.imageName = try await resolveImage(from: name)
     }
 
     if let name = state.dynamicIslandImageName {
-      print("dynamicIslandImageName: \(name)")
       newState.dynamicIslandImageName = try await resolveImage(from: name)
     }
   }
