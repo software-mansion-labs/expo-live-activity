@@ -1,9 +1,10 @@
 import ActivityKit
 import ExpoModulesCore
 
-enum ModuleErrors: Error {
-  case unsupported
-  case liveActivitiesNotEnabled
+enum LiveActivityErrors: Error {
+    case unsupportedOS
+    case liveActivitiesNotEnabled
+    case unexpetedError(Error)
 }
 
 public class ExpoLiveActivityModule: Module {
@@ -125,11 +126,12 @@ public class ExpoLiveActivityModule: Module {
             return activity.id
           } catch (let error) {
             print("Error with live activity: \(error)")
+            throw LiveActivityErrors.unexpetedError(error)
           }
         }
-        throw ModuleErrors.liveActivitiesNotEnabled
+        throw LiveActivityErrors.liveActivitiesNotEnabled
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
 
@@ -156,7 +158,7 @@ public class ExpoLiveActivityModule: Module {
           print("Didn't find activity with ID \(activityId)")
         }
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
 
@@ -180,7 +182,7 @@ public class ExpoLiveActivityModule: Module {
           print("Didn't find activity with ID \(activityId)")
         }
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
   }

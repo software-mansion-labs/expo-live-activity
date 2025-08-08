@@ -41,7 +41,11 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
   if (Platform.OS !== "ios") {
     throw new Error("startActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.startActivity(state, config);
+  try {
+    return ExpoLiveActivityModule.startActivity(state, config);
+  } catch (error) {
+    throw new Error(`startActivity failed with an error: ${error}`);
+  }
 }
 
 /**
@@ -53,7 +57,11 @@ export function stopActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
     throw new Error("stopActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.stopActivity(id, state);
+  try {
+    return ExpoLiveActivityModule.stopActivity(id, state);
+  } catch (error) {
+    throw new Error(`stopActivity failed with an error: ${error}`);
+  }
 }
 
 /**
@@ -65,7 +73,11 @@ export function updateActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
     throw new Error("updateActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.updateActivity(id, state);
+  try {
+    return ExpoLiveActivityModule.updateActivity(id, state);
+  } catch (error) {
+    throw new Error(`updateActivity failed with an error: ${error}`);
+  }
 }
 
 export function addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription {
