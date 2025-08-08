@@ -25,7 +25,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewTint: String?
   var progressViewLabelColor: String?
   var deepLinkUrl: String?
-  var timerType: DynamicIslandTimerType
+  var timerType: DynamicIslandTimerType?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular
@@ -74,7 +74,7 @@ struct LiveActivityWidget: Widget {
         if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
-            timerType: context.attributes.timerType,
+            timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
@@ -82,7 +82,7 @@ struct LiveActivityWidget: Widget {
         if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
-            timerType: context.attributes.timerType,
+            timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
