@@ -54,7 +54,7 @@ import WidgetKit
           }
         }
 
-        if let date = contentState.date {
+        if let date = contentState.timerEndDateInMilliseconds {
           ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
             .tint(progressViewTint)
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))

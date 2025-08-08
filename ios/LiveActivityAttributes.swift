@@ -12,7 +12,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
-    var date: Date?
+    var timerEndDateInMilliseconds: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
   }
