@@ -10,9 +10,8 @@ import {
   Switch,
   Platform,
 } from "react-native";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
-import { useNavigation } from "@react-navigation/native";
 
 const dynamicIslandImageName = "logo-island";
 const toggle = (previousState: boolean) => !previousState;
@@ -28,7 +27,17 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
 
-  const navigation = useNavigation();
+  useEffect(() => {
+  const subscription = LiveActivity.addActivityTokenListener(({ 
+    activityID: newActivityID,
+    activityPushToken: newToken
+  }) => {
+    console.log(`Activity token: ${newToken}`)
+  });
+
+  return () => subscription.remove();
+}, []);
+
 
   const startActivity = () => {
     Keyboard.dismiss();
@@ -50,7 +59,6 @@ export default function CreateLiveActivityScreen() {
     } catch (e) {
       console.error("Starting activity failed! " + e);
     }
-    navigation.goBack();
   };
 
   const stopActivity = () => {
@@ -72,9 +80,9 @@ export default function CreateLiveActivityScreen() {
   const updateActivity = () => {
     const state: LiveActivityState = {
       title,
-      subtitle,
-      date: date.getTime(),
-      imageName,
+      subtitle: passSubtitle ? subtitle : undefined,
+      date: passDate ? date.getTime() : undefined,
+      imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
     };
     try {

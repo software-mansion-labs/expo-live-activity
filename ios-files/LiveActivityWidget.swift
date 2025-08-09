@@ -13,7 +13,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
-    var date: Double?
+    var timerEndDateInMilliseconds: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
   }
@@ -25,7 +25,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewTint: String?
   var progressViewLabelColor: String?
   var deepLinkUrl: String?
-  var timerType: DynamicIslandTimerType
+  var timerType: DynamicIslandTimerType?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular
@@ -58,7 +58,7 @@ struct LiveActivityWidget: Widget {
           }
         }
         DynamicIslandExpandedRegion(.bottom) {
-          if let date = context.state.date {
+          if let date = context.state.timerEndDateInMilliseconds {
             dynamicIslandExpandedBottom(endDate: date, progressViewTint: context.attributes.progressViewTint)
               .padding(.horizontal, 5)
               .applyWidgetURL(from: context.attributes.deepLinkUrl)
@@ -71,18 +71,18 @@ struct LiveActivityWidget: Widget {
             .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } compactTrailing: {
-        if let date = context.state.date {
+        if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
-            timerType: context.attributes.timerType,
+            timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
-        if let date = context.state.date {
+        if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
-            timerType: context.attributes.timerType,
+            timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }

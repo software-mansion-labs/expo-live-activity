@@ -75,7 +75,7 @@ export function getWidgetFiles(
   copyFolderRecursiveSync(imagesXcassetsSource, targetPath);
 
   // Move images to assets directory
-  if (fs.lstatSync(imageAssetsPath).isDirectory()) {
+  if (fs.existsSync(imageAssetsPath) && fs.lstatSync(imageAssetsPath).isDirectory()) {
     const imagesXcassetsTarget = path.join(targetPath, "Assets.xcassets");
 
     const files = fs.readdirSync(imageAssetsPath);
@@ -114,6 +114,8 @@ export function getWidgetFiles(
         );
       }
     })
+  } else {
+    console.warn(`Warning: Skipping adding images to live activity because directory does not exist at path: ${imageAssetsPath}`);
   }
 
   return widgetFiles;

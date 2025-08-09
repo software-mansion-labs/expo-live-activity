@@ -1,9 +1,10 @@
 import ActivityKit
 import ExpoModulesCore
 
-enum ModuleErrors: Error {
-  case unsupported
-  case liveActivitiesNotEnabled
+enum LiveActivityErrors: Error {
+    case unsupportedOS
+    case liveActivitiesNotEnabled
+    case unexpetedError(Error)
 }
 
 public class ExpoLiveActivityModule: Module {
@@ -62,10 +63,6 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
-  func toContentStateDate(date: Double?) -> Date? {
-    return date.map { Date(timeIntervalSince1970: $0 / 1000) }
-  }
-
   func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
       print("imageName: \(name)")
@@ -102,7 +99,7 @@ public class ExpoLiveActivityModule: Module {
             let initialState = LiveActivityAttributes.ContentState(
               title: state.title,
               subtitle: state.subtitle,
-              date: toContentStateDate(date: state.date),
+              timerEndDateInMilliseconds: state.date,
             )
             let pushNotificationsEnabled =
               Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
@@ -129,11 +126,12 @@ public class ExpoLiveActivityModule: Module {
             return activity.id
           } catch (let error) {
             print("Error with live activity: \(error)")
+            throw LiveActivityErrors.unexpetedError(error)
           }
         }
-        throw ModuleErrors.liveActivitiesNotEnabled
+        throw LiveActivityErrors.liveActivitiesNotEnabled
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
 
@@ -143,7 +141,7 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: toContentStateDate(date: state.date),
+          timerEndDateInMilliseconds: state.date,
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
@@ -160,7 +158,7 @@ public class ExpoLiveActivityModule: Module {
           print("Didn't find activity with ID \(activityId)")
         }
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
 
@@ -170,7 +168,7 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          date: toContentStateDate(date: state.date),
+          timerEndDateInMilliseconds: state.date,
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
@@ -184,7 +182,7 @@ public class ExpoLiveActivityModule: Module {
           print("Didn't find activity with ID \(activityId)")
         }
       } else {
-        throw ModuleErrors.unsupported
+        throw LiveActivityErrors.unsupportedOS
       }
     }
   }
