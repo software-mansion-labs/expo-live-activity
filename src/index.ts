@@ -44,7 +44,7 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
   try {
     return ExpoLiveActivityModule.startActivity(state, config);
   } catch (error) {
-    throw new Error(`startActivity failed with an error: ${error}`);
+    console.error(`startActivity failed with an error: ${error}`);
   }
 }
 
