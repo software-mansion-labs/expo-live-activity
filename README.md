@@ -15,6 +15,8 @@
 **Note:** This module is intended for use on **iOS devices only**. The minimal iOS version that supports Live Activities is 16.2. When methods are invoked on platforms other than iOS or on older iOS versions, they will throw an error, ensuring that they are used in the correct context.
 
 ## Installation
+> [!NOTE]  
+> The library isn't supported in Expo Go, to set it up correctly you need to use [Expo DevClient](https://docs.expo.dev/versions/latest/sdk/dev-client/) .
 To begin using `expo-live-activity`, follow the installation and configuration steps outlined below:
 
 ### Step 1: Installation
