@@ -160,9 +160,11 @@ By default, updating live activity is possible only via API. If you want to have
         "content-state":{
             "title":"Hello",
             "subtitle":"World",
-            "timerEndDateInMilliseconds":1754064245000
+            "timerEndDateInMilliseconds":1754064245000,
+            "imageName": "live_activity_image",
+            "dynamicIslandImageName": "dynamic_island_image"
         },
-        "timestamp":1754063621319
+        "timestamp":1754063621319 // timestamp of when the push notification was sent
     }
 }
 ```
@@ -174,8 +176,6 @@ Live activity view also supports image display. There are two dedicated fields i
 - `imageName`
 - `dynamicIslandImageName`
 
-Currently, it's possible to set them only via API, but we plan on to add that feature to push notifications as well. The value of each field can be:
+The value of each field can be:
 - a string which maps to an asset name
-- a URL to remote image
-
-The latter requires adding "App Groups" capability to both "main app" and "live activity" targets.
+- a URL to remote image - currently, it's possible to use this option only via API, but we plan on to add that feature to push notifications as well. It also requires adding "App Groups" capability to both "main app" and "live activity" targets.
