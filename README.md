@@ -12,7 +12,7 @@
 - Listen and handle changes in push notification tokens associated with a live activity.
 
 ## Platform compatibility
-**Note:** This module is intended for use on **iOS devices only**. The minimal iOS version that supports Live Activities is 16.2. When methods are invoked on platforms other than iOS or on older iOS versions, they will throw an error, ensuring that they are used in the correct context.
+**Note:** This module is intended for use on **iOS devices only**. The minimal iOS version that supports Live Activities is 16.2. When methods are invoked on platforms other than iOS or on older iOS versions, they will log an error, ensuring that they are used in the correct context.
 
 ## Installation
 > [!NOTE]  
@@ -68,8 +68,8 @@ import * as LiveActivity from "expo-live-activity";
 `expo-live-activity` module exports three primary functions to manage live activities:
 
 ### Managing Live Activities
-- **`startActivity(state: LiveActivityState, config?: LiveActivityConfig)`**:
-  Start a new live activity. Takes a `state` configuration object for initial activity state and an optional `config` object to customize appearance or behavior. It returns the `ID` of the created live activity, which should be stored for future reference.
+- **`startActivity(state: LiveActivityState, config?: LiveActivityConfig): string | undefined`**:
+  Start a new live activity. Takes a `state` configuration object for initial activity state and an optional `config` object to customize appearance or behavior. It returns the `ID` of the created live activity, which should be stored for future reference. If the live activity can't be created (eg. on android or iOS lower than 16.2), it will return `undefined`.
 
 - **`updateActivity(id: string, state: LiveActivityState)`**:
   Update an existing live activity. The `state` object should contain updated information. The `activityId` indicates which activity should be updated.
@@ -78,7 +78,7 @@ import * as LiveActivity from "expo-live-activity";
   Terminate an ongoing live activity. The `state` object should contain the final state of the activity. The `activityId` indicates which activity should be stopped.
 
 ### Handling Push Notification Tokens
-- **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription)`**:
+- **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined`**:
   Subscribe to changes in the push notification token associated with live activities.
 
 

@@ -27,18 +27,6 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true);
   const [passDate, setPassDate] = useState(true);
 
-  useEffect(() => {
-  const subscription = LiveActivity.addActivityTokenListener(({ 
-    activityID: newActivityID,
-    activityPushToken: newToken
-  }) => {
-    console.log(`Activity token: ${newToken}`)
-  });
-
-  return () => subscription.remove();
-}, []);
-
-
   const startActivity = () => {
     Keyboard.dismiss();
 
