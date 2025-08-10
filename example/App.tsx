@@ -10,8 +10,7 @@ export default function App() {
         console.log(`Activity id: ${newActivityID}, token: ${newToken}`);
       },
     );
-
-    return () => subscription.remove();
+    return () => subscription?.remove();
   }, []);
 
   return <Navigation />;

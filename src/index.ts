@@ -34,43 +34,55 @@ export type LiveActivityModuleEvents = {
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
- * @returns {string} The identifier of the started activity.
- * @throws {Error} When function is called on a platform different from iOS.
+ * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
-export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): string {
+export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): string | undefined {
   if (Platform.OS !== "ios") {
-    throw new Error("startActivity is only available on iOS");
+    console.error("startActivity is only available on iOS");
+    return undefined
   }
-  return ExpoLiveActivityModule.startActivity(state, config);
+  try {
+    return ExpoLiveActivityModule.startActivity(state, config);
+  } catch (error) {
+    console.error(`startActivity failed with an error: ${error}`);
+    return undefined
+  }
 }
 
 /**
  * @param {string} id The identifier of the activity to stop.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @throws {Error} When function is called on a platform different from iOS.
  */
 export function stopActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
-    throw new Error("stopActivity is only available on iOS");
+    console.error("stopActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.stopActivity(id, state);
+  try {
+    return ExpoLiveActivityModule.stopActivity(id, state);
+  } catch (error) {
+    console.error(`stopActivity failed with an error: ${error}`);
+  }
 }
 
 /**
  * @param {string} id The identifier of the activity to update.
  * @param {LiveActivityState} state The updated state for the live activity.
- * @throws {Error} When function is called on a platform different from iOS.
  */
 export function updateActivity(id: string, state: LiveActivityState) {
   if (Platform.OS !== "ios") {
-    throw new Error("updateActivity is only available on iOS");
+    console.error("updateActivity is only available on iOS");
   }
-  return ExpoLiveActivityModule.updateActivity(id, state);
+  try {
+    return ExpoLiveActivityModule.updateActivity(id, state);
+  } catch (error) {
+    console.error(`updateActivity failed with an error: ${error}`);
+  }
 }
 
-export function addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription {
+export function addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined {
   if (Platform.OS !== "ios") {
-    throw new Error("updateActivity is only available on iOS");
+    console.error("addActivityTokenListener is only available on iOS");
+    return undefined
   }
   return ExpoLiveActivityModule.addListener('onTokenReceived', listener);
 }

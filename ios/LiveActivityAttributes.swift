@@ -12,7 +12,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
-    var date: Date?
+    var timerEndDateInMilliseconds: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
   }
@@ -24,7 +24,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewTint: String?
   var progressViewLabelColor: String?
   var deepLinkUrl: String?
-  var timerType: DynamicIslandTimerType
+  var timerType: DynamicIslandTimerType?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular
