@@ -10,7 +10,7 @@ import {
   Switch,
   Platform,
 } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 
 const dynamicIslandImageName = "logo-island";
