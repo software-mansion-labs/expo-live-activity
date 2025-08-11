@@ -64,7 +64,6 @@ public class ExpoLiveActivityModule: Module {
   }
     
   func sendPushToStartToken(activityPushToStartToken: String) {
-    print("## Sending push to start token")
     sendEvent(
       "onPushToStartTokenReceived",
       [

@@ -5,12 +5,12 @@ import Navigation from "./Navigation";
 
 export default function App() {
   useEffect(() => {
-    const subscription = LiveActivity.addActivityTokenListener(
+    const updateTokenSubscription = LiveActivity.addActivityTokenListener(
       ({ activityID: newActivityID, activityPushToken: newToken }) => {
         console.log(`Activity id: ${newActivityID}, token: ${newToken}`);
       },
     );
-    const subscription2 = LiveActivity.addActivityPushToStartTokenListener(
+    const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
       ({ activityPushToStartToken: newActivityPushToStartToken }) => {
         console.log(`Push to start token: ${newActivityPushToStartToken}`);
       },
@@ -18,8 +18,8 @@ export default function App() {
 
     LiveActivity.observePushToStartToken();
     return () => {
-      subscription?.remove();
-      subscription2?.remove();
+      updateTokenSubscription?.remove();
+      startTokenSubscription?.remove();
     };
   }, []);
 
