@@ -122,7 +122,7 @@ const state = {
   dynamicIslandImageName: "dynamic_island_image"
 };
 
-const config = {
+const config: LiveActivity.LiveActivityConfig = {
   backgroundColor: "#FFFFFF",
   titleColor: "#000000",
   subtitleColor: "#333333",
@@ -147,9 +147,13 @@ useEffect(() => {
     // Send token to a remote server to update live activity with push notifications
   });
 
-  return () => subscription.remove();
+  return () => subscription?.remove();
 }, []);
 ```
+
+> [!NOTE]
+> Receiving push token may not work on simulators. Make sure to use external device when testing this functionality.
+
 ## Push notifications
 By default, updating live activity is possible only via API. If you want to have possibility to update live activity using push notifications, you can enable that feature by adding `"enablePushNotifications": true` in the plugin config in your `app.json` or `app.config.ts` file. Then, the notification payload should look like this:
 
