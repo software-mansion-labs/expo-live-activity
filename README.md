@@ -114,7 +114,7 @@ The `config` object should include:
 ## Example Usage
 Managing a live activity:
 ```javascript
-const state = {
+const state: LiveActivity.LiveActivityState = {
   title: "Title",
   subtitle: "This is a subtitle",
   date: new Date(Date.now() + 60 * 1000 * 5).getTime(),
