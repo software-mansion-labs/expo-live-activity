@@ -2,15 +2,17 @@
   "expo": {
     "name": "expo-live-activity-example",
     "slug": "expo-live-activity-example",
+    "scheme": "expo-live-activity-example",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "backgroundColor": "#367135",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#367135"
     },
     "ios": {
       "supportsTablet": true,
@@ -32,6 +34,16 @@
         "../app.plugin.js",
         {
           "enablePushNotifications": true
+        }
+      ],
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Onest-Medium.ttf",
+            "./assets/fonts/Onest-Regular.ttf",
+            "./assets/fonts/Onest-SemiBold.ttf"
+          ]
         }
       ]
     ]
