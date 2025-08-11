@@ -78,8 +78,12 @@ import * as LiveActivity from "expo-live-activity";
   Terminate an ongoing live activity. The `state` object should contain the final state of the activity. The `activityId` indicates which activity should be stopped.
 
 ### Handling Push Notification Tokens
+- **`addActivityPushToStartTokenListener(listener: (event: ActivityPushToStartTokenReceivedEvent) => void): EventSubscription | undefined`**:
+  Subscribe to changes in the push to start token for starting live acitivities with push notifications.
 - **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined`**:
   Subscribe to changes in the push notification token associated with live activities.
+- **`observePushToStartToken()`**:
+  Trigger observing for push to start token. This should be called after the `addActivityPushToStartTokenListener` function.
 
 ### Deep linking
 When starting a new live activity, it's possible to pass `deepLinkUrl` field in `config` object. This usually should be a path to one of your screens. If you are using @react-navigation in your project, it's easiest to enable auto linking:
@@ -157,22 +161,66 @@ This will initiate a live activity with the specified title, subtitle, image fro
 Subscribing to push token changes:
 ```javascript
 useEffect(() => {
-  const subscription = LiveActivity.addActivityTokenListener(({ 
-    activityID: newActivityID,
-    activityPushToken: newToken
-  }) => {
-    // Send token to a remote server to update live activity with push notifications
-  });
+    const updateTokenSubscription = LiveActivity.addActivityTokenListener(
+      ({ activityID: newActivityID, activityPushToken: newToken }) => {
+        // Send token to a remote server to update live activity with push notifications
+      },
+    );
+    const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
+      ({ activityPushToStartToken: newActivityPushToStartToken }) => {
+        // Send token to a remote server to start live activity with push notifications
+      },
+    );
 
-  return () => subscription?.remove();
-}, []);
+    LiveActivity.observePushToStartToken();
+    return () => {
+      updateTokenSubscription?.remove();
+      startTokenSubscription?.remove();
+    };
+  }, []);
 ```
 
 > [!NOTE]
 > Receiving push token may not work on simulators. Make sure to use physical device when testing this functionality.
 
 ## Push notifications
-By default, updating live activity is possible only via API. If you want to have possibility to update live activity using push notifications, you can enable that feature by adding `"enablePushNotifications": true` in the plugin config in your `app.json` or `app.config.ts` file. Then, the notification payload should look like this:
+By default, starting and updating live activity is possible only via API. If you want to have possibility to update live activity using push notifications, you can enable that feature by adding `"enablePushNotifications": true` in the plugin config in your `app.json` or `app.config.ts` file.
+
+Example payload for starting live activity:
+
+```json
+{
+  "aps":{
+    "event":"start",
+    "content-state":{
+      "title":"Live activity title!",
+      "subtitle":"Live activity subtitle.",
+      "timerEndDateInMilliseconds":1754410997000,
+      "imageName": "live_activity_image",
+      "dynamicIslandImageName": "dynamic_island_image"
+    },
+    "timestamp":1754491435000, // timestamp of when the push notification was sent
+    "attributes-type":"LiveActivityAttributes",
+    "attributes":{
+      "name":"Test",
+      "backgroundColor":"001A72",
+      "titleColor":"EBEBF0",
+      "subtitleColor":"FFFFFF75",
+      "progressViewTint":"38ACDD",
+      "progressViewLabelColor":"FFFFFF",
+      "deepLinkUrl":"/dashboard",
+      "timerType":"digital"
+    },
+    "alert":{
+      "title":"",
+      "body":"",
+      "sound":"default"
+    }
+  }
+}
+```
+
+Example payload for updating live activity:
 
 ```json
 {
