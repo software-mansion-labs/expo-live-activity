@@ -27,8 +27,13 @@ export type ActivityTokenReceivedEvent = {
   activityPushToken: string;
 };
 
+export type ActivityPushToStartTokenReceivedEvent = {
+  activityPushToStartToken: string;
+};
+
 export type LiveActivityModuleEvents = {
   onTokenReceived: (params: ActivityTokenReceivedEvent) => void;
+  onPushToStartTokenReceived: (params: ActivityPushToStartTokenReceivedEvent) => void;
 };
 
 /**
@@ -87,9 +92,15 @@ export function addActivityTokenListener(listener: (event: ActivityTokenReceived
   return ExpoLiveActivityModule.addListener('onTokenReceived', listener);
 }
 
-export function observePushToStart() {
+export function addActivityPushToStartTokenListener(listener: (event: ActivityPushToStartTokenReceivedEvent) => void): EventSubscription | undefined {
   if (Platform.OS !== "ios") {
-    throw new Error("updateActivity is only available on iOS");
+    console.error("addActivityPushToStartTokenListener is only available on iOS");
+    return undefined
   }
-  return ExpoLiveActivityModule.observePushToStart();
+  
+  return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener);
+}
+
+export function observePushToStartToken() {
+  ExpoLiveActivityModule.observePushToStart();
 }

@@ -62,6 +62,16 @@ public class ExpoLiveActivityModule: Module {
       ]
     )
   }
+    
+  func sendPushToStartToken(activityPushToStartToken: String) {
+    print("## Sending push to start token")
+    sendEvent(
+      "onPushToStartTokenReceived",
+      [
+        "activityPushToStartToken": activityPushToStartToken,
+      ]
+    )
+  }
 
   func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
@@ -73,21 +83,21 @@ public class ExpoLiveActivityModule: Module {
     }
   }
     
-    func observePushToStartToken() {
-        if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
-            Task {
-                for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
-                    let token = data.reduce("") { $0 + String(format: "%02x", $1) }
-                       print("## TOKEN: \(token)")
-                }
-            }
+  func observePushToStartToken() {
+    if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
+      Task {
+        for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
+          let token = data.reduce("") { $0 + String(format: "%02x", $1) }
+          sendPushToStartToken(activityPushToStartToken: token)
         }
+      }
     }
+  }
 
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
-    Events("onTokenReceived")
+    Events("onTokenReceived", "onPushToStartTokenReceived")
       
     Function("observePushToStart") { () -> Void in
         observePushToStartToken()

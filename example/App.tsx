@@ -10,11 +10,17 @@ export default function App() {
         console.log(`Activity id: ${newActivityID}, token: ${newToken}`);
       },
     );
-    return () => subscription?.remove();
-  }, []);
+    const subscription2 = LiveActivity.addActivityPushToStartTokenListener(
+      ({ activityPushToStartToken: newActivityPushToStartToken }) => {
+        console.log(`Push to start token: ${newActivityPushToStartToken}`);
+      },
+    );
 
-  useEffect(() => {
-    LiveActivity.observePushToStart()
+    LiveActivity.observePushToStartToken();
+    return () => {
+      subscription?.remove();
+      subscription2?.remove();
+    };
   }, []);
 
   return <Navigation />;
