@@ -40,7 +40,7 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var progressViewLabelColor: String?
-    
+
     @Field
     var deepLinkUrl: String?
 
@@ -58,7 +58,7 @@ public class ExpoLiveActivityModule: Module {
       "onTokenReceived",
       [
         "activityID": activityID,
-        "activityPushToken": activityPushToken,
+        "activityPushToken": activityPushToken
       ]
     )
   }
@@ -99,7 +99,7 @@ public class ExpoLiveActivityModule: Module {
             let initialState = LiveActivityAttributes.ContentState(
               title: state.title,
               subtitle: state.subtitle,
-              timerEndDateInMilliseconds: state.date,
+              timerEndDateInMilliseconds: state.date
             )
             let pushNotificationsEnabled =
               Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
@@ -124,7 +124,7 @@ public class ExpoLiveActivityModule: Module {
             }
 
             return activity.id
-          } catch (let error) {
+          } catch let error {
             print("Error with live activity: \(error)")
             throw LiveActivityErrors.unexpetedError(error)
           }
@@ -135,13 +135,13 @@ public class ExpoLiveActivityModule: Module {
       }
     }
 
-    Function("stopActivity") { (activityId: String, state: LiveActivityState) -> Void in
+    Function("stopActivity") { (activityId: String, state: LiveActivityState) in
       if #available(iOS 16.2, *) {
         print("Attempting to stop")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date,
+          timerEndDateInMilliseconds: state.date
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
@@ -162,13 +162,13 @@ public class ExpoLiveActivityModule: Module {
       }
     }
 
-    Function("updateActivity") { (activityId: String, state: LiveActivityState) -> Void in
+    Function("updateActivity") { (activityId: String, state: LiveActivityState) in
       if #available(iOS 16.2, *) {
         print("Attempting to update")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date,
+          timerEndDateInMilliseconds: state.date
         )
         if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
