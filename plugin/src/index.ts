@@ -4,13 +4,15 @@ import { withConfig } from "./withConfig";
 import { withPodfile } from "./withPodfile";
 import { withXcode } from "./withXcode";
 import { withWidgetExtensionEntitlements } from "./withWidgetExtensionEntitlements";
+import withPlist from "./withPlist";
 import { withPushNotifications } from "./withPushNotifications";
 
-const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) => {
+const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (
+  config,
+  props,
+) => {
   const deploymentTarget = "16.2";
-  const targetName = `${IOSConfig.XcodeUtils.sanitizedName(
-    config.name,
-  )}LiveActivity`;
+  const targetName = `${IOSConfig.XcodeUtils.sanitizedName(config.name)}LiveActivity`;
   const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
 
   config.ios = {
@@ -23,6 +25,7 @@ const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) =
   };
 
   config = withPlugins(config, [
+    [withPlist, { targetName }],
     [
       withXcode,
       {

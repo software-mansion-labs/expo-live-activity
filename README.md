@@ -81,9 +81,26 @@ import * as LiveActivity from "expo-live-activity";
 - **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined`**:
   Subscribe to changes in the push notification token associated with live activities.
 
-
 ### Deep linking
-When starting a new live activity, it's possible to pass `deepLinkUrl` field in `config` object. This can be any string that you can handle in your main app target. 
+When starting a new live activity, it's possible to pass `deepLinkUrl` field in `config` object. This usually should be a path to one of your screens. If you are using @react-navigation in your project, it's easiest to enable auto linking:
+```typescript
+const prefix = Linking.createURL('')
+
+export default function App() {
+  const url = Linking.useLinkingURL()
+  const linking = {
+    enabled: 'auto' as const,
+    prefixes: [prefix],
+  }
+}
+
+// Then start the activity with:
+LiveActivity.startActivity(state, {
+  deepLinkUrl: '/order',
+});
+```
+
+URL scheme will be taken automatically from `scheme` field in `app.json` or fall back to `ios.bundleIdentifier`.
 
 ### State Object Structure
 The `state` object should include:
