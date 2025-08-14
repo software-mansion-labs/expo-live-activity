@@ -7,20 +7,20 @@ export default function App() {
   useEffect(() => {
     const updateTokenSubscription = LiveActivity.addActivityTokenListener(
       ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
-        console.log(`Activity id: ${newActivityID}, activity name: ${newName}, token: ${newToken}`);
-      },
-    );
+        console.log(`Activity id: ${newActivityID}, activity name: ${newName}, token: ${newToken}`)
+      }
+    )
     const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
       ({ activityPushToStartToken: newActivityPushToStartToken }) => {
-        console.log(`Push to start token: ${newActivityPushToStartToken}`);
-      },
-    );
+        console.log(`Push to start token: ${newActivityPushToStartToken}`)
+      }
+    )
 
     return () => {
-      updateTokenSubscription?.remove();
-      startTokenSubscription?.remove();
-    };
-  }, []);
+      updateTokenSubscription?.remove()
+      startTokenSubscription?.remove()
+    }
+  }, [])
 
   return <Navigation />
 }
