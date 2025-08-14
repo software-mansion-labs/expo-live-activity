@@ -1,19 +1,16 @@
-import { IOSConfig, withPlugins } from "expo/config-plugins";
-import type { LiveActivityConfigPlugin } from "./types";
-import { withConfig } from "./withConfig";
-import { withPodfile } from "./withPodfile";
-import { withXcode } from "./withXcode";
-import { withWidgetExtensionEntitlements } from "./withWidgetExtensionEntitlements";
-import withPlist from "./withPlist";
-import { withPushNotifications } from "./withPushNotifications";
+import { IOSConfig, withPlugins } from 'expo/config-plugins'
+import type { LiveActivityConfigPlugin } from './types'
+import { withConfig } from './withConfig'
+import { withPodfile } from './withPodfile'
+import { withXcode } from './withXcode'
+import { withWidgetExtensionEntitlements } from './withWidgetExtensionEntitlements'
+import withPlist from './withPlist'
+import { withPushNotifications } from './withPushNotifications'
 
-const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (
-  config,
-  props,
-) => {
-  const deploymentTarget = "16.2";
-  const targetName = `${IOSConfig.XcodeUtils.sanitizedName(config.name)}LiveActivity`;
-  const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`;
+const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) => {
+  const deploymentTarget = '16.2'
+  const targetName = `${IOSConfig.XcodeUtils.sanitizedName(config.name)}LiveActivity`
+  const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`
 
   config.ios = {
     ...config.ios,
@@ -22,7 +19,7 @@ const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (
       NSSupportsLiveActivities: true,
       NSSupportsLiveActivitiesFrequentUpdates: false,
     },
-  };
+  }
 
   config = withPlugins(config, [
     [withPlist, { targetName }],
@@ -37,13 +34,13 @@ const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (
     [withWidgetExtensionEntitlements, { targetName }],
     [withPodfile, { targetName }],
     [withConfig, { targetName, bundleIdentifier }],
-  ]);
+  ])
 
   if (props?.enablePushNotifications) {
-    config = withPushNotifications(config);
+    config = withPushNotifications(config)
   }
 
-  return config;
-};
+  return config
+}
 
-export default withWidgetsAndLiveActivities;
+export default withWidgetsAndLiveActivities
