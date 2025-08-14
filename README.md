@@ -90,6 +90,7 @@ import * as LiveActivity from 'expo-live-activity'
   Terminate an ongoing live activity. The `state` object should contain the final state of the activity. The `activityId` indicates which activity should be stopped.
 
 ### Handling Push Notification Tokens
+
 - **`addActivityPushToStartTokenListener(listener: (event: ActivityPushToStartTokenReceivedEvent) => void): EventSubscription | undefined`**:
   Subscribe to changes in the push to start token for starting live acitivities with push notifications.
 - **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined`**:
@@ -181,22 +182,22 @@ Subscribing to push token changes:
 
 ```javascript
 useEffect(() => {
-    const updateTokenSubscription = LiveActivity.addActivityTokenListener(
-      ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
-        // Send token to a remote server to update live activity with push notifications
-      },
-    );
-    const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
-      ({ activityPushToStartToken: newActivityPushToStartToken }) => {
-        // Send token to a remote server to start live activity with push notifications
-      },
-    );
+  const updateTokenSubscription = LiveActivity.addActivityTokenListener(
+    ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
+      // Send token to a remote server to update live activity with push notifications
+    }
+  )
+  const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
+    ({ activityPushToStartToken: newActivityPushToStartToken }) => {
+      // Send token to a remote server to start live activity with push notifications
+    }
+  )
 
-    return () => {
-      updateTokenSubscription?.remove()
-      startTokenSubscription?.remove();
-    };
-  }, [])
+  return () => {
+    updateTokenSubscription?.remove()
+    startTokenSubscription?.remove()
+  }
+}, [])
 ```
 
 > [!NOTE]
@@ -213,31 +214,31 @@ Example payload for starting live activity:
 
 ```json
 {
-  "aps":{
-    "event":"start",
-    "content-state":{
-      "title":"Live activity title!",
-      "subtitle":"Live activity subtitle.",
-      "timerEndDateInMilliseconds":1754410997000,
+  "aps": {
+    "event": "start",
+    "content-state": {
+      "title": "Live activity title!",
+      "subtitle": "Live activity subtitle.",
+      "timerEndDateInMilliseconds": 1754410997000,
       "imageName": "live_activity_image",
       "dynamicIslandImageName": "dynamic_island_image"
     },
-    "timestamp":1754491435000, // timestamp of when the push notification was sent
-    "attributes-type":"LiveActivityAttributes",
-    "attributes":{
-      "name":"Test",
-      "backgroundColor":"001A72",
-      "titleColor":"EBEBF0",
-      "subtitleColor":"FFFFFF75",
-      "progressViewTint":"38ACDD",
-      "progressViewLabelColor":"FFFFFF",
-      "deepLinkUrl":"/dashboard",
-      "timerType":"digital"
+    "timestamp": 1754491435000, // timestamp of when the push notification was sent
+    "attributes-type": "LiveActivityAttributes",
+    "attributes": {
+      "name": "Test",
+      "backgroundColor": "001A72",
+      "titleColor": "EBEBF0",
+      "subtitleColor": "FFFFFF75",
+      "progressViewTint": "38ACDD",
+      "progressViewLabelColor": "FFFFFF",
+      "deepLinkUrl": "/dashboard",
+      "timerType": "digital"
     },
-    "alert":{
-      "title":"",
-      "body":"",
-      "sound":"default"
+    "alert": {
+      "title": "",
+      "body": "",
+      "sound": "default"
     }
   }
 }
