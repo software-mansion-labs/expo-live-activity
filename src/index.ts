@@ -1,6 +1,7 @@
-import ExpoLiveActivityModule from './ExpoLiveActivityModule'
-import { Platform } from 'react-native'
 import { EventSubscription } from 'expo-modules-core'
+import { Platform } from 'react-native'
+
+import ExpoLiveActivityModule from './ExpoLiveActivityModule'
 
 export type DynamicIslandTimerType = 'circular' | 'digital'
 

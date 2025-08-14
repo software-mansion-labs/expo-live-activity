@@ -1,14 +1,14 @@
 import { ConfigPlugin, withXcodeProject } from '@expo/config-plugins'
 import * as path from 'path'
 
-import { addXCConfigurationList } from './xcode/addXCConfigurationList'
+import { getWidgetFiles } from './lib/getWidgetFiles'
+import { addBuildPhases } from './xcode/addBuildPhases'
+import { addPbxGroup } from './xcode/addPbxGroup'
 import { addProductFile } from './xcode/addProductFile'
+import { addTargetDependency } from './xcode/addTargetDependency'
 import { addToPbxNativeTargetSection } from './xcode/addToPbxNativeTargetSection'
 import { addToPbxProjectSection } from './xcode/addToPbxProjectSection'
-import { addTargetDependency } from './xcode/addTargetDependency'
-import { addPbxGroup } from './xcode/addPbxGroup'
-import { addBuildPhases } from './xcode/addBuildPhases'
-import { getWidgetFiles } from './lib/getWidgetFiles'
+import { addXCConfigurationList } from './xcode/addXCConfigurationList'
 
 export const withXcode: ConfigPlugin<{
   targetName: string

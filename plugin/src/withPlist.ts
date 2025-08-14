@@ -1,5 +1,5 @@
-import plist from '@expo/plist'
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins'
+import plist from '@expo/plist'
 import { readFileSync, writeFileSync } from 'fs'
 import { join as joinPath } from 'path'
 

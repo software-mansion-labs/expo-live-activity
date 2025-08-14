@@ -1,11 +1,12 @@
 import { IOSConfig, withPlugins } from 'expo/config-plugins'
+
 import type { LiveActivityConfigPlugin } from './types'
 import { withConfig } from './withConfig'
-import { withPodfile } from './withPodfile'
-import { withXcode } from './withXcode'
-import { withWidgetExtensionEntitlements } from './withWidgetExtensionEntitlements'
 import withPlist from './withPlist'
+import { withPodfile } from './withPodfile'
 import { withPushNotifications } from './withPushNotifications'
+import { withWidgetExtensionEntitlements } from './withWidgetExtensionEntitlements'
+import { withXcode } from './withXcode'
 
 const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) => {
   const deploymentTarget = '16.2'
