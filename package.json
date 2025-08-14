@@ -9,7 +9,7 @@
     "clean": "expo-module clean",
     "clean:plugin": "rm -rf plugin/build plugin/tsconfig.tsbuildinfo",
     "format:check": "prettier --check .",
-    "lint": "expo-module lint",
+    "eslint": "expo-module eslint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
@@ -36,6 +36,9 @@
   "homepage": "https://github.com/software-mansion-labs/expo-live-activity#readme",
   "devDependencies": {
     "@types/react": "~19.0.0",
+    "eslint": "^9.33.0",
+    "eslint-config-expo": "^9.2.0",
+    "eslint-plugin-prettier": "^5.5.4",
     "expo": "~53.0.0",
     "expo-module-scripts": "^4.1.6",
     "react-native": "0.79.1"
