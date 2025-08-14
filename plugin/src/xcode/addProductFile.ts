@@ -1,4 +1,4 @@
-import { XcodeProject } from "@expo/config-plugins";
+import { XcodeProject } from '@expo/config-plugins'
 
 export function addProductFile(
   xcodeProject: XcodeProject,
@@ -9,17 +9,17 @@ export function addProductFile(
     // fileRef: xcodeProject.generateUuid(),
     // uuid: xcodeProject.generateUuid(),
     group: groupName,
-    explicitFileType: "wrapper.app-extension",
+    explicitFileType: 'wrapper.app-extension',
     /* fileEncoding: 4, */
     settings: {
-      ATTRIBUTES: ["RemoveHeadersOnCopy"],
+      ATTRIBUTES: ['RemoveHeadersOnCopy'],
     },
     includeInIndex: 0,
     path: `${targetName}.appex`,
-    sourceTree: "BUILT_PRODUCTS_DIR",
-  };
+    sourceTree: 'BUILT_PRODUCTS_DIR',
+  }
 
-  const productFile = xcodeProject.addProductFile(targetName, options);
+  const productFile = xcodeProject.addProductFile(targetName, options)
 
-  return productFile;
+  return productFile
 }

@@ -8,6 +8,7 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "clean:plugin": "rm -rf plugin/build plugin/tsconfig.tsbuildinfo",
+    "format:check": "prettier --check .",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
@@ -33,11 +34,10 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/software-mansion-labs/expo-live-activity#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.0.0",
-    "expo-module-scripts": "^4.1.6",
     "expo": "~53.0.0",
+    "expo-module-scripts": "^4.1.6",
     "react-native": "0.79.1"
   },
   "peerDependencies": {

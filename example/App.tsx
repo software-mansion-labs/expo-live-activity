@@ -1,7 +1,7 @@
-import * as React from "react";
-import { useEffect } from "react";
-import * as LiveActivity from "expo-live-activity";
-import Navigation from "./Navigation";
+import * as React from 'react'
+import { useEffect } from 'react'
+import * as LiveActivity from 'expo-live-activity'
+import Navigation from './Navigation'
 
 export default function App() {
   useEffect(() => {
@@ -22,5 +22,5 @@ export default function App() {
     };
   }, []);
 
-  return <Navigation />;
+  return <Navigation />
 }

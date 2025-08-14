@@ -1,4 +1,4 @@
-import { XcodeProject } from "@expo/config-plugins";
+import { XcodeProject } from '@expo/config-plugins'
 
 export function addXCConfigurationList(
   xcodeProject: XcodeProject,
@@ -9,11 +9,11 @@ export function addXCConfigurationList(
     deploymentTarget,
     marketingVersion,
   }: {
-    targetName: string;
-    currentProjectVersion: string;
-    bundleIdentifier: string;
-    deploymentTarget: string;
-    marketingVersion?: string;
+    targetName: string
+    currentProjectVersion: string
+    bundleIdentifier: string
+    deploymentTarget: string
+    marketingVersion?: string
   }
 ) {
   const commonBuildSettings: any = {
@@ -41,7 +41,7 @@ export function addXCConfigurationList(
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone"; */
 
     PRODUCT_NAME: `"$(TARGET_NAME)"`,
-    SWIFT_VERSION: "5.0",
+    SWIFT_VERSION: '5.0',
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,
@@ -54,30 +54,30 @@ export function addXCConfigurationList(
     SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
     CODE_SIGN_ENTITLEMENTS: `"${targetName}/${targetName}.entitlements"`,
     // DEVELOPMENT_TEAM: `"G76836P2D4"`,
-  };
+  }
 
   const buildConfigurationsList = [
     {
-      name: "Debug",
-      isa: "XCBuildConfiguration",
+      name: 'Debug',
+      isa: 'XCBuildConfiguration',
       buildSettings: {
         ...commonBuildSettings,
       },
     },
     {
-      name: "Release",
-      isa: "XCBuildConfiguration",
+      name: 'Release',
+      isa: 'XCBuildConfiguration',
       buildSettings: {
         ...commonBuildSettings,
       },
     },
-  ];
+  ]
 
   const xCConfigurationList = xcodeProject.addXCConfigurationList(
     buildConfigurationsList,
-    "Release",
+    'Release',
     `Build configuration list for PBXNativeTarget "${targetName}"`
-  );
+  )
 
-  return xCConfigurationList;
+  return xCConfigurationList
 }
