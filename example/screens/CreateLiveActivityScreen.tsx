@@ -1,8 +1,8 @@
-import type { LiveActivityState, LiveActivityConfig } from 'expo-live-activity'
-import * as LiveActivity from 'expo-live-activity'
-import { Button, StyleSheet, TextInput, View, Text, Keyboard, Switch, Platform } from 'react-native'
-import { useState } from 'react'
 import RNDateTimePicker from '@react-native-community/datetimepicker'
+import type { LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import * as LiveActivity from 'expo-live-activity'
+import { useState } from 'react'
+import { Button, Keyboard, Platform, StyleSheet, Switch, Text, TextInput, View } from 'react-native'
 
 const dynamicIslandImageName = 'logo-island'
 const toggle = (previousState: boolean) => !previousState

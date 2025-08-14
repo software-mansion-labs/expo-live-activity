@@ -1,6 +1,6 @@
-import * as React from 'react'
-import { useEffect } from 'react'
 import * as LiveActivity from 'expo-live-activity'
+import { useEffect } from 'react'
+
 import Navigation from './Navigation'
 
 export default function App() {
