@@ -82,8 +82,6 @@ import * as LiveActivity from "expo-live-activity";
   Subscribe to changes in the push to start token for starting live acitivities with push notifications.
 - **`addActivityTokenListener(listener: (event: ActivityTokenReceivedEvent) => void): EventSubscription | undefined`**:
   Subscribe to changes in the push notification token associated with live activities.
-- **`observePushToStartToken()`**:
-  Trigger observing for push to start token. This should be called after the `addActivityPushToStartTokenListener` function.
 
 ### Deep linking
 When starting a new live activity, it's possible to pass `deepLinkUrl` field in `config` object. This usually should be a path to one of your screens. If you are using @react-navigation in your project, it's easiest to enable auto linking:
@@ -162,7 +160,7 @@ Subscribing to push token changes:
 ```javascript
 useEffect(() => {
     const updateTokenSubscription = LiveActivity.addActivityTokenListener(
-      ({ activityID: newActivityID, activityPushToken: newToken }) => {
+      ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
         // Send token to a remote server to update live activity with push notifications
       },
     );
@@ -172,7 +170,6 @@ useEffect(() => {
       },
     );
 
-    LiveActivity.observePushToStartToken();
     return () => {
       updateTokenSubscription?.remove();
       startTokenSubscription?.remove();
@@ -184,7 +181,10 @@ useEffect(() => {
 > Receiving push token may not work on simulators. Make sure to use physical device when testing this functionality.
 
 ## Push notifications
-By default, starting and updating live activity is possible only via API. If you want to have possibility to update live activity using push notifications, you can enable that feature by adding `"enablePushNotifications": true` in the plugin config in your `app.json` or `app.config.ts` file.
+By default, starting and updating live activity is possible only via API. If you want to have possibility to start or update live activity using push notifications, you can enable that feature by adding `"enablePushNotifications": true` in the plugin config in your `app.json` or `app.config.ts` file.
+
+> [!NOTE]
+> PushToStart works only for iOS 17.2 and higher.
 
 Example payload for starting live activity:
 

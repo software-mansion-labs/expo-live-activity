@@ -53,11 +53,12 @@ public class ExpoLiveActivityModule: Module {
     case digital
   }
 
-  func sendPushToken(activityID: String, activityPushToken: String) {
+  func sendPushToken(activityID: String, activityName: String, activityPushToken: String) {
     sendEvent(
       "onTokenReceived",
       [
         "activityID": activityID,
+        "activityName": activityName,
         "activityPushToken": activityPushToken
       ]
     )
@@ -67,7 +68,7 @@ public class ExpoLiveActivityModule: Module {
     sendEvent(
       "onPushToStartTokenReceived",
       [
-        "activityPushToStartToken": activityPushToStartToken,
+        "activityPushToStartToken": activityPushToStartToken
       ]
     )
   }
@@ -84,6 +85,7 @@ public class ExpoLiveActivityModule: Module {
     
   func observePushToStartToken() {
     if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
+      print("Observing push to start token updates...")
       Task {
         for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
           let token = data.reduce("") { $0 + String(format: "%02x", $1) }
@@ -93,14 +95,54 @@ public class ExpoLiveActivityModule: Module {
     }
   }
 
+  func observeLiveActivityState() {
+    if #available(iOS 16.2, *) {
+      Task {
+        for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
+          switch activityUpdate.activityState {
+          case .active:
+            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
+            let activityId = activityUpdate.id
+
+            if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+              $0.id == activityId
+            }) {
+              if pushNotificationsEnabled {
+                print("Adding push token observer for activity \(activityId)")
+                Task {
+                  for await pushToken in activity.pushTokenUpdates {
+                    let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+
+                    sendPushToken(activityID: activity.id, activityName: activity.attributes.name, activityPushToken: pushTokenString)
+                  }
+                }
+              }
+            } else {
+              print("Didn't find activity with ID \(activityId)")
+            }
+          default:
+            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
+          }
+        }
+      }
+    }
+  }
+
+  var pushNotificationsEnabled: Bool {
+    Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool ?? false
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
-    Events("onTokenReceived", "onPushToStartTokenReceived")
-      
-    Function("observePushToStart") { () -> Void in
+    OnCreate {
+      if pushNotificationsEnabled {
         observePushToStartToken()
+      }
+      observeLiveActivityState()
     }
+
+    Events("onTokenReceived", "onPushToStartTokenReceived")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       print("Starting activity")
@@ -123,21 +165,12 @@ public class ExpoLiveActivityModule: Module {
               subtitle: state.subtitle,
               timerEndDateInMilliseconds: state.date
             )
-            let pushNotificationsEnabled =
-              Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
+
             let activity = try Activity.request(
               attributes: attributes,
               content: .init(state: initialState, staleDate: nil),
-              pushType: pushNotificationsEnabled == true ? .token : nil
+              pushType: pushNotificationsEnabled ? .token : nil
             )
-
-            Task {
-              for await pushToken in activity.pushTokenUpdates {
-                let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
-
-                sendPushToken(activityID: activity.id, activityPushToken: pushTokenString)
-              }
-            }
 
             Task {
               var newState = activity.content.state

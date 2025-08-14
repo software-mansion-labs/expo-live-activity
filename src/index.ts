@@ -24,6 +24,7 @@ export type LiveActivityConfig = {
 
 export type ActivityTokenReceivedEvent = {
   activityID: string;
+  activityName: string;
   activityPushToken: string;
 };
 
@@ -99,8 +100,4 @@ export function addActivityPushToStartTokenListener(listener: (event: ActivityPu
   }
   
   return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener);
-}
-
-export function observePushToStartToken() {
-  ExpoLiveActivityModule.observePushToStart();
 }

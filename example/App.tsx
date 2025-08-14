@@ -6,8 +6,8 @@ import Navigation from "./Navigation";
 export default function App() {
   useEffect(() => {
     const updateTokenSubscription = LiveActivity.addActivityTokenListener(
-      ({ activityID: newActivityID, activityPushToken: newToken }) => {
-        console.log(`Activity id: ${newActivityID}, token: ${newToken}`);
+      ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
+        console.log(`Activity id: ${newActivityID}, activity name: ${newName}, token: ${newToken}`);
       },
     );
     const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
@@ -16,7 +16,6 @@ export default function App() {
       },
     );
 
-    LiveActivity.observePushToStartToken();
     return () => {
       updateTokenSubscription?.remove();
       startTokenSubscription?.remove();
