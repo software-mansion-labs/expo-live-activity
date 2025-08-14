@@ -21,11 +21,14 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run linter
-        run: npm run lint
-
       - name: Check formatting
         run: npm run format:check
+
+      - name: Run linter
+        run: npm run eslint
+
+      - name: Update version
+        run: ./scripts/update-alpha-version.sh
 
       - name: Build project
         run: npm run prepare
