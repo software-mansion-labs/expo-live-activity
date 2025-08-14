@@ -1,7 +1,7 @@
-import { XcodeProject } from "@expo/config-plugins";
-import * as util from "util";
+import { XcodeProject } from '@expo/config-plugins'
+import * as util from 'util'
 
-import { WidgetFiles } from "../lib/getWidgetFiles";
+import { WidgetFiles } from '../lib/getWidgetFiles'
 
 export function addBuildPhases(
   xcodeProject: XcodeProject,
@@ -11,73 +11,58 @@ export function addBuildPhases(
     productFile,
     widgetFiles,
   }: {
-    targetUuid: string;
-    groupName: string;
+    targetUuid: string
+    groupName: string
     productFile: {
-      uuid: string;
-      target: string;
-      basename: string;
-      group: string;
-    };
-    widgetFiles: WidgetFiles;
+      uuid: string
+      target: string
+      basename: string
+      group: string
+    }
+    widgetFiles: WidgetFiles
   }
 ) {
-  const buildPath = `""`;
-  const folderType = "app_extension";
+  const buildPath = `""`
+  const folderType = 'app_extension'
 
-  const {
-    swiftFiles,
-    intentFiles,
-    assetDirectories,
-    entitlementFiles,
-    plistFiles,
-  } = widgetFiles;
+  const { swiftFiles, intentFiles, assetDirectories } = widgetFiles
 
   // Sources build phase
   xcodeProject.addBuildPhase(
     [...swiftFiles, ...intentFiles],
-    "PBXSourcesBuildPhase",
+    'PBXSourcesBuildPhase',
     groupName,
     targetUuid,
     folderType,
     buildPath
-  );
+  )
 
   // Copy files build phase
   xcodeProject.addBuildPhase(
     [],
-    "PBXCopyFilesBuildPhase",
+    'PBXCopyFilesBuildPhase',
     groupName,
     xcodeProject.getFirstTarget().uuid,
     folderType,
     buildPath
-  );
+  )
 
-  xcodeProject
-    .buildPhaseObject("PBXCopyFilesBuildPhase", groupName, productFile.target)
-    .files.push({
-      value: productFile.uuid,
-      comment: util.format("%s in %s", productFile.basename, productFile.group), // longComment(file);
-    });
-  xcodeProject.addToPbxBuildFileSection(productFile);
+  xcodeProject.buildPhaseObject('PBXCopyFilesBuildPhase', groupName, productFile.target).files.push({
+    value: productFile.uuid,
+    comment: util.format('%s in %s', productFile.basename, productFile.group), // longComment(file);
+  })
+  xcodeProject.addToPbxBuildFileSection(productFile)
 
   // Frameworks build phase
-  xcodeProject.addBuildPhase(
-    [],
-    "PBXFrameworksBuildPhase",
-    groupName,
-    targetUuid,
-    folderType,
-    buildPath
-  );
+  xcodeProject.addBuildPhase([], 'PBXFrameworksBuildPhase', groupName, targetUuid, folderType, buildPath)
 
   // Resources build phase
   xcodeProject.addBuildPhase(
     [...assetDirectories],
-    "PBXResourcesBuildPhase",
+    'PBXResourcesBuildPhase',
     groupName,
     targetUuid,
     folderType,
     buildPath
-  );
+  )
 }

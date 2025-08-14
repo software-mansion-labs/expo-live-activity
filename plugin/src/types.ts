@@ -1,9 +1,7 @@
-import { ConfigPlugin } from "@expo/config-plugins";
+import { ConfigPlugin } from '@expo/config-plugins'
 
 interface ConfigPluginProps {
-  enablePushNotifications?: boolean;
+  enablePushNotifications?: boolean
 }
 
-export type LiveActivityConfigPlugin = ConfigPlugin<
-  ConfigPluginProps | undefined
->;
+export type LiveActivityConfigPlugin = ConfigPlugin<ConfigPluginProps | undefined>

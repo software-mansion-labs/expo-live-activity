@@ -3,7 +3,7 @@ name: Publish to npm
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
 
 jobs:
   publish:
@@ -15,11 +15,20 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "22"
-          registry-url: "https://registry.npmjs.org/"
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
 
       - name: Install dependencies
         run: npm install
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Run linter
+        run: npm run eslint
+
+      - name: Update version
+        run: ./scripts/update-version.sh
 
       - name: Build project
         run: npm run prepare
