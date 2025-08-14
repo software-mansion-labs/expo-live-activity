@@ -1,11 +1,9 @@
-import { useNavigation } from '@react-navigation/native'
 import { useLinkingURL } from 'expo-linking'
 import * as React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text } from 'react-native'
 import CreateLiveActivityScreen from './CreateLiveActivityScreen'
 
 export default function HomeScreen() {
-  const navigation = useNavigation()
   const url = useLinkingURL()
 
   return (
