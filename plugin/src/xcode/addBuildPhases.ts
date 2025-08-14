@@ -25,7 +25,7 @@ export function addBuildPhases(
   const buildPath = `""`
   const folderType = 'app_extension'
 
-  const { swiftFiles, intentFiles, assetDirectories, entitlementFiles, plistFiles } = widgetFiles
+  const { swiftFiles, intentFiles, assetDirectories } = widgetFiles
 
   // Sources build phase
   xcodeProject.addBuildPhase(

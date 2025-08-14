@@ -1,12 +1,10 @@
 import { ExportedConfig, InfoPlist } from '@expo/config-plugins'
 
-export function getWidgetExtensionEntitlements(
-  iosConfig: ExportedConfig['ios'],
-  {}: // groupIdentifier,
-  {
-    // groupIdentifier?: string;
-  }
-) {
+interface Options {
+  groupIdentifier?: string
+}
+
+export function getWidgetExtensionEntitlements(_iosConfig: ExportedConfig['ios'], _options: Options | undefined = {}) {
   const entitlements: InfoPlist = {}
 
   addApplicationGroupsEntitlement(entitlements)

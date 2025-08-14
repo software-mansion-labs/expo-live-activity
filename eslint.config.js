@@ -6,6 +6,27 @@ module.exports = defineConfig([
   expoConfig,
   eslintPluginPrettierRecommended,
   {
-    ignores: ['dist/*'],
+    ignores: ['build/*', 'plugin/build/*'],
   },
+  defineConfig([
+    {
+      files: ['example/webpack.config.js'],
+      languageOptions: {
+        globals: {
+          __dirname: 'readonly',
+        },
+      },
+    },
+    {
+      basePath: 'example',
+      settings: {
+        'import/resolver': {
+          alias: {
+            map: [['expo-live-activity', './src']],
+            extensions: ['.ts'],
+          },
+        },
+      },
+    },
+  ]),
 ])

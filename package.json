@@ -38,6 +38,8 @@
     "@types/react": "~19.0.0",
     "eslint": "^9.33.0",
     "eslint-config-expo": "^9.2.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "expo": "~53.0.0",
     "expo-module-scripts": "^4.1.6",

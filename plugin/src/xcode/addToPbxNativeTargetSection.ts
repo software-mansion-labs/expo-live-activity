@@ -31,10 +31,10 @@ export function addToPbxNativeTargetSection(
 
   xcodeProject.addToPbxNativeTargetSection(target)
 
-  const frameworksGroup = xcodeProject.findPBXGroupKey({ name: 'Frameworks' })
-  const file1 = xcodeProject.addFile('WidgetKit.framework', frameworksGroup)
-  const file2 = xcodeProject.addFile('SwiftUI.framework', frameworksGroup)
-  const frameworksBuildPhaseObj = xcodeProject.pbxFrameworksBuildPhaseObj(target.uuid)
+  // const frameworksGroup = xcodeProject.findPBXGroupKey({ name: 'Frameworks' })
+  // const file1 = xcodeProject.addFile('WidgetKit.framework', frameworksGroup)
+  // const file2 = xcodeProject.addFile('SwiftUI.framework', frameworksGroup)
+  // const frameworksBuildPhaseObj = xcodeProject.pbxFrameworksBuildPhaseObj(target.uuid)
   /* console.log(
     { file1, file2, frameworksBuildPhaseObj },
     frameworksBuildPhaseObj.files
