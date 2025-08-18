@@ -87,7 +87,8 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
-  private func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
+  private func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws
+  {
     if let name = state.imageName {
       newState.imageName = try await resolveImage(from: name)
     }
@@ -98,47 +99,47 @@ public class ExpoLiveActivityModule: Module {
   }
 
   private func observePushToStartToken() {
-    if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
-      print("Observing push to start token updates...")
-      Task {
-        for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
-          let token = data.reduce("") { $0 + String(format: "%02x", $1) }
-          sendPushToStartToken(activityPushToStartToken: token)
-        }
+    guard #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+
+    print("Observing push to start token updates...")
+    Task {
+      for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
+        let token = data.reduce("") { $0 + String(format: "%02x", $1) }
+        sendPushToStartToken(activityPushToStartToken: token)
       }
     }
   }
 
   private func observeLiveActivityUpdates() {
-    if #available(iOS 16.2, *) {
-      Task {
-        for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
-          let activityId = activityUpdate.id
-          let activityState = activityUpdate.activityState
+    guard #available(iOS 16.2, *) else { return }
 
-          print("Received activity update: \(activityId), \(activityState)")
+    Task {
+      for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
+        let activityId = activityUpdate.id
+        let activityState = activityUpdate.activityState
 
-          guard
-            let activity = Activity<LiveActivityAttributes>.activities.first(where: {
-              $0.id == activityId
-            })
-          else { return print("Didn't find activity with ID \(activityId)") }
+        print("Received activity update: \(activityId), \(activityState)")
 
-          if case .active = activityState {
-            Task {
-              for await state in activity.activityStateUpdates {
-                sendStateChange(activity: activity, activityState: state)
-              }
+        guard
+          let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+            $0.id == activityId
+          })
+        else { return print("Didn't find activity with ID \(activityId)") }
+
+        if case .active = activityState {
+          Task {
+            for await state in activity.activityStateUpdates {
+              sendStateChange(activity: activity, activityState: state)
             }
+          }
 
-            if pushNotificationsEnabled {
-              print("Adding push token observer for activity \(activity.id)")
-              Task {
-                for await pushToken in activity.pushTokenUpdates {
-                  let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+          if pushNotificationsEnabled {
+            print("Adding push token observer for activity \(activity.id)")
+            Task {
+              for await pushToken in activity.pushTokenUpdates {
+                let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
 
-                  sendPushToken(activity: activity, activityPushToken: pushTokenString)
-                }
+                sendPushToken(activity: activity, activityPushToken: pushTokenString)
               }
             }
           }
@@ -197,10 +198,10 @@ public class ExpoLiveActivityModule: Module {
           await activity.update(ActivityContent(state: newState, staleDate: nil))
         }
 
-            return activity.id
-          } catch let error {
-            print("Error with live activity: \(error)")
-            throw LiveActivityErrors.unexpectedError(error)
+        return activity.id
+      } catch let error {
+        print("Error with live activity: \(error)")
+        throw LiveActivityErrors.unexpectedError(error)
 
       }
     }
