@@ -5,12 +5,21 @@ import Navigation from "./Navigation";
 
 export default function App() {
   useEffect(() => {
-    const subscription = LiveActivity.addActivityTokenListener(
-      ({ activityID: newActivityID, activityPushToken: newToken }) => {
-        console.log(`Activity id: ${newActivityID}, token: ${newToken}`);
+    const updateTokenSubscription = LiveActivity.addActivityTokenListener(
+      ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {
+        console.log(`Activity id: ${newActivityID}, activity name: ${newName}, token: ${newToken}`);
       },
     );
-    return () => subscription?.remove();
+    const startTokenSubscription = LiveActivity.addActivityPushToStartTokenListener(
+      ({ activityPushToStartToken: newActivityPushToStartToken }) => {
+        console.log(`Push to start token: ${newActivityPushToStartToken}`);
+      },
+    );
+
+    return () => {
+      updateTokenSubscription?.remove();
+      startTokenSubscription?.remove();
+    };
   }, []);
 
   return <Navigation />;
