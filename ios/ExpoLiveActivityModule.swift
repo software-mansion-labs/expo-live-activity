@@ -4,7 +4,7 @@ import ExpoModulesCore
 enum LiveActivityErrors: Error {
   case unsupportedOS
   case liveActivitiesNotEnabled
-  case unexpetedError(Error)
+  case unexpectedError(Error)
 }
 
 public class ExpoLiveActivityModule: Module {
@@ -203,7 +203,7 @@ public class ExpoLiveActivityModule: Module {
             return activity.id
           } catch let error {
             print("Error with live activity: \(error)")
-            throw LiveActivityErrors.unexpetedError(error)
+            throw LiveActivityErrors.unexpectedError(error)
           }
         }
         throw LiveActivityErrors.liveActivitiesNotEnabled
