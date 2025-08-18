@@ -3,6 +3,7 @@ import ExpoModulesCore
 
 enum LiveActivityErrors: Error {
   case unsupportedOS
+  case notFound
   case liveActivitiesNotEnabled
   case unexpectedError(Error)
 }
@@ -163,99 +164,87 @@ public class ExpoLiveActivityModule: Module {
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
-      print("Starting activity")
-      if #available(iOS 16.2, *) {
-        if ActivityAuthorizationInfo().areActivitiesEnabled {
-          do {
-            let config = maybeConfig ?? LiveActivityConfig()
-            let attributes = LiveActivityAttributes(
-              name: "ExpoLiveActivity",
-              backgroundColor: config.backgroundColor,
-              titleColor: config.titleColor,
-              subtitleColor: config.subtitleColor,
-              progressViewTint: config.progressViewTint,
-              progressViewLabelColor: config.progressViewLabelColor,
-              deepLinkUrl: config.deepLinkUrl,
-              timerType: config.timerType == .digital ? .digital : .circular
-            )
-            let initialState = LiveActivityAttributes.ContentState(
-              title: state.title,
-              subtitle: state.subtitle,
-              timerEndDateInMilliseconds: state.date
-            )
+      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
+      guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivityErrors.liveActivitiesNotEnabled }
 
-            let activity = try Activity.request(
-              attributes: attributes,
-              content: .init(state: initialState, staleDate: nil),
-              pushType: pushNotificationsEnabled ? .token : nil
-            )
+      do {
+        let config = maybeConfig ?? LiveActivityConfig()
+        let attributes = LiveActivityAttributes(
+          name: "ExpoLiveActivity",
+          backgroundColor: config.backgroundColor,
+          titleColor: config.titleColor,
+          subtitleColor: config.subtitleColor,
+          progressViewTint: config.progressViewTint,
+          progressViewLabelColor: config.progressViewLabelColor,
+          deepLinkUrl: config.deepLinkUrl,
+          timerType: config.timerType == .digital ? .digital : .circular
+        )
+        let initialState = LiveActivityAttributes.ContentState(
+          title: state.title,
+          subtitle: state.subtitle,
+          timerEndDateInMilliseconds: state.date
+        )
 
-            Task {
-              var newState = activity.content.state
-              try await updateImages(state: state, newState: &newState)
-              await activity.update(ActivityContent(state: newState, staleDate: nil))
-            }
+        let activity = try Activity.request(
+          attributes: attributes,
+          content: .init(state: initialState, staleDate: nil),
+          pushType: pushNotificationsEnabled ? .token : nil
+        )
+
+        Task {
+          var newState = activity.content.state
+          try await updateImages(state: state, newState: &newState)
+          await activity.update(ActivityContent(state: newState, staleDate: nil))
+        }
 
             return activity.id
           } catch let error {
             print("Error with live activity: \(error)")
             throw LiveActivityErrors.unexpectedError(error)
-          }
-        }
-        throw LiveActivityErrors.liveActivitiesNotEnabled
-      } else {
-        throw LiveActivityErrors.unsupportedOS
+
       }
     }
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
-      if #available(iOS 16.2, *) {
-        print("Attempting to stop")
+      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
+      guard
+        let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+          $0.id == activityId
+        })
+      else { throw LiveActivityErrors.notFound }
+
+      Task {
+        print("Stopping activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.date
         )
-        if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
-          $0.id == activityId
-        }) {
-          Task {
-            print("Stopping activity with id: \(activityId)")
-            try await updateImages(state: state, newState: &newState)
-            await activity.end(
-              ActivityContent(state: newState, staleDate: nil),
-              dismissalPolicy: .immediate
-            )
-          }
-        } else {
-          print("Didn't find activity with ID \(activityId)")
-        }
-      } else {
-        throw LiveActivityErrors.unsupportedOS
+        try await updateImages(state: state, newState: &newState)
+        await activity.end(
+          ActivityContent(state: newState, staleDate: nil),
+          dismissalPolicy: .immediate
+        )
       }
     }
 
     Function("updateActivity") { (activityId: String, state: LiveActivityState) in
-      if #available(iOS 16.2, *) {
-        print("Attempting to update")
+      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
+      guard
+        let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+          $0.id == activityId
+        })
+      else { throw LiveActivityErrors.notFound }
+
+      Task {
+        print("Updating activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.date
         )
-        if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
-          $0.id == activityId
-        }) {
-          Task {
-            print("Updating activity with id: \(activityId)")
-            try await updateImages(state: state, newState: &newState)
-            await activity.update(ActivityContent(state: newState, staleDate: nil))
-          }
-        } else {
-          print("Didn't find activity with ID \(activityId)")
-        }
-      } else {
-        throw LiveActivityErrors.unsupportedOS
+        try await updateImages(state: state, newState: &newState)
+        await activity.update(ActivityContent(state: newState, staleDate: nil))
       }
     }
   }
