@@ -123,7 +123,7 @@ URL scheme will be taken automatically from `scheme` field in `app.json` or fall
 
 The `state` object should include:
 
-```javascript
+```typescript
 {
   title: string;
   subtitle?: string;
@@ -149,11 +149,15 @@ The `config` object should include:
 };
 ```
 
+### Activity updates
+
+`LiveActivity.addActivityUpdatesListener` API allows to subscribe to changes in live activity state. This is useful for example when you want to update the live activity with new information. Handler will receive an `ActivityUpdateEvent` object which contains information about new state under `activityState` property which is of `ActivityState` type, so the possible values are: `'active'`, `'dismissed'`, `'pending'`, `'stale'` or `'ended'`. Apart from this property, the event also contains `activityId` and `activityName` which can be used to identify the live activity.
+
 ## Example Usage
 
 Managing a live activity:
 
-```javascript
+```typescript
 const state: LiveActivity.LiveActivityState = {
   title: 'Title',
   subtitle: 'This is a subtitle',
@@ -180,7 +184,7 @@ This will initiate a live activity with the specified title, subtitle, image fro
 
 Subscribing to push token changes:
 
-```javascript
+```typescript
 useEffect(() => {
   const updateTokenSubscription = LiveActivity.addActivityTokenListener(
     ({ activityID: newActivityID, activityName: newName, activityPushToken: newToken }) => {

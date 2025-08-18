@@ -33,9 +33,18 @@ export type ActivityPushToStartTokenReceivedEvent = {
   activityPushToStartToken: string
 }
 
+type ActivityState = 'active' | 'dismissed' | 'pending' | 'stale' | 'ended'
+
+export type ActivityUpdateEvent = {
+  activityID: string
+  activityName: string
+  activityState: ActivityState
+}
+
 export type LiveActivityModuleEvents = {
   onTokenReceived: (params: ActivityTokenReceivedEvent) => void
   onPushToStartTokenReceived: (params: ActivityPushToStartTokenReceivedEvent) => void
+  onStateChange: (params: ActivityUpdateEvent) => void
 }
 
 /**
@@ -105,4 +114,15 @@ export function addActivityPushToStartTokenListener(
   }
 
   return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener)
+}
+
+export function addActivityUpdatesListener(
+  listener: (event: ActivityUpdateEvent) => void
+): EventSubscription | undefined {
+  if (Platform.OS !== 'ios') {
+    console.error('addActivityUpdatesListener is only available on iOS')
+    return undefined
+  }
+
+  return ExpoLiveActivityModule.addListener('onStateChange', listener)
 }

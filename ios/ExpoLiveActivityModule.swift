@@ -2,9 +2,9 @@ import ActivityKit
 import ExpoModulesCore
 
 enum LiveActivityErrors: Error {
-    case unsupportedOS
-    case liveActivitiesNotEnabled
-    case unexpetedError(Error)
+  case unsupportedOS
+  case liveActivitiesNotEnabled
+  case unexpetedError(Error)
 }
 
 public class ExpoLiveActivityModule: Module {
@@ -59,16 +59,27 @@ public class ExpoLiveActivityModule: Module {
       [
         "activityID": activityID,
         "activityName": activityName,
-        "activityPushToken": activityPushToken
+        "activityPushToken": activityPushToken,
       ]
     )
   }
-    
+
   func sendPushToStartToken(activityPushToStartToken: String) {
     sendEvent(
       "onPushToStartTokenReceived",
       [
         "activityPushToStartToken": activityPushToStartToken
+      ]
+    )
+  }
+
+  func sendStateChange(activityID: String, activityName: String, activityState: String) {
+    sendEvent(
+      "onStateChange",
+      [
+        "activityID": activityID,
+        "activityName": activityName,
+        "activityState": activityState,
       ]
     )
   }
@@ -82,7 +93,7 @@ public class ExpoLiveActivityModule: Module {
       newState.dynamicIslandImageName = try await resolveImage(from: name)
     }
   }
-    
+
   func observePushToStartToken() {
     if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
       print("Observing push to start token updates...")
@@ -95,33 +106,34 @@ public class ExpoLiveActivityModule: Module {
     }
   }
 
-  func observeLiveActivityState() {
+  func observeLiveActivity() {
     if #available(iOS 16.2, *) {
       Task {
         for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
-          switch activityUpdate.activityState {
-          case .active:
-            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
-            let activityId = activityUpdate.id
+          let activityId = activityUpdate.id
+          let activityState = activityUpdate.activityState
 
-            if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+          print("Received activity update: \(activityId), \(activityState)")
+
+          guard
+            let activity = Activity<LiveActivityAttributes>.activities.first(where: {
               $0.id == activityId
-            }) {
-              if pushNotificationsEnabled {
-                print("Adding push token observer for activity \(activityId)")
-                Task {
-                  for await pushToken in activity.pushTokenUpdates {
-                    let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+            })
+          else { return print("Didn't find activity with ID \(activityId)") }
 
-                    sendPushToken(activityID: activity.id, activityName: activity.attributes.name, activityPushToken: pushTokenString)
-                  }
-                }
+          if case .active = activityState, pushNotificationsEnabled {
+            print("Adding push token observer for activity \(activity.id)")
+            Task {
+              for await pushToken in activity.pushTokenUpdates {
+                let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+
+                sendPushToken(
+                  activityID: activity.id,
+                  activityName: activity.attributes.name,
+                  activityPushToken: pushTokenString
+                )
               }
-            } else {
-              print("Didn't find activity with ID \(activityId)")
             }
-          default:
-            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
           }
         }
       }
@@ -139,10 +151,10 @@ public class ExpoLiveActivityModule: Module {
       if pushNotificationsEnabled {
         observePushToStartToken()
       }
-      observeLiveActivityState()
+      observeLiveActivity()
     }
 
-    Events("onTokenReceived", "onPushToStartTokenReceived")
+    Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       print("Starting activity")
@@ -176,6 +188,16 @@ public class ExpoLiveActivityModule: Module {
               var newState = activity.content.state
               try await updateImages(state: state, newState: &newState)
               await activity.update(ActivityContent(state: newState, staleDate: nil))
+            }
+
+            Task {
+              for await state in activity.activityStateUpdates {
+                sendStateChange(
+                  activityID: activity.id,
+                  activityName: activity.attributes.name,
+                  activityState: String(describing: state)
+                )
+              }
             }
 
             return activity.id

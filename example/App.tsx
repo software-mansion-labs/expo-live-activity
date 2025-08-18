@@ -16,9 +16,14 @@ export default function App() {
       }
     )
 
+    const updatesSubscription = LiveActivity.addActivityUpdatesListener(({ activityState }) => {
+      console.log(`Activity state: ${activityState}`)
+    })
+
     return () => {
       updateTokenSubscription?.remove()
       startTokenSubscription?.remove()
+      updatesSubscription?.remove()
     }
   }, [])
 
