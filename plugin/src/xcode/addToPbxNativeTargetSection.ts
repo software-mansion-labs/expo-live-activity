@@ -1,4 +1,4 @@
-import { XcodeProject } from "@expo/config-plugins";
+import { XcodeProject } from '@expo/config-plugins'
 
 export function addToPbxNativeTargetSection(
   xcodeProject: XcodeProject,
@@ -8,16 +8,16 @@ export function addToPbxNativeTargetSection(
     productFile,
     xCConfigurationList,
   }: {
-    targetName: string;
-    targetUuid: string;
-    productFile: { fileRef: string };
-    xCConfigurationList: { uuid: string };
+    targetName: string
+    targetUuid: string
+    productFile: { fileRef: string }
+    xCConfigurationList: { uuid: string }
   }
 ) {
   const target = {
     uuid: targetUuid,
     pbxNativeTarget: {
-      isa: "PBXNativeTarget",
+      isa: 'PBXNativeTarget',
       name: targetName,
       productName: targetName,
       productReference: productFile.fileRef,
@@ -27,20 +27,18 @@ export function addToPbxNativeTargetSection(
       buildRules: [],
       dependencies: [],
     },
-  };
+  }
 
-  xcodeProject.addToPbxNativeTargetSection(target);
+  xcodeProject.addToPbxNativeTargetSection(target)
 
-  const frameworksGroup = xcodeProject.findPBXGroupKey({ name: "Frameworks" });
-  const file1 = xcodeProject.addFile("WidgetKit.framework", frameworksGroup);
-  const file2 = xcodeProject.addFile("SwiftUI.framework", frameworksGroup);
-  const frameworksBuildPhaseObj = xcodeProject.pbxFrameworksBuildPhaseObj(
-    target.uuid
-  );
+  // const frameworksGroup = xcodeProject.findPBXGroupKey({ name: 'Frameworks' })
+  // const file1 = xcodeProject.addFile('WidgetKit.framework', frameworksGroup)
+  // const file2 = xcodeProject.addFile('SwiftUI.framework', frameworksGroup)
+  // const frameworksBuildPhaseObj = xcodeProject.pbxFrameworksBuildPhaseObj(target.uuid)
   /* console.log(
     { file1, file2, frameworksBuildPhaseObj },
     frameworksBuildPhaseObj.files
   ); */
 
-  return target;
+  return target
 }

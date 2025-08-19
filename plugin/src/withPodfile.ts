@@ -1,20 +1,14 @@
-import { mergeContents } from "@expo/config-plugins/build/utils/generateCode";
-import { ConfigPlugin, withDangerousMod } from "@expo/config-plugins";
-import * as fs from "fs";
-import * as path from "path";
+import { ConfigPlugin, withDangerousMod } from '@expo/config-plugins'
+import { mergeContents } from '@expo/config-plugins/build/utils/generateCode'
+import * as fs from 'fs'
+import * as path from 'path'
 
-export const withPodfile: ConfigPlugin<{ targetName: string }> = (
-  config,
-  { targetName }
-) => {
+export const withPodfile: ConfigPlugin<{ targetName: string }> = (config, { targetName }) => {
   return withDangerousMod(config, [
-    "ios",
+    'ios',
     (config) => {
-      const podFilePath = path.join(
-        config.modRequest.platformProjectRoot,
-        "Podfile"
-      );
-      let podFileContent = fs.readFileSync(podFilePath).toString();
+      const podFilePath = path.join(config.modRequest.platformProjectRoot, 'Podfile')
+      let podFileContent = fs.readFileSync(podFilePath).toString()
 
       /* podFileContent = mergeContents({
         tag: "withWidgetExtensionPodfile1999999999",
@@ -31,7 +25,7 @@ export const withPodfile: ConfigPlugin<{ targetName: string }> = (
       ); */
 
       podFileContent = mergeContents({
-        tag: "react-native-widget-extension-1",
+        tag: 'react-native-widget-extension-1',
         src: podFileContent,
         newSrc: `installer.pods_project.targets.each do |target|
           target.build_configurations.each do |config|
@@ -39,11 +33,10 @@ export const withPodfile: ConfigPlugin<{ targetName: string }> = (
             config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = target.name == 'Sentry' ? 'YES' : 'No'
           end
         end`,
-        anchor:
-          /installer.target_installation_results.pod_target_installation_results/,
+        anchor: /installer.target_installation_results.pod_target_installation_results/,
         offset: 0,
-        comment: "#",
-      }).contents;
+        comment: '#',
+      }).contents
 
       /* podFileContent = mergeContents({
         tag: "react-native-widget-extension-2",
@@ -62,11 +55,11 @@ export const withPodfile: ConfigPlugin<{ targetName: string }> = (
             use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
           end`
         )
-        .concat(`\n# >>> Inserted by react-native-widget-extension`);
+        .concat(`\n# >>> Inserted by react-native-widget-extension`)
 
-      fs.writeFileSync(podFilePath, podFileContent);
+      fs.writeFileSync(podFilePath, podFileContent)
 
-      return config;
+      return config
     },
-  ]);
-};
+  ])
+}

@@ -8,9 +8,10 @@
     "build": "expo-module build",
     "clean": "expo-module clean",
     "clean:plugin": "rm -rf plugin/build plugin/tsconfig.tsbuildinfo",
-    "lint": "expo-module lint",
+    "format:check": "prettier --check .",
+    "eslint": "expo-module eslint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "prepare": "expo-module prepare && rm .eslintrc.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios"
@@ -33,11 +34,16 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/software-mansion-labs/expo-live-activity#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "~19.0.0",
-    "expo-module-scripts": "^4.1.6",
+    "eslint": "^9.33.0",
+    "eslint-config-expo": "^9.2.0",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "eslint-plugin-import": "^2.32.0",
+    "eslint-plugin-prettier": "^5.5.4",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "expo": "~53.0.0",
+    "expo-module-scripts": "^4.1.6",
     "react-native": "0.79.1"
   },
   "peerDependencies": {
