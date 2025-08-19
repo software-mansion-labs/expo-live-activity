@@ -121,17 +121,35 @@ public class ExpoLiveActivityModule: Module {
             })
           else { return print("Didn't find activity with ID \(activityId)") }
 
-          if case .active = activityState, pushNotificationsEnabled {
-            print("Adding push token observer for activity \(activity.id)")
-            Task {
-              for await pushToken in activity.pushTokenUpdates {
-                let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+          if case .active = activityState {
+            sendStateChange(
+              activityID: activity.id,
+              activityName: activity.attributes.name,
+              activityState: String(describing: activityState)
+            )
 
-                sendPushToken(
+            Task {
+              for await state in activity.activityStateUpdates {
+                sendStateChange(
                   activityID: activity.id,
                   activityName: activity.attributes.name,
-                  activityPushToken: pushTokenString
+                  activityState: String(describing: state)
                 )
+              }
+            }
+
+            if pushNotificationsEnabled {
+              print("Adding push token observer for activity \(activity.id)")
+              Task {
+                for await pushToken in activity.pushTokenUpdates {
+                  let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+
+                  sendPushToken(
+                    activityID: activity.id,
+                    activityName: activity.attributes.name,
+                    activityPushToken: pushTokenString
+                  )
+                }
               }
             }
           }
