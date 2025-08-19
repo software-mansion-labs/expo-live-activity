@@ -106,7 +106,7 @@ public class ExpoLiveActivityModule: Module {
     }
   }
 
-  func observeLiveActivity() {
+  func observeLiveActivityUpdates() {
     if #available(iOS 16.2, *) {
       Task {
         for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
@@ -151,7 +151,7 @@ public class ExpoLiveActivityModule: Module {
       if pushNotificationsEnabled {
         observePushToStartToken()
       }
-      observeLiveActivity()
+      observeLiveActivityUpdates()
     }
 
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
