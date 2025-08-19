@@ -28,7 +28,7 @@ jobs:
         run: npm run eslint
 
       - name: Update version
-        run: ./scripts/update-alpha-version.sh
+        run: ./scripts/update-version.sh
 
       - name: Build project
         run: npm run prepare
