@@ -3,6 +3,8 @@ import { Platform } from 'react-native'
 
 import ExpoLiveActivityModule from './ExpoLiveActivityModule'
 
+type Voidable<T> = T | void
+
 export type DynamicIslandTimerType = 'circular' | 'digital'
 
 export type LiveActivityState = {
@@ -47,22 +49,21 @@ export type LiveActivityModuleEvents = {
   onStateChange: (params: ActivityUpdateEvent) => void
 }
 
+function assertIOS(name: string) {
+  const isIOS = Platform.OS === 'ios'
+
+  if (!isIOS) console.error(`${name} is only available on iOS`)
+
+  return isIOS
+}
+
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
-export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): string | undefined {
-  if (Platform.OS !== 'ios') {
-    console.error('startActivity is only available on iOS')
-    return undefined
-  }
-  try {
-    return ExpoLiveActivityModule.startActivity(state, config)
-  } catch (error) {
-    console.error(`startActivity failed with an error: ${error}`)
-    return undefined
-  }
+export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
+  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, config)
 }
 
 /**
@@ -70,14 +71,7 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
  * @param {LiveActivityState} state The updated state for the live activity.
  */
 export function stopActivity(id: string, state: LiveActivityState) {
-  if (Platform.OS !== 'ios') {
-    console.error('stopActivity is only available on iOS')
-  }
-  try {
-    return ExpoLiveActivityModule.stopActivity(id, state)
-  } catch (error) {
-    console.error(`stopActivity failed with an error: ${error}`)
-  }
+  if (assertIOS('stopActivity')) return ExpoLiveActivityModule.stopActivity(id, state)
 }
 
 /**
@@ -85,44 +79,24 @@ export function stopActivity(id: string, state: LiveActivityState) {
  * @param {LiveActivityState} state The updated state for the live activity.
  */
 export function updateActivity(id: string, state: LiveActivityState) {
-  if (Platform.OS !== 'ios') {
-    console.error('updateActivity is only available on iOS')
-  }
-  try {
-    return ExpoLiveActivityModule.updateActivity(id, state)
-  } catch (error) {
-    console.error(`updateActivity failed with an error: ${error}`)
-  }
+  if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state)
 }
 
 export function addActivityTokenListener(
   listener: (event: ActivityTokenReceivedEvent) => void
-): EventSubscription | undefined {
-  if (Platform.OS !== 'ios') {
-    console.error('addActivityTokenListener is only available on iOS')
-    return undefined
-  }
-  return ExpoLiveActivityModule.addListener('onTokenReceived', listener)
+): Voidable<EventSubscription> {
+  if (assertIOS('addActivityTokenListener')) return ExpoLiveActivityModule.addListener('onTokenReceived', listener)
 }
 
 export function addActivityPushToStartTokenListener(
   listener: (event: ActivityPushToStartTokenReceivedEvent) => void
-): EventSubscription | undefined {
-  if (Platform.OS !== 'ios') {
-    console.error('addActivityPushToStartTokenListener is only available on iOS')
-    return undefined
-  }
-
-  return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener)
+): Voidable<EventSubscription> {
+  if (assertIOS('addActivityPushToStartTokenListener'))
+    return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener)
 }
 
 export function addActivityUpdatesListener(
   listener: (event: ActivityUpdateEvent) => void
-): EventSubscription | undefined {
-  if (Platform.OS !== 'ios') {
-    console.error('addActivityUpdatesListener is only available on iOS')
-    return undefined
-  }
-
-  return ExpoLiveActivityModule.addListener('onStateChange', listener)
+): Voidable<EventSubscription> {
+  if (assertIOS('addActivityUpdatesListener')) return ExpoLiveActivityModule.addListener('onStateChange', listener)
 }
