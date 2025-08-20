@@ -34,7 +34,7 @@ export default function CreateLiveActivityScreen() {
         ...activityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
       })
-      setActivityID(id)
+      if (id) setActivityID(id)
     } catch (e) {
       console.error('Starting activity failed! ' + e)
     }
