@@ -2,9 +2,9 @@ import ActivityKit
 import ExpoModulesCore
 
 enum LiveActivityErrors: Error {
-    case unsupportedOS
-    case liveActivitiesNotEnabled
-    case unexpetedError(Error)
+  case unsupportedOS
+  case liveActivitiesNotEnabled
+  case unexpectedError(Error)
 }
 
 public class ExpoLiveActivityModule: Module {
@@ -53,18 +53,19 @@ public class ExpoLiveActivityModule: Module {
     case digital
   }
 
-  func sendPushToken(activityID: String, activityName: String, activityPushToken: String) {
+  @available(iOS 16.1, *)
+  private func sendPushToken(activity: Activity<LiveActivityAttributes>, activityPushToken: String) {
     sendEvent(
       "onTokenReceived",
       [
-        "activityID": activityID,
-        "activityName": activityName,
-        "activityPushToken": activityPushToken
+        "activityID": activity.id,
+        "activityName": activity.attributes.name,
+        "activityPushToken": activityPushToken,
       ]
     )
   }
-    
-  func sendPushToStartToken(activityPushToStartToken: String) {
+
+  private func sendPushToStartToken(activityPushToStartToken: String) {
     sendEvent(
       "onPushToStartTokenReceived",
       [
@@ -73,7 +74,19 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
-  func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
+  @available(iOS 16.1, *)
+  private func sendStateChange(activity: Activity<LiveActivityAttributes>, activityState: ActivityState) {
+    sendEvent(
+      "onStateChange",
+      [
+        "activityID": activity.id,
+        "activityName": activity.attributes.name,
+        "activityState": String(describing: activityState),
+      ]
+    )
+  }
+
+  private func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws {
     if let name = state.imageName {
       newState.imageName = try await resolveImage(from: name)
     }
@@ -82,8 +95,8 @@ public class ExpoLiveActivityModule: Module {
       newState.dynamicIslandImageName = try await resolveImage(from: name)
     }
   }
-    
-  func observePushToStartToken() {
+
+  private func observePushToStartToken() {
     if #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled {
       print("Observing push to start token updates...")
       Task {
@@ -95,40 +108,45 @@ public class ExpoLiveActivityModule: Module {
     }
   }
 
-  func observeLiveActivityState() {
+  private func observeLiveActivityUpdates() {
     if #available(iOS 16.2, *) {
       Task {
         for await activityUpdate in Activity<LiveActivityAttributes>.activityUpdates {
-          switch activityUpdate.activityState {
-          case .active:
-            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
-            let activityId = activityUpdate.id
+          let activityId = activityUpdate.id
+          let activityState = activityUpdate.activityState
 
-            if let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+          print("Received activity update: \(activityId), \(activityState)")
+
+          guard
+            let activity = Activity<LiveActivityAttributes>.activities.first(where: {
               $0.id == activityId
-            }) {
-              if pushNotificationsEnabled {
-                print("Adding push token observer for activity \(activityId)")
-                Task {
-                  for await pushToken in activity.pushTokenUpdates {
-                    let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+            })
+          else { return print("Didn't find activity with ID \(activityId)") }
 
-                    sendPushToken(activityID: activity.id, activityName: activity.attributes.name, activityPushToken: pushTokenString)
-                  }
+          if case .active = activityState {
+            Task {
+              for await state in activity.activityStateUpdates {
+                sendStateChange(activity: activity, activityState: state)
+              }
+            }
+
+            if pushNotificationsEnabled {
+              print("Adding push token observer for activity \(activity.id)")
+              Task {
+                for await pushToken in activity.pushTokenUpdates {
+                  let pushTokenString = pushToken.reduce("") { $0 + String(format: "%02x", $1) }
+
+                  sendPushToken(activity: activity, activityPushToken: pushTokenString)
                 }
               }
-            } else {
-              print("Didn't find activity with ID \(activityId)")
             }
-          default:
-            print("Received activity state update: \(activityUpdate.id), \(activityUpdate.activityState)")
           }
         }
       }
     }
   }
 
-  var pushNotificationsEnabled: Bool {
+  private var pushNotificationsEnabled: Bool {
     Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool ?? false
   }
 
@@ -139,10 +157,10 @@ public class ExpoLiveActivityModule: Module {
       if pushNotificationsEnabled {
         observePushToStartToken()
       }
-      observeLiveActivityState()
+      observeLiveActivityUpdates()
     }
 
-    Events("onTokenReceived", "onPushToStartTokenReceived")
+    Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       print("Starting activity")
@@ -181,7 +199,7 @@ public class ExpoLiveActivityModule: Module {
             return activity.id
           } catch let error {
             print("Error with live activity: \(error)")
-            throw LiveActivityErrors.unexpetedError(error)
+            throw LiveActivityErrors.unexpectedError(error)
           }
         }
         throw LiveActivityErrors.liveActivitiesNotEnabled
