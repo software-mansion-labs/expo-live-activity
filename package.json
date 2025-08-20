@@ -11,6 +11,7 @@
     "format:check": "prettier --check .",
     "eslint": "expo-module eslint",
     "test": "expo-module test",
+    "postinstall": "cd example && npm install",
     "prepare": "expo-module prepare && rm .eslintrc.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
