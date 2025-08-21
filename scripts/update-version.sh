@@ -10,6 +10,6 @@ elif [[ "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)$ ]]; then
 fi
 
 if [[ -n "${NEW_VERSION:-}" ]]; then
-  jq --arg v "$NEW_VERSION" '.version = $v' ../package.json > package.json.tmp \
-    && mv package.json.tmp ../package.json
+  jq --arg v "$NEW_VERSION" '.version = $v' package.json > package.json.tmp \
+    && mv package.json.tmp package.json
 fi
