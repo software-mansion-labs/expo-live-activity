@@ -24,19 +24,19 @@ export const withPodfile: ConfigPlugin<{ targetName: string }> = (config, { targ
         `use_expo_modules!(searchPaths: ["./node_modules", "../../node_modules", "../../../WidgetExtension"])`
       ); */
 
-      podFileContent = mergeContents({
-        tag: 'react-native-widget-extension-1',
-        src: podFileContent,
-        newSrc: `installer.pods_project.targets.each do |target|
-          target.build_configurations.each do |config|
-            # Sentry has build errors unless configured as 'YES' for the Sentry target: https://github.com/bndkt/react-native-widget-extension/issues/24
-            config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = target.name == 'Sentry' ? 'YES' : 'No'
-          end
-        end`,
-        anchor: /installer.target_installation_results.pod_target_installation_results/,
-        offset: 0,
-        comment: '#',
-      }).contents
+      // podFileContent = mergeContents({
+      //   tag: 'react-native-widget-extension-1',
+      //   src: podFileContent,
+      //   newSrc: `installer.pods_project.targets.each do |target|
+      //     target.build_configurations.each do |config|
+      //       # Sentry has build errors unless configured as 'YES' for the Sentry target: https://github.com/bndkt/react-native-widget-extension/issues/24
+      //       config.build_settings['APPLICATION_EXTENSION_API_ONLY'] = target.name == 'Sentry' ? 'YES' : 'No'
+      //     end
+      //   end`,
+      //   anchor: /installer.target_installation_results.pod_target_installation_results/,
+      //   offset: 0,
+      //   comment: '#',
+      // }).contents
 
       /* podFileContent = mergeContents({
         tag: "react-native-widget-extension-2",
