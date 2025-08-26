@@ -28,6 +28,7 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "@maplibre/maplibre-react-native",
       [
         "../app.plugin.js",
         {
