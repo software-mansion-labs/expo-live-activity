@@ -3,7 +3,13 @@ import { ConfigPlugin, withEntitlementsPlist, withInfoPlist } from '@expo/config
 export const withPushNotifications: ConfigPlugin = (config) =>
   withInfoPlist(
     withEntitlementsPlist(config, (mod) => {
-      mod.modResults['aps-environment'] = 'development'
+      const profile = process.env.EAS_BUILD_PROFILE?.toLowerCase()
+      const desiredAps = profile === 'production' || profile === 'release' ? 'production' : 'development'
+
+      // Only set if not already defined to avoid overriding project settings
+      if (!mod.modResults['aps-environment']) {
+        mod.modResults['aps-environment'] = desiredAps
+      }
       return mod
     }),
     (mod) => {
