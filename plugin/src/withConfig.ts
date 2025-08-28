@@ -14,7 +14,7 @@ export const withConfig: ConfigPlugin<{
     }
   })
 
-  if (configIndex === null) {
+  if (!configIndex) {
     config.extra = {
       ...config.extra,
       eas: {
