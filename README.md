@@ -128,8 +128,8 @@ The `state` object should include:
   title: string;
   subtitle?: string;
   date?: number; // Set as epoch time in milliseconds. This is used as an end date in a timer.
-  imageName?: string; // Matches the name of the image in 'assets/live-activity'
-  dynamicIslandImageName?: string; // Matches the name of the image in 'assets/live-activity'
+  imageName?: string; // Matches the name of the image in 'assets/liveActivity'
+  dynamicIslandImageName?: string; // Matches the name of the image in 'assets/liveActivity'
 };
 ```
 
