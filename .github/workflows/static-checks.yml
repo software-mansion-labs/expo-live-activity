@@ -1,0 +1,28 @@
+name: Static checks
+
+on:
+  pull_request:
+jobs:
+  types_and_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org/'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run prettier 💅
+        run: npm run format:check
+
+      - name: Run linter  👮
+        run: npm run lint
+
+      - name: Check types 🚓
+        run: npm run typecheck
