@@ -26,3 +26,7 @@ jobs:
 
       - name: Check types 🚓
         run: npm run typecheck
+
+      - name: Check types (Example app) 🚓
+        run: npm run typecheck
+        working-directory: example
