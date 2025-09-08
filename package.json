@@ -16,7 +16,8 @@
     "prepare": "expo-module prepare && rm .eslintrc.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
-    "open:ios": "xed example/ios"
+    "open:ios": "xed example/ios",
+    "typecheck": "tsc"
   },
   "keywords": [
     "react-native",
