@@ -224,6 +224,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.date
+          progress: state.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -247,6 +248,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.date
+          progress: state.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
