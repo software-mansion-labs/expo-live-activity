@@ -11,6 +11,7 @@ export type LiveActivityState = {
   title: string
   subtitle?: string
   date?: number
+  progress?: number
   imageName?: string
   dynamicIslandImageName?: string
 }

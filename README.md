@@ -128,6 +128,7 @@ The `state` object should include:
   title: string;
   subtitle?: string;
   date?: number; // Set as epoch time in milliseconds. This is used as an end date in a timer.
+  progress?: number; //Set amount of progress in the progress bar
   imageName?: string; // Matches the name of the image in 'assets/liveActivity'
   dynamicIslandImageName?: string; // Matches the name of the image in 'assets/liveActivity'
 };

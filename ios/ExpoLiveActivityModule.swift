@@ -20,6 +20,9 @@ public class ExpoLiveActivityModule: Module {
     var date: Double?
 
     @Field
+    var progress: Double?
+
+    @Field
     var imageName: String?
 
     @Field
@@ -184,6 +187,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.date
+          progress: state.progress
         )
 
         let activity = try Activity.request(
