@@ -1,12 +1,6 @@
 import ActivityKit
 import ExpoModulesCore
 
-enum LiveActivityErrors: Error {
-  case unsupportedOS
-  case notFound
-  case liveActivitiesNotEnabled
-  case unexpectedError(Error)
-}
 
 public class ExpoLiveActivityModule: Module {
   struct LiveActivityState: Record {
@@ -165,10 +159,14 @@ public class ExpoLiveActivityModule: Module {
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
-      guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivityErrors.liveActivitiesNotEnabled }
-
       do {
+        guard #available(iOS 16.2, *) else {
+          throw UnsupportedOSException("16.2")
+        }
+        
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivitiesNotEnabledException() }
+
+        try validateTitle(state.title)
         let config = maybeConfig ?? LiveActivityConfig()
         let attributes = LiveActivityAttributes(
           name: "ExpoLiveActivity",
@@ -200,21 +198,24 @@ public class ExpoLiveActivityModule: Module {
 
         return activity.id
       } catch let error {
-        print("Error with live activity: \(error)")
-        throw LiveActivityErrors.unexpectedError(error)
-
+        throw error // Re-throw our custom exceptions
+      } catch {
+        throw UnexpectedErrorException(error)
       }
     }
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
-      guard
-        let activity = Activity<LiveActivityAttributes>.activities.first(where: {
-          $0.id == activityId
-        })
-      else { throw LiveActivityErrors.notFound }
+      do {
+        guard #available(iOS 16.2, *) else {
+          throw UnsupportedOSException("16.2")
+        }
+        guard
+          let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+            $0.id == activityId
+          })
+        else { throw ActivityNotFoundException(activityId) }
 
-      Task {
+        Task {
         print("Stopping activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
@@ -226,18 +227,26 @@ public class ExpoLiveActivityModule: Module {
           ActivityContent(state: newState, staleDate: nil),
           dismissalPolicy: .immediate
         )
+        }
+      } catch let error {
+        throw error // Re-throw our custom exceptions
+      } catch {
+        throw UnexpectedErrorException(error)
       }
     }
 
     Function("updateActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
-      guard
-        let activity = Activity<LiveActivityAttributes>.activities.first(where: {
-          $0.id == activityId
-        })
-      else { throw LiveActivityErrors.notFound }
+      do {
+        guard #available(iOS 16.2, *) else {
+          throw UnsupportedOSException("16.2")
+        }
+        guard
+          let activity = Activity<LiveActivityAttributes>.activities.first(where: {
+            $0.id == activityId
+          })
+        else { throw ActivityNotFoundException(activityId) }
 
-      Task {
+        Task {
         print("Updating activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
@@ -246,6 +255,11 @@ public class ExpoLiveActivityModule: Module {
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
+        }
+      } catch let error {
+        throw error // Re-throw our custom exceptions
+      } catch {
+        throw UnexpectedErrorException(error)
       }
     }
   }

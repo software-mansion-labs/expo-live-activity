@@ -36,7 +36,8 @@ export default function CreateLiveActivityScreen() {
       })
       if (id) setActivityID(id)
     } catch (e) {
-      console.error('Starting activity failed! ' + e)
+      console.error('Starting activity failed!', e)
+      alert(`Error: ${(e as Error).message || e}`)
     }
   }
 
@@ -123,7 +124,7 @@ export default function CreateLiveActivityScreen() {
         </>
       )}
       <View style={styles.buttonsContainer}>
-        <Button title="Start Activity" onPress={startActivity} disabled={title === '' || !!activityId} />
+        <Button title="Start Activity" onPress={startActivity} disabled={!!activityId} />
         <Button title="Stop Activity" onPress={stopActivity} disabled={!activityId} />
         <Button title="Update Activity" onPress={updateActivity} disabled={!activityId} />
       </View>
