@@ -1,6 +1,6 @@
 //
 //  LiveActivityExceptions.swift
-//  
+//
 //
 //  Created by Gregory Moskaliuk on 16/09/2025.
 //
