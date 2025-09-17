@@ -77,7 +77,7 @@ export default function CreateLiveActivityScreen() {
       title,
       subtitle,
       progressBar: {
-        progress: 0,
+        progress: 1,
       },
       imageName,
       dynamicIslandImageName,
