@@ -36,7 +36,7 @@ export default function CreateLiveActivityScreen() {
       })
       if (id) setActivityID(id)
     } catch (e) {
-      console.error('Starting activity failed!', e)
+      console.error('Starting activity failed! ' + e)
     }
   }
 
