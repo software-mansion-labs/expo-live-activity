@@ -76,39 +76,13 @@ function assertIOS(name: string) {
   return isIOS
 }
 
-const mapStateToNativeState = (state: LiveActivityState): NativeLiveActivityState => {
-  if (state.progressBar?.date) {
-    return {
-      title: state.title,
-      subtitle: state.subtitle,
-      date: state.progressBar.date,
-      imageName: state.imageName,
-      dynamicIslandImageName: state.dynamicIslandImageName,
-    }
-  } else if (state.progressBar?.progress) {
-    return {
-      title: state.title,
-      subtitle: state.subtitle,
-      progress: state.progressBar.progress,
-      imageName: state.imageName,
-      dynamicIslandImageName: state.dynamicIslandImageName,
-    }
-  }
-  return {
-    title: state.title,
-    subtitle: state.subtitle,
-    imageName: state.imageName,
-    dynamicIslandImageName: state.dynamicIslandImageName,
-  }
-}
-
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
-  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(mapStateToNativeState(state), config)
+  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, config)
 }
 
 /**
@@ -116,7 +90,7 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
  * @param {LiveActivityState} state The updated state for the live activity.
  */
 export function stopActivity(id: string, state: LiveActivityState) {
-  if (assertIOS('stopActivity')) return ExpoLiveActivityModule.stopActivity(id, mapStateToNativeState(state))
+  if (assertIOS('stopActivity')) return ExpoLiveActivityModule.stopActivity(id, state)
 }
 
 /**
@@ -124,7 +98,7 @@ export function stopActivity(id: string, state: LiveActivityState) {
  * @param {LiveActivityState} state The updated state for the live activity.
  */
 export function updateActivity(id: string, state: LiveActivityState) {
-  if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, mapStateToNativeState(state))
+  if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state)
 }
 
 export function addActivityTokenListener(

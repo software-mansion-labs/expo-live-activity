@@ -17,10 +17,15 @@ public class ExpoLiveActivityModule: Module {
     var subtitle: String?
 
     @Field
-    var date: Double?
+    var progressBar: ProgressBar?
+      
+    struct ProgressBar: Record {
+      @Field
+      var date: Double?
 
-    @Field
-    var progress: Double?
+      @Field
+      var progress: Double?
+    }
 
     @Field
     var imageName: String?

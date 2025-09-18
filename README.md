@@ -127,7 +127,7 @@ The `state` object should include:
 {
   title: string;
   subtitle?: string;
-  progressBar: {
+  progressBar: { // Only one property, either date or progress, is available at a time as they share a single progress bar component
     date?: number; // Set as epoch time in milliseconds. This is used as an end date in a timer.
     progress?: number; //Set amount of progress in the progress bar
   };
