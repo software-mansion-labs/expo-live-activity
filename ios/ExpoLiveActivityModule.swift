@@ -191,8 +191,8 @@ public class ExpoLiveActivityModule: Module {
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date,
-          progress: state.progress
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
 
         let activity = try Activity.request(
@@ -228,8 +228,8 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date,
-          progress: state.progress
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -252,8 +252,8 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date,
-          progress: state.progress
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
