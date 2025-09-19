@@ -58,6 +58,10 @@ import WidgetKit
           ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
             .tint(progressViewTint)
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+        } else if let progress = contentState.progress {
+          ProgressView(value: progress)
+            .tint(progressViewTint)
+            .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         }
       }
       .padding(24)
