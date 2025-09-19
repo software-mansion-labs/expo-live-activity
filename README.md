@@ -285,3 +285,24 @@ The value of each field can be:
 
 - a string which maps to an asset name
 - a URL to remote image - currently, it's possible to use this option only via API, but we plan on to add that feature to push notifications as well. It also requires adding "App Groups" capability to both "main app" and "live activity" targets.
+
+## expo-live-activity is created by Software Mansion
+
+[![swm](https://logo.swmansion.com/logo?color=white&variant=desktop&width=150&tag=typegpu-github 'Software Mansion')](https://swmansion.com)
+
+Since 2012 [Software Mansion](https://swmansion.com) is a software agency with
+experience in building web and mobile apps. We are Core React Native
+Contributors and experts in dealing with all kinds of React Native issues. We
+can help you build your next dream product –
+[Hire us](https://swmansion.com/contact/projects?utm_source=typegpu&utm_medium=readme).
+
+<!-- automd:contributors author="software-mansion" -->
+
+Made by [@software-mansion](https://github.com/software-mansion) and
+[community](https://github.com/software-mansion-labs/expo-live-activity/graphs/contributors) 💛
+<br><br>
+<a href="https://github.com/software-mansion-labs/expo-live-activity/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=software-mansion-labs/expo-live-activity" />
+</a>
+
+<!-- /automd -->
