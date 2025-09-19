@@ -12,7 +12,6 @@
     "lint": "expo-module eslint",
     "lint:libOnly": "expo-module eslint --ignore-pattern 'example/*'",
     "test": "expo-module test",
-    "postinstall": "cd example && npm install",
     "prepare": "expo-module prepare && rm .eslintrc.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
