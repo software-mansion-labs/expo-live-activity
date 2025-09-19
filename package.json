@@ -46,7 +46,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "expo": "~54.0.0-preview.6",
+    "expo": "~54.0.0",
     "expo-module-scripts": "^5.0.3",
     "prettier": "^3.6.2",
     "react-native": "0.81.0"
