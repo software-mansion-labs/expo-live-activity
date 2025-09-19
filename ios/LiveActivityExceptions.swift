@@ -1,6 +1,6 @@
 //
 //  LiveActivityExceptions.swift
-//
+//  
 //
 //  Created by Gregory Moskaliuk on 16/09/2025.
 //
@@ -22,12 +22,6 @@ internal final class ActivityNotFoundException: GenericException<String> {
 internal final class LiveActivitiesNotEnabledException: Exception {
   override var reason: String {
     "Live Activities are currently disabled - enable them in Settings > Face ID & Passcode > Live Activities and Settings > [Your App] > Live Activities"
-  }
-}
-
-internal final class EmptyTitleException: Exception {
-  override var reason: String {
-    "Title cannot be empty"
   }
 }
 

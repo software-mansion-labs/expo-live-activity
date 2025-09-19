@@ -164,8 +164,6 @@ public class ExpoLiveActivityModule: Module {
       }
       
       guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivitiesNotEnabledException() }
-
-      try validateTitle(state.title)
         
       do {
         let config = maybeConfig ?? LiveActivityConfig()

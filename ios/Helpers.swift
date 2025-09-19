@@ -19,9 +19,3 @@ func resolveImage(from string: String) async throws -> String {
     return string
   }
 }
-
-func validateTitle(_ title: String) throws {
-  if title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-    throw EmptyTitleException()
-  }
-}
