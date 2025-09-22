@@ -48,7 +48,9 @@ jobs:
     name: Publish to NPM
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }} # only on manual trigger
+    if: ${{ github.event_name == 'workflow_dispatch' }}
+    environment: 
+      name: npm-publish
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
