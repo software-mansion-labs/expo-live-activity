@@ -58,6 +58,24 @@ public class ExpoLiveActivityModule: Module {
       
     @Field
     var padding: Int?
+
+    @Field
+    var paddingHorizontal: Int?
+
+    @Field
+    var paddingVertical: Int?
+
+    @Field
+    var paddingTop: Int?
+
+    @Field
+    var paddingBottom: Int?
+    
+    @Field
+    var paddingLeft: Int?
+
+    @Field
+    var paddingRight: Int?
   }
 
   enum DynamicIslandTimerType: String, Enumerable {
@@ -190,7 +208,13 @@ public class ExpoLiveActivityModule: Module {
           progressViewLabelColor: config.progressViewLabelColor,
           deepLinkUrl: config.deepLinkUrl,
           timerType: config.timerType == .digital ? .digital : .circular,
-          padding: config.padding
+          padding: config.padding,
+          paddingHorizontal: config.paddingHorizontal,
+          paddingVertical: config.paddingVertical,
+          paddingTop: config.paddingTop,
+          paddingBottom: config.paddingBottom,
+          paddingLeft: config.paddingLeft,
+          paddingRight: config.paddingRight,
         )
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,

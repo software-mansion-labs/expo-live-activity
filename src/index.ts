@@ -43,6 +43,12 @@ export type LiveActivityConfig = {
   deepLinkUrl?: string
   timerType?: DynamicIslandTimerType
   padding?: number
+  paddingHorizontal?: number
+  paddingVertical?: number
+  paddingTop?: number
+  paddingBottom?: number
+  paddingLeft?: number
+  paddingRight?: number
 }
 
 export type ActivityTokenReceivedEvent = {

@@ -28,6 +28,13 @@ struct LiveActivityAttributes: ActivityAttributes {
   var deepLinkUrl: String?
   var timerType: DynamicIslandTimerType?
   var padding: Int?
+  var paddingTop: Int?
+  var paddingBottom: Int?
+  var paddingLeft: Int?
+  var paddingRight: Int?
+  var paddingHorizontal: Int?
+  var paddingVertical: Int?
+
 
   enum DynamicIslandTimerType: String, Codable {
     case circular

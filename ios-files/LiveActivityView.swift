@@ -31,6 +31,29 @@ import WidgetKit
     }
 
     var body: some View {
+
+      let defaultPadding: CGFloat = 24
+
+      let top = attributes.padding.map { CGFloat($0) }
+      ?? attributes.paddingTop.map { CGFloat($0) }
+      ?? attributes.paddingVertical.map { CGFloat($0) }
+      ?? defaultPadding
+
+      let bottom = attributes.padding.map { CGFloat($0) }
+      ?? attributes.paddingBottom.map { CGFloat($0) }
+      ?? attributes.paddingVertical.map { CGFloat($0) }
+      ?? defaultPadding
+
+      let leading = attributes.padding.map { CGFloat($0) }
+      ?? attributes.paddingLeft.map { CGFloat($0) }
+      ?? attributes.paddingHorizontal.map { CGFloat($0) }
+      ?? defaultPadding
+
+      let trailing = attributes.padding.map { CGFloat($0) }
+      ?? attributes.paddingRight.map { CGFloat($0) }
+      ?? attributes.paddingHorizontal.map { CGFloat($0) }
+      ?? defaultPadding
+
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
           VStack(alignment: .leading, spacing: 2) {
@@ -64,13 +87,7 @@ import WidgetKit
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         }
       }
-      .padding(EdgeInsets(
-        //TODO add dedicated variable for default padding
-        top: CGFloat(attributes.padding ?? 24),
-        leading: CGFloat(attributes.padding ?? 24),
-        bottom: CGFloat(attributes.padding ?? 24),
-        trailing: CGFloat(attributes.padding ?? 24)
-      ))
+      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
 
