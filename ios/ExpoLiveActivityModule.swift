@@ -55,6 +55,9 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var timerType: DynamicIslandTimerType?
+      
+    @Field
+    var padding: Int?
   }
 
   enum DynamicIslandTimerType: String, Enumerable {
@@ -186,7 +189,8 @@ public class ExpoLiveActivityModule: Module {
           progressViewTint: config.progressViewTint,
           progressViewLabelColor: config.progressViewLabelColor,
           deepLinkUrl: config.deepLinkUrl,
-          timerType: config.timerType == .digital ? .digital : .circular
+          timerType: config.timerType == .digital ? .digital : .circular,
+          padding: config.padding
         )
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,

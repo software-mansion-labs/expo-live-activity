@@ -42,6 +42,7 @@ export type LiveActivityConfig = {
   progressViewLabelColor?: string
   deepLinkUrl?: string
   timerType?: DynamicIslandTimerType
+  padding?: number
 }
 
 export type ActivityTokenReceivedEvent = {

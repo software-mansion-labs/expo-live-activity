@@ -64,7 +64,13 @@ import WidgetKit
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         }
       }
-      .padding(24)
+      .padding(EdgeInsets(
+        //TODO add dedicated variable for default padding
+        top: CGFloat(attributes.padding ?? 24),
+        leading: CGFloat(attributes.padding ?? 24),
+        bottom: CGFloat(attributes.padding ?? 24),
+        trailing: CGFloat(attributes.padding ?? 24)
+      ))
     }
   }
 

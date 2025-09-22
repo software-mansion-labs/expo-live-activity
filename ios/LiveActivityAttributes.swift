@@ -26,6 +26,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var progressViewLabelColor: String?
   var deepLinkUrl: String?
   var timerType: DynamicIslandTimerType?
+  var padding: Int?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular
