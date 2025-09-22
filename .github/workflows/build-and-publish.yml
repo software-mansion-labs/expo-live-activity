@@ -48,9 +48,9 @@ jobs:
     name: Publish to NPM
     needs: build
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' }}
     environment:
       name: npm-publish
+      url: https://www.npmjs.com/package/expo-live-activity
     steps:
       - name: Download artifact
         uses: actions/download-artifact@v4
