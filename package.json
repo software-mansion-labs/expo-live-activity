@@ -29,10 +29,7 @@
     "Anna Olak <anna.olak@swmansion.com> (https://github.com/anna1901)",
     "Artur Bilski <artur.bilski@swmansion.com> (https://github.com/arthwood)"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/software-mansion-labs/expo-live-activity.git"
-  },
+  "repository":"https://github.com/software-mansion-labs/expo-live-activity",
   "bugs": {
     "url": "https://github.com/software-mansion-labs/expo-live-activity/issues"
   },
