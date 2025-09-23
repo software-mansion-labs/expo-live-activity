@@ -1,4 +1,6 @@
 <img width="100%" alt="expo-live-activity by Software Mansion" src="https://github.com/user-attachments/assets/9f9be263-84ee-4034-a3ca-39c72c189544" />
+<br/>
+<br/>
 
 > [!WARNING]  
 > This library is in early development stage, breaking changes can be introduced in minor version upgrades.
