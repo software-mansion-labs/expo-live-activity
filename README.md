@@ -1,6 +1,7 @@
+<img width="100%" alt="expo-live-activity by Software Mansion" src="https://github.com/user-attachments/assets/9f9be263-84ee-4034-a3ca-39c72c189544" />
+
 > [!WARNING]  
 > This library is in early development stage, breaking changes can be introduced in minor version upgrades.
-
 # expo-live-activity
 
 `expo-live-activity` is a React Native module designed for use with Expo to manage and display Live Activities on iOS devices exclusively. This module leverages the Live Activities feature introduced in iOS 16, allowing developers to deliver timely updates right on the lock screen.
