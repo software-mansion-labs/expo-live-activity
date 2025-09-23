@@ -11,7 +11,15 @@ public class ExpoLiveActivityModule: Module {
     var subtitle: String?
 
     @Field
-    var date: Double?
+    var progressBar: ProgressBar?
+      
+    struct ProgressBar: Record {
+      @Field
+      var date: Double?
+
+      @Field
+      var progress: Double?
+    }
 
     @Field
     var imageName: String?
@@ -180,7 +188,8 @@ public class ExpoLiveActivityModule: Module {
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
 
         let activity = try Activity.request(
@@ -217,7 +226,8 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -243,7 +253,8 @@ public class ExpoLiveActivityModule: Module {
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))

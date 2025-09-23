@@ -7,10 +7,29 @@ type Voidable<T> = T | void
 
 export type DynamicIslandTimerType = 'circular' | 'digital'
 
+type ProgressBarType =
+  | {
+      date?: number
+      progress?: undefined
+    }
+  | {
+      date?: undefined
+      progress?: number
+    }
+
 export type LiveActivityState = {
   title: string
   subtitle?: string
+  progressBar?: ProgressBarType
+  imageName?: string
+  dynamicIslandImageName?: string
+}
+
+export type NativeLiveActivityState = {
+  title: string
+  subtitle?: string
   date?: number
+  progress?: number
   imageName?: string
   dynamicIslandImageName?: string
 }
