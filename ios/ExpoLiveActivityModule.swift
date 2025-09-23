@@ -167,9 +167,7 @@ public class ExpoLiveActivityModule: Module {
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
-      guard #available(iOS 16.2, *) else {
-        throw UnsupportedOSException("16.2")
-      }
+      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
       
       guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivitiesNotEnabledException() }
         
@@ -211,9 +209,7 @@ public class ExpoLiveActivityModule: Module {
     }
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else {
-        throw UnsupportedOSException("16.2")
-      }
+      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
       
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
