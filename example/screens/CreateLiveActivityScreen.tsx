@@ -217,6 +217,8 @@ const activityConfig: LiveActivityConfig = {
   paddingHorizontal: 15,
   paddingBottom: 25,
   paddingTop: 20,
+  imageSize: 'fullHeight',
+  imagePosition: 'left',
 }
 
 const styles = StyleSheet.create({

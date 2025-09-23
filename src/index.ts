@@ -49,6 +49,8 @@ export type LiveActivityConfig = {
   paddingBottom?: number
   paddingLeft?: number
   paddingRight?: number
+  imagePosition?: 'left' | 'right'
+  imageSize?: 'fullHeight' | 'default'
 }
 
 export type ActivityTokenReceivedEvent = {

@@ -76,6 +76,12 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var paddingRight: Int?
+
+    @Field
+    var imagePosition: String?
+
+    @Field
+    var imageSize: String?
   }
 
   enum DynamicIslandTimerType: String, Enumerable {
@@ -215,7 +221,9 @@ public class ExpoLiveActivityModule: Module {
           paddingBottom: config.paddingBottom,
           paddingLeft: config.paddingLeft,
           paddingRight: config.paddingRight,
-        )
+          imagePosition: config.imagePosition,
+          imageSize: config.imageSize
+  )
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,

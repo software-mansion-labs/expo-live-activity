@@ -56,6 +56,14 @@ import WidgetKit
 
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
+          if attributes.imagePosition == "left" {
+            if let imageName = contentState.imageName {
+              resizableImage(imageName: imageName)
+              .applyImageSize(attributes.imageSize)
+            }
+            Spacer()
+          }
+
           VStack(alignment: .leading, spacing: 2) {
             Text(contentState.title)
               .font(.title2)
@@ -69,11 +77,12 @@ import WidgetKit
             }
           }
 
-          Spacer()
-
-          if let imageName = contentState.imageName {
-            resizableImage(imageName: imageName)
-              .frame(maxHeight: 64)
+          if attributes.imagePosition == "right" || attributes.imagePosition == nil {
+            Spacer()
+            if let imageName = contentState.imageName {
+              resizableImage(imageName: imageName)
+              .applyImageSize(attributes.imageSize)
+            }
           }
         }
 
