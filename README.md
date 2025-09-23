@@ -3,7 +3,7 @@
 <br/>
 
 > [!WARNING]  
-> This library is in early development stage, breaking changes can be introduced in minor version upgrades.
+> This library is in early development stage; breaking changes can be introduced in minor version upgrades.
 # expo-live-activity
 
 `expo-live-activity` is a React Native module designed for use with Expo to manage and display Live Activities on iOS devices exclusively. This module leverages the Live Activities feature introduced in iOS 16, allowing developers to deliver timely updates right on the lock screen.
@@ -22,7 +22,7 @@
 ## Installation
 
 > [!NOTE]  
-> The library isn't supported in Expo Go, to set it up correctly you need to use [Expo DevClient](https://docs.expo.dev/versions/latest/sdk/dev-client/) .
+> The library isn't supported in Expo Go; to set it up correctly you need to use [Expo DevClient](https://docs.expo.dev/versions/latest/sdk/dev-client/) .
 > To begin using `expo-live-activity`, follow the installation and configuration steps outlined below:
 
 ### Step 1: Installation
