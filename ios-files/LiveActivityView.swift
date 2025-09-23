@@ -31,7 +31,6 @@ import WidgetKit
     }
 
     var body: some View {
-
       let defaultPadding: CGFloat = 24
 
       let top = attributes.padding.map { CGFloat($0) }
@@ -60,8 +59,8 @@ import WidgetKit
             if let imageName = contentState.imageName {
               resizableImage(imageName: imageName)
               .applyImageSize(attributes.imageSize)
+              Spacer();
             }
-            Spacer()
           }
 
           VStack(alignment: .leading, spacing: 2) {
@@ -75,10 +74,22 @@ import WidgetKit
                 .font(.title3)
                 .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
             }
+
+            if attributes.imageSize == "fullHeight" {
+              if let date = contentState.timerEndDateInMilliseconds {
+                ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
+                .tint(progressViewTint)
+                .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+              } else if let progress = contentState.progress {
+                ProgressView(value: progress)
+                .tint(progressViewTint)
+                .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+              }
+            }
           }
 
           if attributes.imagePosition == "right" || attributes.imagePosition == nil {
-            Spacer()
+            Spacer();
             if let imageName = contentState.imageName {
               resizableImage(imageName: imageName)
               .applyImageSize(attributes.imageSize)
@@ -86,6 +97,7 @@ import WidgetKit
           }
         }
 
+      if attributes.imageSize != "fullHeight" {
         if let date = contentState.timerEndDateInMilliseconds {
           ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
             .tint(progressViewTint)
@@ -94,6 +106,7 @@ import WidgetKit
           ProgressView(value: progress)
             .tint(progressViewTint)
             .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+          }
         }
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
