@@ -30,36 +30,46 @@ import WidgetKit
       attributes.progressViewTint.map { Color(hex: $0) }
     }
 
-    var body: some View {
+    private var edgeInsets: EdgeInsets {
       let defaultPadding: CGFloat = 24
 
-      let top = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingTop.map { CGFloat($0) }
-      ?? attributes.paddingVertical.map { CGFloat($0) }
-      ?? defaultPadding
+      switch attributes.padding {
+      case .number(let n):
+        let val = CGFloat(n)
+        return EdgeInsets(top: val, leading: val, bottom: val, trailing: val)
 
-      let bottom = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingBottom.map { CGFloat($0) }
-      ?? attributes.paddingVertical.map { CGFloat($0) }
-      ?? defaultPadding
+      case .values(let v):
+        let top = v.top.map { CGFloat($0) }
+        ?? v.vertical.map { CGFloat($0) }
+        ?? defaultPadding
+        let bottom = v.bottom.map { CGFloat($0) }
+        ?? v.vertical.map { CGFloat($0) }
+        ?? defaultPadding
+        let leading = v.left.map { CGFloat($0) }
+        ?? v.horizontal.map { CGFloat($0) }
+        ?? defaultPadding
+        let trailing = v.right.map { CGFloat($0) }
+        ?? v.horizontal.map { CGFloat($0) }
+        ?? defaultPadding
+        return EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing)
 
-      let leading = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingLeft.map { CGFloat($0) }
-      ?? attributes.paddingHorizontal.map { CGFloat($0) }
-      ?? defaultPadding
+      case .none:
+        return EdgeInsets(
+          top: defaultPadding,
+          leading: defaultPadding,
+          bottom: defaultPadding,
+          trailing: defaultPadding
+        )
+      }
+    }
 
-      let trailing = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingRight.map { CGFloat($0) }
-      ?? attributes.paddingHorizontal.map { CGFloat($0) }
-      ?? defaultPadding
-
+    var body: some View {
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
           if attributes.imagePosition == "left" {
             if let imageName = contentState.imageName {
               resizableImage(imageName: imageName)
               .applyImageSize(attributes.imageSize)
-              Spacer();
             }
           }
 
@@ -109,7 +119,7 @@ import WidgetKit
           }
         }
       }
-      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
+      .padding(edgeInsets)
     }
   }
 

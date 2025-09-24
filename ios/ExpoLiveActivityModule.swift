@@ -55,27 +55,9 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var timerType: DynamicIslandTimerType?
-      
-    @Field
-    var padding: Int?
 
     @Field
-    var paddingHorizontal: Int?
-
-    @Field
-    var paddingVertical: Int?
-
-    @Field
-    var paddingTop: Int?
-
-    @Field
-    var paddingBottom: Int?
-    
-    @Field
-    var paddingLeft: Int?
-
-    @Field
-    var paddingRight: Int?
+    var padding: Padding?
 
     @Field
     var imagePosition: String?
@@ -215,12 +197,6 @@ public class ExpoLiveActivityModule: Module {
           deepLinkUrl: config.deepLinkUrl,
           timerType: config.timerType == .digital ? .digital : .circular,
           padding: config.padding,
-          paddingHorizontal: config.paddingHorizontal,
-          paddingVertical: config.paddingVertical,
-          paddingTop: config.paddingTop,
-          paddingBottom: config.paddingBottom,
-          paddingLeft: config.paddingLeft,
-          paddingRight: config.paddingRight,
           imagePosition: config.imagePosition,
           imageSize: config.imageSize
   )

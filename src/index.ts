@@ -34,6 +34,17 @@ export type NativeLiveActivityState = {
   dynamicIslandImageName?: string
 }
 
+export type LiveActivityConfigPadding =
+  | number
+  | {
+      horizontal?: number
+      vertical?: number
+      top?: number
+      bottom?: number
+      left?: number
+      right?: number
+    }
+
 export type LiveActivityConfig = {
   backgroundColor?: string
   titleColor?: string
@@ -42,13 +53,7 @@ export type LiveActivityConfig = {
   progressViewLabelColor?: string
   deepLinkUrl?: string
   timerType?: DynamicIslandTimerType
-  padding?: number
-  paddingHorizontal?: number
-  paddingVertical?: number
-  paddingTop?: number
-  paddingBottom?: number
-  paddingLeft?: number
-  paddingRight?: number
+  padding?: LiveActivityConfigPadding
   imagePosition?: 'left' | 'right'
   imageSize?: 'fullHeight' | 'default'
 }
