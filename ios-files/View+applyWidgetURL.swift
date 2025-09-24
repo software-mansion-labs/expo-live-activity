@@ -23,7 +23,9 @@ extension View {
   @ViewBuilder
   func applyWidgetURL(from urlString: String?) -> some View {
     applyIfPresent(urlString) { view, string in
-      applyIfPresent(cachedScheme) { view, scheme in view.widgetURL(URL(string: scheme + "://" + string)) }
+      applyIfPresent(cachedScheme) { view, scheme in
+        view.widgetURL(URL(string: scheme + "://" + string))
+      }
     }
   }
 }
