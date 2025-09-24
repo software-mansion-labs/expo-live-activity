@@ -1,10 +1,3 @@
-//
-//  LiveActivityWidget.swift
-//  LiveActivity
-//
-//  Created by Anna Olak on 02/06/2025.
-//
-
 import ActivityKit
 import SwiftUI
 import WidgetKit
@@ -60,9 +53,11 @@ struct LiveActivityWidget: Widget {
         }
         DynamicIslandExpandedRegion(.bottom) {
           if let date = context.state.timerEndDateInMilliseconds {
-            dynamicIslandExpandedBottom(endDate: date, progressViewTint: context.attributes.progressViewTint)
-              .padding(.horizontal, 5)
-              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+            dynamicIslandExpandedBottom(
+              endDate: date, progressViewTint: context.attributes.progressViewTint
+            )
+            .padding(.horizontal, 5)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
       } compactLeading: {
@@ -136,7 +131,8 @@ struct LiveActivityWidget: Widget {
     }
   }
 
-  private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View {
+  private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View
+  {
     ProgressView(timerInterval: Date.toTimerInterval(miliseconds: endDate))
       .foregroundStyle(.white)
       .tint(progressViewTint.map { Color(hex: $0) })

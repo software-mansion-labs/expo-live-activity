@@ -1,7 +1,6 @@
 import ActivityKit
 import ExpoModulesCore
 
-
 public class ExpoLiveActivityModule: Module {
   struct LiveActivityState: Record {
     @Field
@@ -12,7 +11,7 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var progressBar: ProgressBar?
-      
+
     struct ProgressBar: Record {
       @Field
       var date: Double?
@@ -57,7 +56,8 @@ public class ExpoLiveActivityModule: Module {
   }
 
   @available(iOS 16.1, *)
-  private func sendPushToken(activity: Activity<LiveActivityAttributes>, activityPushToken: String) {
+  private func sendPushToken(activity: Activity<LiveActivityAttributes>, activityPushToken: String)
+  {
     sendEvent(
       "onTokenReceived",
       [
@@ -78,7 +78,9 @@ public class ExpoLiveActivityModule: Module {
   }
 
   @available(iOS 16.1, *)
-  private func sendStateChange(activity: Activity<LiveActivityAttributes>, activityState: ActivityState) {
+  private func sendStateChange(
+    activity: Activity<LiveActivityAttributes>, activityState: ActivityState
+  ) {
     sendEvent(
       "onStateChange",
       [
@@ -89,8 +91,9 @@ public class ExpoLiveActivityModule: Module {
     )
   }
 
-  private func updateImages(state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState) async throws
-  {
+  private func updateImages(
+    state: LiveActivityState, newState: inout LiveActivityAttributes.ContentState
+  ) async throws {
     if let name = state.imageName {
       newState.imageName = try await resolveImage(from: name)
     }
@@ -151,7 +154,8 @@ public class ExpoLiveActivityModule: Module {
   }
 
   private var pushNotificationsEnabled: Bool {
-    Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool ?? false
+    Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_EnablePushNotifications") as? Bool
+      ?? false
   }
 
   public func definition() -> ModuleDefinition {
@@ -166,11 +170,14 @@ public class ExpoLiveActivityModule: Module {
 
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
-    Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
+    Function("startActivity") {
+      (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
       guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
-      
-      guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivitiesNotEnabledException() }
-        
+
+      guard ActivityAuthorizationInfo().areActivitiesEnabled else {
+        throw LiveActivitiesNotEnabledException()
+      }
+
       do {
         let config = maybeConfig ?? LiveActivityConfig()
         let attributes = LiveActivityAttributes(
@@ -210,7 +217,7 @@ public class ExpoLiveActivityModule: Module {
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
       guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
-      
+
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
@@ -237,7 +244,7 @@ public class ExpoLiveActivityModule: Module {
       guard #available(iOS 16.2, *) else {
         throw UnsupportedOSException("16.2")
       }
-      
+
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
