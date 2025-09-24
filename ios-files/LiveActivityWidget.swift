@@ -3,7 +3,7 @@ import SwiftUI
 import WidgetKit
 
 struct LiveActivityAttributes: ActivityAttributes {
-  public struct ContentState: Codable, Hashable {
+  struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
     var timerEndDateInMilliseconds: Double?
@@ -131,8 +131,7 @@ struct LiveActivityWidget: Widget {
     }
   }
 
-  private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View
-  {
+  private func dynamicIslandExpandedBottom(endDate: Double, progressViewTint: String?) -> some View {
     ProgressView(timerInterval: Date.toTimerInterval(miliseconds: endDate))
       .foregroundStyle(.white)
       .tint(progressViewTint.map { Color(hex: $0) })
