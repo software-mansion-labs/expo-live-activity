@@ -1,10 +1,3 @@
-//
-//  View+applyIfPresent.swift
-//
-//
-//  Created by Artur Bilski on 05/08/2025.
-//
-
 import SwiftUI
 
 extension View {

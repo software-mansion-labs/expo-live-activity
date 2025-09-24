@@ -1,10 +1,3 @@
-//
-//  LiveActivityView.swift
-//  ExpoLiveActivity
-//
-//  Created by Anna Olak on 03/06/2025.
-//
-
 import SwiftUI
 import WidgetKit
 
