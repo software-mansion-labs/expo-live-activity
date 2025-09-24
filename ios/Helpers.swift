@@ -1,10 +1,3 @@
-//
-//  Helpers.swift
-//
-//
-//  Created by Artur Bilski on 04/08/2025.
-//
-
 func resolveImage(from string: String) async throws -> String {
   if let url = URL(string: string), url.scheme?.hasPrefix("http") == true,
     let container = FileManager.default.containerURL(

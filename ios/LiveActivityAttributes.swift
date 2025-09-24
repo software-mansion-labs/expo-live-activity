@@ -1,10 +1,3 @@
-//
-//  LiveActivityAttributes.swift
-//  ExpoLiveActivity
-//
-//  Created by Anna Olak on 03/06/2025.
-//
-
 import ActivityKit
 import Foundation
 

@@ -1,10 +1,3 @@
-//
-//  View+applyWidgetURL.swift
-//
-//
-//  Created by Artur Bilski on 05/08/2025.
-//
-
 import SwiftUI
 
 private let cachedScheme: String? = {

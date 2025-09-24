@@ -1,10 +1,3 @@
-//
-//  LiveActivityWidget.swift
-//  LiveActivity
-//
-//  Created by Anna Olak on 02/06/2025.
-//
-
 import ActivityKit
 import SwiftUI
 import WidgetKit
