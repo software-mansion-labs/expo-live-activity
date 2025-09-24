@@ -4,29 +4,34 @@ on:
   pull_request:
 jobs:
   types_and_lint:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check out
+        uses: actions/checkout@v5
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: '22'
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: 22
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          cd example
+          npm ci
 
-      - name: Run prettier 💅
+      - name: Run Prettier 💅
         run: npm run format:check
 
-      - name: Run linter  👮
+      - name: Run SwiftFormat 🦅
+        run: swiftformat --exclude "**/node_modules/" --lint --reporter github-actions-log .
+
+      - name: Run ESLint 👮
         run: npm run lint
 
       - name: Check types 🚓
         run: npm run typecheck
 
-      - name: Check types (Example app) 🚓
+      - name: Check types (example app) 🚓
         run: npm run typecheck
         working-directory: example
