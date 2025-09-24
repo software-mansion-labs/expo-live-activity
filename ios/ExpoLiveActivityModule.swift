@@ -1,12 +1,6 @@
 import ActivityKit
 import ExpoModulesCore
 
-enum LiveActivityErrors: Error {
-  case unsupportedOS
-  case notFound
-  case liveActivitiesNotEnabled
-  case unexpectedError(Error)
-}
 
 public class ExpoLiveActivityModule: Module {
   struct LiveActivityState: Record {
@@ -17,7 +11,15 @@ public class ExpoLiveActivityModule: Module {
     var subtitle: String?
 
     @Field
-    var date: Double?
+    var progressBar: ProgressBar?
+      
+    struct ProgressBar: Record {
+      @Field
+      var date: Double?
+
+      @Field
+      var progress: Double?
+    }
 
     @Field
     var imageName: String?
@@ -165,9 +167,10 @@ public class ExpoLiveActivityModule: Module {
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") { (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
-      guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivityErrors.liveActivitiesNotEnabled }
-
+      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
+      
+      guard ActivityAuthorizationInfo().areActivitiesEnabled else { throw LiveActivitiesNotEnabledException() }
+        
       do {
         let config = maybeConfig ?? LiveActivityConfig()
         let attributes = LiveActivityAttributes(
@@ -183,7 +186,8 @@ public class ExpoLiveActivityModule: Module {
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
 
         let activity = try Activity.request(
@@ -199,27 +203,27 @@ public class ExpoLiveActivityModule: Module {
         }
 
         return activity.id
-      } catch let error {
-        print("Error with live activity: \(error)")
-        throw LiveActivityErrors.unexpectedError(error)
-
+      } catch {
+        throw UnexpectedErrorException(error)
       }
     }
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
+      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
+      
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
         })
-      else { throw LiveActivityErrors.notFound }
+      else { throw ActivityNotFoundException(activityId) }
 
       Task {
         print("Stopping activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -230,19 +234,23 @@ public class ExpoLiveActivityModule: Module {
     }
 
     Function("updateActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else { throw LiveActivityErrors.unsupportedOS }
+      guard #available(iOS 16.2, *) else {
+        throw UnsupportedOSException("16.2")
+      }
+      
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
           $0.id == activityId
         })
-      else { throw LiveActivityErrors.notFound }
+      else { throw ActivityNotFoundException(activityId) }
 
       Task {
         print("Updating activity with id: \(activityId)")
         var newState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
-          timerEndDateInMilliseconds: state.date
+          timerEndDateInMilliseconds: state.progressBar?.date,
+          progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))

@@ -12,7 +12,6 @@
     "lint": "expo-module eslint",
     "lint:libOnly": "expo-module eslint --ignore-pattern 'example/*'",
     "test": "expo-module test",
-    "postinstall": "cd example && npm install",
     "prepare": "expo-module prepare && rm .eslintrc.js",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
@@ -31,27 +30,28 @@
     "Anna Olak <anna.olak@swmansion.com> (https://github.com/anna1901)",
     "Artur Bilski <artur.bilski@swmansion.com> (https://github.com/arthwood)"
   ],
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/software-mansion-labs/expo-live-activity.git"
-  },
+  "repository":"https://github.com/software-mansion-labs/expo-live-activity",
   "bugs": {
     "url": "https://github.com/software-mansion-labs/expo-live-activity/issues"
   },
   "license": "MIT",
   "homepage": "https://github.com/software-mansion-labs/expo-live-activity#readme",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com"
+  },
   "devDependencies": {
-    "@types/react": "~19.0.0",
+    "@types/react": "~19.1.0",
     "eslint": "^9.33.0",
     "eslint-config-expo": "^9.2.0",
     "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "expo": "~53.0.0",
-    "expo-module-scripts": "^4.1.10",
+    "expo": "~54.0.0",
+    "expo-module-scripts": "^5.0.3",
     "prettier": "^3.6.2",
-    "react-native": "0.79.1"
+    "react-native": "0.81.4"
   },
   "peerDependencies": {
     "expo": "*",
