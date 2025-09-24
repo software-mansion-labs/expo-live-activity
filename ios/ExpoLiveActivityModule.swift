@@ -56,8 +56,7 @@ public class ExpoLiveActivityModule: Module {
   }
 
   @available(iOS 16.1, *)
-  private func sendPushToken(activity: Activity<LiveActivityAttributes>, activityPushToken: String)
-  {
+  private func sendPushToken(activity: Activity<LiveActivityAttributes>, activityPushToken: String) {
     sendEvent(
       "onTokenReceived",
       [
@@ -72,7 +71,7 @@ public class ExpoLiveActivityModule: Module {
     sendEvent(
       "onPushToStartTokenReceived",
       [
-        "activityPushToStartToken": activityPushToStartToken
+        "activityPushToStartToken": activityPushToStartToken,
       ]
     )
   }
