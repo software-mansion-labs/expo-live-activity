@@ -34,6 +34,17 @@ export type NativeLiveActivityState = {
   dynamicIslandImageName?: string
 }
 
+export type LiveActivityConfigPadding =
+  | {
+      top?: number
+      bottom?: number
+      left?: number
+      right?: number
+      vertical?: number
+      horizontal?: number
+    }
+  | number
+
 export type LiveActivityConfig = {
   backgroundColor?: string
   titleColor?: string
@@ -42,13 +53,7 @@ export type LiveActivityConfig = {
   progressViewLabelColor?: string
   deepLinkUrl?: string
   timerType?: DynamicIslandTimerType
-  padding?: number
-  paddingHorizontal?: number
-  paddingVertical?: number
-  paddingTop?: number
-  paddingBottom?: number
-  paddingLeft?: number
-  paddingRight?: number
+  padding?: LiveActivityConfigPadding
   imagePosition?: 'left' | 'right'
   imageSize?: 'fullHeight' | 'default'
 }
@@ -91,7 +96,17 @@ function assertIOS(name: string) {
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
-  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, config)
+  function normalizeConfig(config?: LiveActivityConfig) {
+    if (typeof config?.padding === 'number') {
+      return { ...config, padding: config.padding, paddingConfig: undefined }
+    }
+    if (typeof config?.padding === 'object') {
+      return { ...config, padding: undefined, paddingConfig: config.padding }
+    }
+    return config
+  }
+
+  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config))
 }
 
 /**

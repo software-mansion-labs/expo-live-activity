@@ -214,9 +214,10 @@ const activityConfig: LiveActivityConfig = {
   progressViewTint: '38ACDD',
   progressViewLabelColor: '#FFFFFF',
   deepLinkUrl: '/dashboard',
-  paddingHorizontal: 15,
-  paddingBottom: 25,
-  paddingTop: 20,
+  padding: {
+    horizontal: 10,
+    vertical: 10,
+  },
   imageSize: 'fullHeight',
   imagePosition: 'left',
 }

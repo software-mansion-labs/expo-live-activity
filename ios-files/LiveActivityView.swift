@@ -31,27 +31,35 @@ import WidgetKit
     }
 
     var body: some View {
-      let defaultPadding: CGFloat = 24
+      let defaultPadding: Int = 24
 
-      let top = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingTop.map { CGFloat($0) }
-      ?? attributes.paddingVertical.map { CGFloat($0) }
-      ?? defaultPadding
+      let top = CGFloat(
+        attributes.paddingConfig?.top
+        ?? attributes.paddingConfig?.vertical
+        ?? attributes.padding
+        ?? defaultPadding
+      )
 
-      let bottom = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingBottom.map { CGFloat($0) }
-      ?? attributes.paddingVertical.map { CGFloat($0) }
-      ?? defaultPadding
+      let bottom = CGFloat(
+        attributes.paddingConfig?.bottom
+        ?? attributes.paddingConfig?.vertical
+        ?? attributes.padding
+        ?? defaultPadding
+      )
 
-      let leading = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingLeft.map { CGFloat($0) }
-      ?? attributes.paddingHorizontal.map { CGFloat($0) }
-      ?? defaultPadding
+      let leading = CGFloat(
+        attributes.paddingConfig?.left
+        ?? attributes.paddingConfig?.horizontal
+        ?? attributes.padding
+        ?? defaultPadding
+      )
 
-      let trailing = attributes.padding.map { CGFloat($0) }
-      ?? attributes.paddingRight.map { CGFloat($0) }
-      ?? attributes.paddingHorizontal.map { CGFloat($0) }
-      ?? defaultPadding
+      let trailing = CGFloat(
+        attributes.paddingConfig?.right
+        ?? attributes.paddingConfig?.horizontal
+        ?? attributes.padding
+        ?? defaultPadding
+      )
 
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
