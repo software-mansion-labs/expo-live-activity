@@ -2,8 +2,8 @@ import SwiftUI
 
 func resizableImage(imageName: String) -> some View {
   Image.dynamic(assetNameOrPath: imageName)
-  .resizable()
-  .scaledToFit()
+    .resizable()
+    .scaledToFit()
 }
 
 extension View {
@@ -11,9 +11,9 @@ extension View {
   func applyImageSize(_ size: String?) -> some View {
     switch size {
     case "fullHeight":
-      self.frame(maxHeight: .infinity)
+      frame(maxHeight: .infinity)
     default:
-      self.frame(maxHeight: 64)
+      frame(maxHeight: 64)
     }
   }
 }

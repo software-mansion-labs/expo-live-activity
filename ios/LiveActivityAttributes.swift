@@ -28,13 +28,13 @@ struct LiveActivityAttributes: ActivityAttributes {
     case circular
     case digital
   }
-    
-    struct PaddingConfig: Codable, Hashable {
-       var top: Int?
-       var bottom: Int?
-       var left: Int?
-       var right: Int?
-       var vertical: Int?
-       var horizontal: Int?
-     }
+
+  struct PaddingConfig: Codable, Hashable {
+    var top: Int?
+    var bottom: Int?
+    var left: Int?
+    var right: Int?
+    var vertical: Int?
+    var horizontal: Int?
+  }
 }
