@@ -34,7 +34,7 @@ export type NativeLiveActivityState = {
   dynamicIslandImageName?: string
 }
 
-export type LiveActivityConfigPadding =
+export type Padding =
   | {
       top?: number
       bottom?: number
@@ -45,6 +45,10 @@ export type LiveActivityConfigPadding =
     }
   | number
 
+export type ImagePosition = 'left' | 'right'
+
+export type ImageSize = 'fullHeight' | 'default'
+
 export type LiveActivityConfig = {
   backgroundColor?: string
   titleColor?: string
@@ -53,9 +57,9 @@ export type LiveActivityConfig = {
   progressViewLabelColor?: string
   deepLinkUrl?: string
   timerType?: DynamicIslandTimerType
-  padding?: LiveActivityConfigPadding
-  imagePosition?: 'left' | 'right'
-  imageSize?: 'fullHeight' | 'default'
+  padding?: Padding
+  imagePosition?: ImagePosition
+  imageSize?: ImageSize
 }
 
 export type ActivityTokenReceivedEvent = {
@@ -98,10 +102,10 @@ function assertIOS(name: string) {
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
   function normalizeConfig(config?: LiveActivityConfig) {
     if (typeof config?.padding === 'number') {
-      return { ...config, padding: config.padding, paddingConfig: undefined }
+      return { ...config, padding: config.padding, paddingDetails: undefined }
     }
     if (typeof config?.padding === 'object') {
-      return { ...config, padding: undefined, paddingConfig: config.padding }
+      return { ...config, padding: undefined, paddingDetails: config.padding }
     }
     return config
   }

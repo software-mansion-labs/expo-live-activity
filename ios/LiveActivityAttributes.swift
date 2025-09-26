@@ -20,7 +20,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var deepLinkUrl: String?
   var timerType: DynamicIslandTimerType?
   var padding: Int?
-  var paddingConfig: PaddingConfig?
+  var paddingDetails: PaddingDetails?
   var imagePosition: String?
   var imageSize: String?
 
@@ -29,7 +29,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     case digital
   }
 
-  struct PaddingConfig: Codable, Hashable {
+  struct PaddingDetails: Codable, Hashable {
     var top: Int?
     var bottom: Int?
     var left: Int?

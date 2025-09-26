@@ -215,11 +215,13 @@ const activityConfig: LiveActivityConfig = {
   progressViewLabelColor: '#FFFFFF',
   deepLinkUrl: '/dashboard',
   padding: {
-    horizontal: 10,
-    vertical: 10,
+    top: 10,
+    bottom: 10,
+    left: 15,
+    right: 15,
   },
-  imageSize: 'fullHeight',
-  imagePosition: 'left',
+  imageSize: 'default',
+  imagePosition: 'right',
 }
 
 const styles = StyleSheet.create({

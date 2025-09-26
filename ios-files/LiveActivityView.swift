@@ -27,29 +27,29 @@ import WidgetKit
       let defaultPadding = 24
 
       let top = CGFloat(
-        attributes.paddingConfig?.top
-          ?? attributes.paddingConfig?.vertical
+        attributes.paddingDetails?.top
+          ?? attributes.paddingDetails?.vertical
           ?? attributes.padding
           ?? defaultPadding
       )
 
       let bottom = CGFloat(
-        attributes.paddingConfig?.bottom
-          ?? attributes.paddingConfig?.vertical
+        attributes.paddingDetails?.bottom
+          ?? attributes.paddingDetails?.vertical
           ?? attributes.padding
           ?? defaultPadding
       )
 
       let leading = CGFloat(
-        attributes.paddingConfig?.left
-          ?? attributes.paddingConfig?.horizontal
+        attributes.paddingDetails?.left
+          ?? attributes.paddingDetails?.horizontal
           ?? attributes.padding
           ?? defaultPadding
       )
 
       let trailing = CGFloat(
-        attributes.paddingConfig?.right
-          ?? attributes.paddingConfig?.horizontal
+        attributes.paddingDetails?.right
+          ?? attributes.paddingDetails?.horizontal
           ?? attributes.padding
           ?? defaultPadding
       )
@@ -60,7 +60,6 @@ import WidgetKit
             if let imageName = contentState.imageName {
               resizableImage(imageName: imageName)
                 .applyImageSize(attributes.imageSize)
-              Spacer()
             }
           }
 

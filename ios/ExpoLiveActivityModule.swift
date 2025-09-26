@@ -53,7 +53,7 @@ public class ExpoLiveActivityModule: Module {
     var padding: Int?
 
     @Field
-    var paddingConfig: PaddingConfig?
+    var paddingDetails: PaddingDetails?
 
     @Field
     var imagePosition: String?
@@ -61,7 +61,7 @@ public class ExpoLiveActivityModule: Module {
     @Field
     var imageSize: String?
 
-    struct PaddingConfig: Record {
+    struct PaddingDetails: Record {
       @Field var top: Int?
       @Field var bottom: Int?
       @Field var left: Int?
@@ -211,8 +211,8 @@ public class ExpoLiveActivityModule: Module {
           deepLinkUrl: config.deepLinkUrl,
           timerType: config.timerType == .digital ? .digital : .circular,
           padding: config.padding,
-          paddingConfig: config.paddingConfig.map {
-            LiveActivityAttributes.PaddingConfig(
+          paddingDetails: config.paddingDetails.map {
+            LiveActivityAttributes.PaddingDetails(
               top: $0.top,
               bottom: $0.bottom,
               left: $0.left,
