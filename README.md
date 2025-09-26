@@ -150,7 +150,10 @@ The `config` object should include:
    progressViewTint?: string;
    progressViewLabelColor?: string;
    deepLinkUrl?: string;
-   timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appereance on the dynamic island
+   timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appearance on the dynamic island
+   padding?: Padding // number | {top?: number bottom?: number ...}
+   imagePosition?: ImagePosition; // 'left' | 'right';
+   imageSize?: ImageSize // 'fullHeight' | 'default';
 };
 ```
 
@@ -181,6 +184,9 @@ const config: LiveActivity.LiveActivityConfig = {
   progressViewLabelColor: '#FFFFFF',
   deepLinkUrl: '/dashboard',
   timerType: 'circular',
+  padding: { horizontal: 20, top: 16, bottom: 16 },
+  imagePosition: 'right',
+  imageSize: 'default',
 }
 
 const activityId = LiveActivity.startActivity(state, config)
@@ -245,7 +251,10 @@ Example payload for starting Live Activity:
       "progressViewTint": "38ACDD",
       "progressViewLabelColor": "FFFFFF",
       "deepLinkUrl": "/dashboard",
-      "timerType": "digital"
+      "timerType": "digital",
+      "padding": 24, // or use object to control each side: { "horizontal": 20, "top": 16, "bottom": 16 }
+      "imagePosition": "right",
+      "imageSize": "default"
     },
     "alert": {
       "title": "",
