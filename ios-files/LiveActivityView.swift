@@ -24,8 +24,45 @@ import WidgetKit
     }
 
     var body: some View {
+      let defaultPadding = 24
+
+      let top = CGFloat(
+        attributes.paddingDetails?.top
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+
+      let bottom = CGFloat(
+        attributes.paddingDetails?.bottom
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+
+      let leading = CGFloat(
+        attributes.paddingDetails?.left
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+
+      let trailing = CGFloat(
+        attributes.paddingDetails?.right
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
+          if attributes.imagePosition == "left" {
+            if let imageName = contentState.imageName {
+              resizableImage(imageName: imageName)
+                .applyImageSize(attributes.imageSize)
+            }
+          }
+
           VStack(alignment: .leading, spacing: 2) {
             Text(contentState.title)
               .font(.title2)
@@ -37,27 +74,42 @@ import WidgetKit
                 .font(.title3)
                 .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
             }
+
+            if attributes.imageSize == "fullHeight" {
+              if let date = contentState.timerEndDateInMilliseconds {
+                ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
+                  .tint(progressViewTint)
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+              } else if let progress = contentState.progress {
+                ProgressView(value: progress)
+                  .tint(progressViewTint)
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+              }
+            }
           }
 
-          Spacer()
-
-          if let imageName = contentState.imageName {
-            resizableImage(imageName: imageName)
-              .frame(maxHeight: 64)
+          if attributes.imagePosition == "right" || attributes.imagePosition == nil {
+            Spacer()
+            if let imageName = contentState.imageName {
+              resizableImage(imageName: imageName)
+                .applyImageSize(attributes.imageSize)
+            }
           }
         }
 
-        if let date = contentState.timerEndDateInMilliseconds {
-          ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
-            .tint(progressViewTint)
-            .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-        } else if let progress = contentState.progress {
-          ProgressView(value: progress)
-            .tint(progressViewTint)
-            .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+        if attributes.imageSize != "fullHeight" {
+          if let date = contentState.timerEndDateInMilliseconds {
+            ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
+              .tint(progressViewTint)
+              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+          } else if let progress = contentState.progress {
+            ProgressView(value: progress)
+              .tint(progressViewTint)
+              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+          }
         }
       }
-      .padding(24)
+      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
 

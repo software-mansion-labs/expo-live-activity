@@ -48,6 +48,27 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var timerType: DynamicIslandTimerType?
+
+    @Field
+    var padding: Int?
+
+    @Field
+    var paddingDetails: PaddingDetails?
+
+    @Field
+    var imagePosition: String?
+
+    @Field
+    var imageSize: String?
+
+    struct PaddingDetails: Record {
+      @Field var top: Int?
+      @Field var bottom: Int?
+      @Field var left: Int?
+      @Field var right: Int?
+      @Field var vertical: Int?
+      @Field var horizontal: Int?
+    }
   }
 
   enum DynamicIslandTimerType: String, Enumerable {
@@ -179,6 +200,7 @@ public class ExpoLiveActivityModule: Module {
 
       do {
         let config = maybeConfig ?? LiveActivityConfig()
+
         let attributes = LiveActivityAttributes(
           name: "ExpoLiveActivity",
           backgroundColor: config.backgroundColor,
@@ -187,8 +209,22 @@ public class ExpoLiveActivityModule: Module {
           progressViewTint: config.progressViewTint,
           progressViewLabelColor: config.progressViewLabelColor,
           deepLinkUrl: config.deepLinkUrl,
-          timerType: config.timerType == .digital ? .digital : .circular
+          timerType: config.timerType == .digital ? .digital : .circular,
+          padding: config.padding,
+          paddingDetails: config.paddingDetails.map {
+            LiveActivityAttributes.PaddingDetails(
+              top: $0.top,
+              bottom: $0.bottom,
+              left: $0.left,
+              right: $0.right,
+              vertical: $0.vertical,
+              horizontal: $0.horizontal
+            )
+          },
+          imagePosition: config.imagePosition,
+          imageSize: config.imageSize
         )
+
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
