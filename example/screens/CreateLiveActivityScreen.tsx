@@ -1,8 +1,20 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import type { ImagePosition, ImageSize, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
-import { Button, Keyboard, Platform, ScrollView, StyleSheet, Switch, Text, TextInput, View } from 'react-native'
+import {
+  ActionSheetIOS,
+  Button,
+  Keyboard,
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  View,
+} from 'react-native'
 
 const dynamicIslandImageName = 'logo-island'
 const toggle = (previousState: boolean) => !previousState
@@ -19,6 +31,16 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
+  const [imageSize, setImageSize] = useState<ImageSize>('default')
+  const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
+  const [showPaddingDetails, setShowPaddingDetails] = useState(false)
+  const [paddingSingle, setPaddingSingle] = useState('')
+  const [paddingTop, setPaddingTop] = useState('')
+  const [paddingBottom, setPaddingBottom] = useState('')
+  const [paddingLeft, setPaddingLeft] = useState('')
+  const [paddingRight, setPaddingRight] = useState('')
+  const [paddingVertical, setPaddingVertical] = useState('')
+  const [paddingHorizontal, setPaddingHorizontal] = useState('')
 
   const onChangeProgress = useCallback(
     (text: string) => {
@@ -43,6 +65,39 @@ export default function CreateLiveActivityScreen() {
   const activityIdState = activityId ? `Activity ID: ${activityId}` : 'No active activity'
   console.log(activityIdState)
 
+  const onChangeNumeric = useCallback((text: string, setter: (val: string) => void) => {
+    if (/^\d*$/.test(text)) setter(text)
+  }, [])
+
+  const computePadding = useCallback(() => {
+    if (!showPaddingDetails) {
+      if (paddingSingle !== '') {
+        return parseInt(paddingSingle, 10)
+      }
+      return undefined
+    }
+    const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
+    const obj = {
+      top: toNum(paddingTop),
+      bottom: toNum(paddingBottom),
+      left: toNum(paddingLeft),
+      right: toNum(paddingRight),
+      vertical: toNum(paddingVertical),
+      horizontal: toNum(paddingHorizontal),
+    }
+    const allUndefined = Object.values(obj).every((v) => v === undefined)
+    return allUndefined ? undefined : obj
+  }, [
+    showPaddingDetails,
+    paddingSingle,
+    paddingTop,
+    paddingBottom,
+    paddingLeft,
+    paddingRight,
+    paddingVertical,
+    paddingHorizontal,
+  ])
+
   const startActivity = () => {
     Keyboard.dismiss()
     const progressState = passDate
@@ -63,8 +118,11 @@ export default function CreateLiveActivityScreen() {
 
     try {
       const id = LiveActivity.startActivity(state, {
-        ...activityConfig,
+        ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
+        imageSize,
+        imagePosition,
+        padding: computePadding(),
       })
       if (id) setActivityID(id)
     } catch (e) {
@@ -141,6 +199,113 @@ export default function CreateLiveActivityScreen() {
           value={imageName}
           editable={passImage}
         />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image size:</Text>
+        </View>
+        <Dropdown
+          value={imageSize}
+          onChange={(v) => setImageSize(v as ImageSize)}
+          options={[
+            { label: 'Default', value: 'default' },
+            { label: 'Full height', value: 'fullHeight' },
+          ]}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image position:</Text>
+        </View>
+        <Dropdown
+          value={imagePosition}
+          onChange={(v) => setImagePosition(v as ImagePosition)}
+          options={[
+            { label: 'Left', value: 'left' },
+            { label: 'Right', value: 'right' },
+          ]}
+        />
+
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Show padding details:</Text>
+          <Switch onValueChange={() => setShowPaddingDetails(toggle)} value={showPaddingDetails} />
+        </View>
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Padding:</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={(t) => onChangeNumeric(t, setPaddingSingle)}
+          keyboardType="number-pad"
+          placeholder="Single padding (applies to all)"
+          value={paddingSingle}
+        />
+        {showPaddingDetails && (
+          <View style={styles.paddingGrid}>
+            <View style={styles.paddingRow}>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Top</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingTop)}
+                  keyboardType="number-pad"
+                  placeholder="Top"
+                  value={paddingTop}
+                />
+              </View>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Bottom</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingBottom)}
+                  keyboardType="number-pad"
+                  placeholder="Bottom"
+                  value={paddingBottom}
+                />
+              </View>
+            </View>
+            <View style={styles.paddingRow}>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Left</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingLeft)}
+                  keyboardType="number-pad"
+                  placeholder="Left"
+                  value={paddingLeft}
+                />
+              </View>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Right</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingRight)}
+                  keyboardType="number-pad"
+                  placeholder="Right"
+                  value={paddingRight}
+                />
+              </View>
+            </View>
+            <View style={styles.paddingRow}>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Vertical</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingVertical)}
+                  keyboardType="number-pad"
+                  placeholder="Vertical"
+                  value={paddingVertical}
+                />
+              </View>
+              <View style={styles.paddingCell}>
+                <Text style={styles.smallLabel}>Horizontal</Text>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={(t) => onChangeNumeric(t, setPaddingHorizontal)}
+                  keyboardType="number-pad"
+                  placeholder="Horizontal"
+                  value={paddingHorizontal}
+                />
+              </View>
+            </View>
+          </View>
+        )}
         {Platform.OS === 'ios' && (
           <>
             <View style={styles.labelWithSwitch}>
@@ -207,7 +372,7 @@ export default function CreateLiveActivityScreen() {
   )
 }
 
-const activityConfig: LiveActivityConfig = {
+const baseActivityConfig: LiveActivityConfig = {
   backgroundColor: '001A72',
   titleColor: 'EBEBF0',
   subtitleColor: '#FFFFFF75',
@@ -245,6 +410,10 @@ const styles = StyleSheet.create({
     width: '90%',
     paddingEnd: 15,
   },
+  smallLabel: {
+    fontSize: 14,
+    width: '90%',
+  },
   input: {
     height: 45,
     width: '90%',
@@ -273,4 +442,98 @@ const styles = StyleSheet.create({
   spacer: {
     height: 16,
   },
+  dropdown: {
+    width: '90%',
+    marginVertical: 8,
+  },
+  dropdownHeader: {
+    height: 45,
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dropdownList: {
+    borderWidth: 1,
+    borderColor: 'gray',
+    borderRadius: 10,
+    marginTop: 4,
+  },
+  dropdownItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+  paddingGrid: {
+    width: '90%',
+  },
+  paddingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  paddingCell: {
+    width: '48%',
+  },
 })
+
+type DropdownOption = { label: string; value: string }
+
+function Dropdown({
+  value,
+  onChange,
+  options,
+}: {
+  value: string
+  onChange: (val: string) => void
+  options: DropdownOption[]
+}) {
+  const [open, setOpen] = useState(false)
+  const selected = options.find((o) => o.value === value) ?? options[0]
+
+  return (
+    <View style={styles.dropdown}>
+      <Pressable
+        style={styles.dropdownHeader}
+        onPress={() => {
+          if (Platform.OS === 'ios') {
+            const labels = options.map((o) => o.label)
+            ActionSheetIOS.showActionSheetWithOptions(
+              {
+                options: [...labels, 'Cancel'],
+                cancelButtonIndex: labels.length,
+              },
+              (buttonIndex) => {
+                if (buttonIndex !== undefined && buttonIndex < labels.length) {
+                  onChange(options[buttonIndex].value)
+                }
+              }
+            )
+          } else {
+            setOpen((o) => !o)
+          }
+        }}
+      >
+        <Text>{selected.label}</Text>
+        <Text>{open ? '▲' : '▼'}</Text>
+      </Pressable>
+      {Platform.OS !== 'ios' && open && (
+        <View style={styles.dropdownList}>
+          {options.map((opt) => (
+            <Pressable
+              key={opt.value}
+              style={styles.dropdownItem}
+              onPress={() => {
+                onChange(opt.value)
+                setOpen(false)
+              }}
+            >
+              <Text>{opt.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+    </View>
+  )
+}
