@@ -36,10 +36,6 @@
   },
   "license": "MIT",
   "homepage": "https://github.com/software-mansion-labs/expo-live-activity#readme",
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://npm.pkg.github.com"
-  },
   "devDependencies": {
     "@types/react": "~19.1.0",
     "eslint": "^9.33.0",
