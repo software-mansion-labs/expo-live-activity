@@ -23,6 +23,26 @@ import WidgetKit
       attributes.progressViewTint.map { Color(hex: $0) }
     }
 
+    private var imageAlignment: Alignment {
+      switch attributes.imageAlign {
+      case "top":
+        return .top
+      case "bottom":
+        return .bottom
+      default:
+        return .center
+      }
+    }
+
+    @ViewBuilder
+    private func alignedImage(imageName: String) -> some View {
+      VStack {
+        resizableImage(imageName: imageName)
+          .applyImageSize(attributes.imageSize)
+      }
+      .frame(maxHeight: .infinity, alignment: imageAlignment)
+    }
+
     var body: some View {
       let defaultPadding = 24
 
@@ -60,23 +80,14 @@ import WidgetKit
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
-        let hAlignment: VerticalAlignment = {
-          switch attributes.imageAlign {
-          case "top": return .top
-          case "bottom": return .bottom
-          default: return .center
-          }
-        }()
-
-        HStack(alignment: hAlignment) {
-          if isLeftImage {
+        HStack(alignment: .center) {
+          if hasImage && isLeftImage {
             if let imageName = contentState.imageName {
-              resizableImage(imageName: imageName)
-                .applyImageSize(attributes.imageSize)
+              alignedImage(imageName: imageName)
             }
           }
 
-          VStack(alignment: .leading) {
+          VStack(alignment: .leading, spacing: 2) {
             Text(contentState.title)
               .font(.title2)
               .fontWeight(.semibold)
@@ -101,11 +112,10 @@ import WidgetKit
             }
           }
 
-          if !isLeftImage { // right side (default)
+          if hasImage && !isLeftImage { // right side (default)
             Spacer()
             if let imageName = contentState.imageName {
-              resizableImage(imageName: imageName)
-                .applyImageSize(attributes.imageSize)
+              alignedImage(imageName: imageName)
             }
           }
         }
