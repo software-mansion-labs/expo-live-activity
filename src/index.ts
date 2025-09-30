@@ -47,7 +47,7 @@ export type Padding =
 
 export type ImagePosition = 'left' | 'right'
 
-export type ImageSize = 'fullHeight' | 'default'
+export type ImageSize = 'default' | number
 
 export type LiveActivityConfig = {
   backgroundColor?: string
@@ -101,13 +101,24 @@ function assertIOS(name: string) {
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
   function normalizeConfig(config?: LiveActivityConfig) {
-    if (typeof config?.padding === 'number') {
-      return { ...config, padding: config.padding, paddingDetails: undefined }
+    if (!config) return config
+
+    const { padding, imageSize, ...base } = config
+    const normalized: any = { ...base }
+
+    // Normalize padding: keep number in padding, object in paddingDetails
+    if (typeof padding === 'number') {
+      normalized.padding = padding
+    } else if (typeof padding === 'object') {
+      normalized.paddingDetails = padding
     }
-    if (typeof config?.padding === 'object') {
-      return { ...config, padding: undefined, paddingDetails: config.padding }
-    }
-    return config
+
+    // Normalize imageSize: 'default' | number -> imageSize (number)
+    if (typeof imageSize === 'number') {
+      normalized.imageSize = imageSize
+    } // omit if 'default' to use native default
+
+    return normalized
   }
 
   if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config))

@@ -1,5 +1,5 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { ImagePosition, ImageSize, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import type { ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {
@@ -31,7 +31,7 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
-  const [imageSize, setImageSize] = useState<ImageSize>('default')
+  const [imageSizeInput, setImageSizeInput] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
@@ -117,6 +117,7 @@ export default function CreateLiveActivityScreen() {
     }
 
     try {
+      const imageSize = imageSizeInput === '' ? 'default' : parseInt(imageSizeInput, 10)
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
@@ -200,15 +201,14 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image size:</Text>
+          <Text style={styles.label}>Image max height (pt):</Text>
         </View>
-        <Dropdown
-          value={imageSize}
-          onChange={(v) => setImageSize(v as ImageSize)}
-          options={[
-            { label: 'Default', value: 'default' },
-            { label: 'Full height', value: 'fullHeight' },
-          ]}
+        <TextInput
+          style={styles.input}
+          onChangeText={(t) => onChangeNumeric(t, setImageSizeInput)}
+          keyboardType="number-pad"
+          placeholder="Leave empty for default (64)"
+          value={imageSizeInput}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>

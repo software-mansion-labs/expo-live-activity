@@ -59,7 +59,7 @@ public class ExpoLiveActivityModule: Module {
     var imagePosition: String?
 
     @Field
-    var imageSize: String?
+    var imageSize: Int?
 
     struct PaddingDetails: Record {
       @Field var top: Int?
