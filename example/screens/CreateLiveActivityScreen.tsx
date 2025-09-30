@@ -1,5 +1,5 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import { ImageAlign, ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {
@@ -33,6 +33,7 @@ export default function CreateLiveActivityScreen() {
   const [passProgress, setPassProgress] = useState(false)
   const [imageSizeInput, setImageSizeInput] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
+  const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
   const [paddingTop, setPaddingTop] = useState('')
@@ -123,6 +124,7 @@ export default function CreateLiveActivityScreen() {
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
         imageSize,
         imagePosition,
+        imageAlign,
         padding: computePadding(),
       })
       if (id) setActivityID(id)
@@ -219,6 +221,21 @@ export default function CreateLiveActivityScreen() {
           options={[
             { label: 'Left', value: 'left' },
             { label: 'Right', value: 'right' },
+            { label: 'Left (stretch)', value: 'leftStretch' },
+            { label: 'Right (stretch)', value: 'rightStretch' },
+          ]}
+        />
+
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image vertical align:</Text>
+        </View>
+        <Dropdown
+          value={imageAlign}
+          onChange={(v) => setImageAlign(v as 'top' | 'center' | 'bottom')}
+          options={[
+            { label: 'Top', value: 'top' },
+            { label: 'Center', value: 'center' },
+            { label: 'Bottom', value: 'bottom' },
           ]}
         />
 

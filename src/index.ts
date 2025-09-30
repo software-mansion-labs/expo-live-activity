@@ -45,7 +45,9 @@ export type Padding =
     }
   | number
 
-export type ImagePosition = 'left' | 'right'
+export type ImagePosition = 'left' | 'right' | 'leftStretch' | 'rightStretch'
+
+export type ImageAlign = 'top' | 'center' | 'bottom'
 
 export type ImageSize = 'default' | number
 
@@ -59,6 +61,7 @@ export type LiveActivityConfig = {
   timerType?: DynamicIslandTimerType
   padding?: Padding
   imagePosition?: ImagePosition
+  imageAlign?: ImageAlign
   imageSize?: ImageSize
 }
 

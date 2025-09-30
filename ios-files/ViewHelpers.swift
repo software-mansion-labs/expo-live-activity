@@ -1,9 +1,10 @@
 import SwiftUI
 
-func resizableImage(imageName: String) -> some View {
+@ViewBuilder
+func resizableImage(imageName: String, stretch: Bool = false) -> some View {
   Image.dynamic(assetNameOrPath: imageName)
-    .resizable()
-    .scaledToFit()
+  .resizable()
+  .scaledToFit()
 }
 
 extension View {

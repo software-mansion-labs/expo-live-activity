@@ -61,6 +61,9 @@ public class ExpoLiveActivityModule: Module {
     @Field
     var imageSize: Int?
 
+    @Field
+    var imageAlign: String?
+
     struct PaddingDetails: Record {
       @Field var top: Int?
       @Field var bottom: Int?
@@ -222,7 +225,8 @@ public class ExpoLiveActivityModule: Module {
             )
           },
           imagePosition: config.imagePosition,
-          imageSize: config.imageSize
+          imageSize: config.imageSize,
+          imageAlign: config.imageAlign
         )
 
         let initialState = LiveActivityAttributes.ContentState(
