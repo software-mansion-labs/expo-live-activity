@@ -1,5 +1,5 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { LiveActivityConfig, LiveActivityState, ImagePosition, ImageAlign } from 'expo-live-activity'
+import type { ImageAlign, ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {
@@ -31,7 +31,7 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
-  const [imageSizeInput, setImageSizeInput] = useState('')
+  const [imageSize, setImageSize] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
@@ -118,11 +118,10 @@ export default function CreateLiveActivityScreen() {
     }
 
     try {
-      const imageSize = imageSizeInput === '' ? 'default' : parseInt(imageSizeInput, 10)
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize,
+        imageSize: imageSize === '' ? 'default' : parseInt(imageSize, 10),
         imagePosition,
         imageAlign,
         padding: computePadding(),
@@ -207,10 +206,10 @@ export default function CreateLiveActivityScreen() {
         </View>
         <TextInput
           style={styles.input}
-          onChangeText={(t) => onChangeNumeric(t, setImageSizeInput)}
+          onChangeText={(t) => onChangeNumeric(t, setImageSize)}
           keyboardType="number-pad"
           placeholder="Leave empty for default (64)"
-          value={imageSizeInput}
+          value={imageSize}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>
