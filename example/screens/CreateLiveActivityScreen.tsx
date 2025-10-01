@@ -1,5 +1,5 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import { ImageAlign, ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import type { LiveActivityConfig, LiveActivityState, ImagePosition, ImageAlign } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {

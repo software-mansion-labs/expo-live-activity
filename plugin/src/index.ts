@@ -22,7 +22,7 @@ const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) =
   }
 
   config = withPlugins(config, [
-    [withPlist, { targetName }],
+    withPlist,
     [
       withXcode,
       {
