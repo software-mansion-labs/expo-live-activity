@@ -81,7 +81,7 @@ import WidgetKit
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
         HStack(alignment: .center) {
-          if hasImage && isLeftImage {
+          if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
             }
@@ -112,14 +112,13 @@ import WidgetKit
             }
           }
 
-          if hasImage && !isLeftImage { // right side (default)
+          if hasImage, !isLeftImage { // right side (default)
             Spacer()
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
             }
           }
         }
-
 
         if !effectiveStretch {
           // Bottom progress (hidden when using Stretch variants where progress is inline)
