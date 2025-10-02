@@ -18,6 +18,7 @@ import {
 
 const dynamicIslandImageName = 'logo-island'
 const toggle = (previousState: boolean) => !previousState
+const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
 
 export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>()
@@ -77,7 +78,7 @@ export default function CreateLiveActivityScreen() {
       }
       return undefined
     }
-    const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
+
     const obj = {
       top: toNum(paddingTop),
       bottom: toNum(paddingBottom),
@@ -121,7 +122,7 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize: imageSize === '' ? undefined : parseInt(imageSize, 10),
+        imageSize: toNum(imageSize),
         imagePosition,
         imageAlign,
         padding: computePadding(),

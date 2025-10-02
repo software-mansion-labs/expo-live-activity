@@ -106,7 +106,7 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
   function normalizeConfig(config?: LiveActivityConfig) {
     if (config === undefined) return config
 
-    const { padding, imageSize, ...base } = config
+    const { padding, ...base } = config
     type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
     const normalized: NormalizedConfig = { ...base }
 
