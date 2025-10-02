@@ -94,22 +94,22 @@ function assertIOS(name: string) {
   return isIOS
 }
 
+function normalizeConfig(config?: LiveActivityConfig) {
+  if (typeof config?.padding === 'number') {
+    return { ...config, padding: config.padding, paddingDetails: undefined }
+  }
+  if (typeof config?.padding === 'object') {
+    return { ...config, padding: undefined, paddingDetails: config.padding }
+  }
+  return config
+}
+
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
-  function normalizeConfig(config?: LiveActivityConfig) {
-    if (typeof config?.padding === 'number') {
-      return { ...config, padding: config.padding, paddingDetails: undefined }
-    }
-    if (typeof config?.padding === 'object') {
-      return { ...config, padding: undefined, paddingDetails: config.padding }
-    }
-    return config
-  }
-
   if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config))
 }
 
