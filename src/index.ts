@@ -45,9 +45,11 @@ export type Padding =
     }
   | number
 
-export type ImagePosition = 'left' | 'right'
+export type ImagePosition = 'left' | 'right' | 'leftStretch' | 'rightStretch'
 
-export type ImageSize = 'fullHeight' | 'default'
+export type ImageAlign = 'top' | 'center' | 'bottom'
+
+export type ImageSize = number
 
 export type LiveActivityConfig = {
   backgroundColor?: string
@@ -59,6 +61,7 @@ export type LiveActivityConfig = {
   timerType?: DynamicIslandTimerType
   padding?: Padding
   imagePosition?: ImagePosition
+  imageAlign?: ImageAlign
   imageSize?: ImageSize
 }
 
@@ -95,13 +98,20 @@ function assertIOS(name: string) {
 }
 
 function normalizeConfig(config?: LiveActivityConfig) {
-  if (typeof config?.padding === 'number') {
-    return { ...config, padding: config.padding, paddingDetails: undefined }
+  if (config === undefined) return config
+
+  const { padding, ...base } = config
+  type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
+  const normalized: NormalizedConfig = { ...base }
+
+  // Normalize padding: keep number in padding, object in paddingDetails
+  if (typeof padding === 'number') {
+    normalized.padding = padding
+  } else if (typeof padding === 'object') {
+    normalized.paddingDetails = padding
   }
-  if (typeof config?.padding === 'object') {
-    return { ...config, padding: undefined, paddingDetails: config.padding }
-  }
-  return config
+
+  return normalized
 }
 
 /**

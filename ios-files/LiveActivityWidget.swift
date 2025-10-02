@@ -23,7 +23,8 @@ struct LiveActivityAttributes: ActivityAttributes {
   var padding: Int?
   var paddingDetails: PaddingDetails?
   var imagePosition: String?
-  var imageSize: String?
+  var imageSize: Int?
+  var imageAlign: String?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular

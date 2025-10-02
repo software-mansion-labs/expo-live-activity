@@ -1,5 +1,5 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { ImagePosition, ImageSize, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import type { ImageAlign, ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {
@@ -18,6 +18,7 @@ import {
 
 const dynamicIslandImageName = 'logo-island'
 const toggle = (previousState: boolean) => !previousState
+const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
 
 export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>()
@@ -31,8 +32,9 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
-  const [imageSize, setImageSize] = useState<ImageSize>('default')
+  const [imageSize, setImageSize] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
+  const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
   const [paddingTop, setPaddingTop] = useState('')
@@ -76,7 +78,7 @@ export default function CreateLiveActivityScreen() {
       }
       return undefined
     }
-    const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
+
     const obj = {
       top: toNum(paddingTop),
       bottom: toNum(paddingBottom),
@@ -120,8 +122,9 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize,
+        imageSize: toNum(imageSize),
         imagePosition,
+        imageAlign,
         padding: computePadding(),
       })
       if (id) setActivityID(id)
@@ -200,15 +203,14 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image size:</Text>
+          <Text style={styles.label}>Image max height (pt):</Text>
         </View>
-        <Dropdown
+        <TextInput
+          style={styles.input}
+          onChangeText={(t) => onChangeNumeric(t, setImageSize)}
+          keyboardType="number-pad"
+          placeholder="Leave empty for default (64)"
           value={imageSize}
-          onChange={(v) => setImageSize(v as ImageSize)}
-          options={[
-            { label: 'Default', value: 'default' },
-            { label: 'Full height', value: 'fullHeight' },
-          ]}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>
@@ -219,6 +221,21 @@ export default function CreateLiveActivityScreen() {
           options={[
             { label: 'Left', value: 'left' },
             { label: 'Right', value: 'right' },
+            { label: 'Left (stretch)', value: 'leftStretch' },
+            { label: 'Right (stretch)', value: 'rightStretch' },
+          ]}
+        />
+
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image vertical align:</Text>
+        </View>
+        <Dropdown
+          value={imageAlign}
+          onChange={(v) => setImageAlign(v as 'top' | 'center' | 'bottom')}
+          options={[
+            { label: 'Top', value: 'top' },
+            { label: 'Center', value: 'center' },
+            { label: 'Bottom', value: 'bottom' },
           ]}
         />
 
