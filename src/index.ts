@@ -97,29 +97,29 @@ function assertIOS(name: string) {
   return isIOS
 }
 
+function normalizeConfig(config?: LiveActivityConfig) {
+  if (config === undefined) return config
+
+  const { padding, ...base } = config
+  type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
+  const normalized: NormalizedConfig = { ...base }
+
+  // Normalize padding: keep number in padding, object in paddingDetails
+  if (typeof padding === 'number') {
+    normalized.padding = padding
+  } else if (typeof padding === 'object') {
+    normalized.paddingDetails = padding
+  }
+
+  return normalized
+}
+
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
-  function normalizeConfig(config?: LiveActivityConfig) {
-    if (config === undefined) return config
-
-    const { padding, ...base } = config
-    type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
-    const normalized: NormalizedConfig = { ...base }
-
-    // Normalize padding: keep number in padding, object in paddingDetails
-    if (typeof padding === 'number') {
-      normalized.padding = padding
-    } else if (typeof padding === 'object') {
-      normalized.paddingDetails = padding
-    }
-
-    return normalized
-  }
-
   if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config))
 }
 
