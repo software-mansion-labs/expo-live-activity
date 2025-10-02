@@ -8,12 +8,7 @@ func resizableImage(imageName: String) -> some View {
 
 extension View {
   @ViewBuilder
-  func applyImageSize(_ size: String?) -> some View {
-    switch size {
-    case "fullHeight":
-      frame(maxHeight: .infinity)
-    default:
-      frame(maxHeight: 64)
-    }
+  func applyImageSize(_ size: Int?) -> some View {
+    frame(maxHeight: CGFloat(size ?? 64))
   }
 }

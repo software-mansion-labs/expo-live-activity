@@ -23,6 +23,26 @@ import WidgetKit
       attributes.progressViewTint.map { Color(hex: $0) }
     }
 
+    private var imageAlignment: Alignment {
+      switch attributes.imageAlign {
+      case "center":
+        return .center
+      case "bottom":
+        return .bottom
+      default:
+        return .top
+      }
+    }
+
+    @ViewBuilder
+    private func alignedImage(imageName: String) -> some View {
+      VStack {
+        resizableImage(imageName: imageName)
+          .applyImageSize(attributes.imageSize)
+      }
+      .frame(maxHeight: .infinity, alignment: imageAlignment)
+    }
+
     var body: some View {
       let defaultPadding = 24
 
@@ -55,11 +75,15 @@ import WidgetKit
       )
 
       VStack(alignment: .leading) {
+        let position = attributes.imagePosition ?? "right"
+        let isStretch = position.contains("Stretch")
+        let isLeftImage = position.hasPrefix("left")
+        let hasImage = contentState.imageName != nil
+        let effectiveStretch = isStretch && hasImage
         HStack(alignment: .center) {
-          if attributes.imagePosition == "left" {
+          if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
-              resizableImage(imageName: imageName)
-                .applyImageSize(attributes.imageSize)
+              alignedImage(imageName: imageName)
             }
           }
 
@@ -75,7 +99,7 @@ import WidgetKit
                 .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
             }
 
-            if attributes.imageSize == "fullHeight" {
+            if effectiveStretch {
               if let date = contentState.timerEndDateInMilliseconds {
                 ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
                   .tint(progressViewTint)
@@ -88,16 +112,16 @@ import WidgetKit
             }
           }
 
-          if attributes.imagePosition == "right" || attributes.imagePosition == nil {
+          if hasImage, !isLeftImage { // right side (default)
             Spacer()
             if let imageName = contentState.imageName {
-              resizableImage(imageName: imageName)
-                .applyImageSize(attributes.imageSize)
+              alignedImage(imageName: imageName)
             }
           }
         }
 
-        if attributes.imageSize != "fullHeight" {
+        if !effectiveStretch {
+          // Bottom progress (hidden when using Stretch variants where progress is inline)
           if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
               .tint(progressViewTint)
