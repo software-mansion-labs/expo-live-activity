@@ -121,7 +121,7 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize: imageSize === '' ? 'default' : parseInt(imageSize, 10),
+        imageSize: imageSize === '' ? undefined : parseInt(imageSize, 10),
         imagePosition,
         imageAlign,
         padding: computePadding(),

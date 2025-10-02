@@ -49,7 +49,7 @@ export type ImagePosition = 'left' | 'right' | 'leftStretch' | 'rightStretch'
 
 export type ImageAlign = 'top' | 'center' | 'bottom'
 
-export type ImageSize = 'default' | number
+export type ImageSize = number
 
 export type LiveActivityConfig = {
   backgroundColor?: string
@@ -104,10 +104,11 @@ function assertIOS(name: string) {
  */
 export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
   function normalizeConfig(config?: LiveActivityConfig) {
-    if (!config) return config
+    if (config === undefined) return config
 
     const { padding, imageSize, ...base } = config
-    const normalized: any = { ...base }
+    type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
+    const normalized: NormalizedConfig = { ...base }
 
     // Normalize padding: keep number in padding, object in paddingDetails
     if (typeof padding === 'number') {
@@ -115,11 +116,6 @@ export function startActivity(state: LiveActivityState, config?: LiveActivityCon
     } else if (typeof padding === 'object') {
       normalized.paddingDetails = padding
     }
-
-    // Normalize imageSize: 'default' | number -> imageSize (number)
-    if (typeof imageSize === 'number') {
-      normalized.imageSize = imageSize
-    } // omit if 'default' to use native default
 
     return normalized
   }

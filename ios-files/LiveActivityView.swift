@@ -25,12 +25,12 @@ import WidgetKit
 
     private var imageAlignment: Alignment {
       switch attributes.imageAlign {
-      case "top":
-        return .top
+      case "center":
+        return .center
       case "bottom":
         return .bottom
       default:
-        return .center
+        return .top
       }
     }
 
@@ -76,7 +76,7 @@ import WidgetKit
 
       VStack(alignment: .leading) {
         let position = attributes.imagePosition ?? "right"
-        let isStretch = position == "leftStretch" || position == "rightStretch"
+        let isStretch = position.contains("Stretch")
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
