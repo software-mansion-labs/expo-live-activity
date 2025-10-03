@@ -62,6 +62,9 @@ public class ExpoLiveActivityModule: Module {
     var imageSize: Int?
 
     @Field
+    var imageSizePercent: Double?
+
+    @Field
     var imageAlign: String?
 
     struct PaddingDetails: Record {
@@ -226,6 +229,7 @@ public class ExpoLiveActivityModule: Module {
           },
           imagePosition: config.imagePosition,
           imageSize: config.imageSize,
+          imageSizePercent: config.imageSizePercent,
           imageAlign: config.imageAlign
         )
 

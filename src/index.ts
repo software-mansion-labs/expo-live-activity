@@ -49,7 +49,7 @@ export type ImagePosition = 'left' | 'right' | 'leftStretch' | 'rightStretch'
 
 export type ImageAlign = 'top' | 'center' | 'bottom'
 
-export type ImageSize = number
+export type ImageSize = number | `${number}%`
 
 export type LiveActivityConfig = {
   backgroundColor?: string
@@ -100,8 +100,11 @@ function assertIOS(name: string) {
 function normalizeConfig(config?: LiveActivityConfig) {
   if (config === undefined) return config
 
-  const { padding, ...base } = config
-  type NormalizedConfig = LiveActivityConfig & { paddingDetails?: Padding }
+  const { padding, imageSize, ...base } = config
+  type NormalizedConfig = LiveActivityConfig & {
+    paddingDetails?: Padding
+    imageSizePercent?: number
+  }
   const normalized: NormalizedConfig = { ...base }
 
   // Normalize padding: keep number in padding, object in paddingDetails
@@ -109,6 +112,17 @@ function normalizeConfig(config?: LiveActivityConfig) {
     normalized.padding = padding
   } else if (typeof padding === 'object') {
     normalized.paddingDetails = padding
+  }
+
+  // Normalize imageSize: accept points (number) or percent string like '50%'
+  if (typeof imageSize === 'number') {
+    normalized.imageSize = imageSize
+  } else if (typeof imageSize === 'string') {
+    const match = imageSize.trim().match(/^(-?\d+(?:\.\d+)?)%$/)
+    if (match) {
+      const percent = Math.max(0, Math.min(100, Number(match[1])))
+      normalized.imageSizePercent = percent
+    }
   }
 
   return normalized
