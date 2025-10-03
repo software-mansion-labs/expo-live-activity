@@ -7,7 +7,7 @@ func resizableImage(imageName: String) -> some View {
 }
 
 private struct ContainerHeightKey: PreferenceKey {
-  static var defaultValue: CGFloat? = nil
+  static var defaultValue: CGFloat?
   static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
     value = nextValue() ?? value
   }

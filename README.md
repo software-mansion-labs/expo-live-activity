@@ -153,7 +153,11 @@ The `config` object should include:
    timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appearance on the dynamic island
    padding?: Padding // number | {top?: number bottom?: number ...}
    imagePosition?: ImagePosition; // 'left' | 'right';
+<<<<<<< Updated upstream
    imageSize?: ImageSize // number (points maxHeight) | `${number}%` (relative height)
+=======
+  imageSize?: ImageSize // number (points maxHeight) | `${number}%` (relative height)
+>>>>>>> Stashed changes
 };
 ```
 
