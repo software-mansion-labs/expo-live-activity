@@ -71,6 +71,22 @@ export default function CreateLiveActivityScreen() {
     if (/^\d*$/.test(text)) setter(text)
   }, [])
 
+  const onChangeImageSizeText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      // do not allow multiple dots
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setImageSize(text)
+    }
+  }, [])
+
+  const computeImageSize = useCallback((): LiveActivityConfig['imageSize'] | undefined => {
+    const raw = imageSize.trim()
+    if (raw === '') return undefined
+    if (/^-?\d+(?:\.\d+)?%$/.test(raw)) return raw as LiveActivityConfig['imageSize']
+    const n = parseInt(raw, 10)
+    return isNaN(n) ? undefined : n
+  }, [imageSize])
+
   const computePadding = useCallback(() => {
     if (!showPaddingDetails) {
       if (paddingSingle !== '') {
@@ -122,7 +138,7 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize: toNum(imageSize),
+        imageSize: computeImageSize(),
         imagePosition,
         imageAlign,
         padding: computePadding(),
@@ -203,13 +219,14 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image max height (pt):</Text>
+          <Text style={styles.label}>Image max height (pt or %):</Text>
         </View>
         <TextInput
           style={styles.input}
-          onChangeText={(t) => onChangeNumeric(t, setImageSize)}
-          keyboardType="number-pad"
-          placeholder="Leave empty for default (64)"
+          onChangeText={onChangeImageSizeText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="Leave empty for default (64), e.g. 80 or 50%"
           value={imageSize}
         />
         <View style={styles.labelWithSwitch}>

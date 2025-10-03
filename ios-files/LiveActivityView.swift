@@ -18,6 +18,7 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
+    @State private var containerHeight: CGFloat?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -36,11 +37,12 @@ import WidgetKit
 
     @ViewBuilder
     private func alignedImage(imageName: String) -> some View {
-      VStack {
+      VStack(alignment: .trailing, spacing: 0) {
         resizableImage(imageName: imageName)
-          .applyImageSize(attributes.imageSize)
+          .applyImageSize(attributes.imageSize, percent: attributes.imageSizePercent, containerHeight: containerHeight)
       }
       .frame(maxHeight: .infinity, alignment: imageAlignment)
+      .fixedSize(horizontal: true, vertical: false)
     }
 
     var body: some View {
@@ -113,7 +115,7 @@ import WidgetKit
           }
 
           if hasImage, !isLeftImage { // right side (default)
-            Spacer()
+            Spacer(minLength: 0)
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
             }
@@ -134,6 +136,10 @@ import WidgetKit
         }
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
+      .captureContainerHeight()
+      .onContainerHeight { h in
+        if let h, h > 0 { containerHeight = h }
+      }
     }
   }
 
