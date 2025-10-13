@@ -18,7 +18,7 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
-    @State private var textColumnHeight: CGFloat?
+    @State private var imageContainerHeight: CGFloat?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -38,7 +38,7 @@ import WidgetKit
     @ViewBuilder
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
-      let base = textColumnHeight ?? defaultHeight
+      let base = imageContainerHeight ?? defaultHeight
       let computedHeight: CGFloat = {
         if let percent = attributes.imageSizePercent {
           let clamped = min(max(percent, 0), 100) / 100.0
@@ -58,10 +58,7 @@ import WidgetKit
       .fixedSize(horizontal: true, vertical: false)
       .captureContainerHeight()
       .onContainerHeight { h in
-        #if DEBUG
-          print("[ExpoLiveActivity] text column height: \(String(describing: h))")
-        #endif
-        if let h, h > 0 { textColumnHeight = h }
+        if let h, h > 0 { imageContainerHeight = h }
       }
     }
 

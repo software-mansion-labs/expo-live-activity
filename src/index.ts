@@ -118,8 +118,8 @@ function normalizeConfig(config?: LiveActivityConfig) {
   if (typeof imageSize === 'number') {
     normalized.imageSize = imageSize
   } else if (typeof imageSize === 'string') {
-    const regExpo0to100 = /^(100(?:\.0+)?|\d{1,2}(?:\.\d+)?)%$/ // Matches 0.0% to 100.0%
-    const match = imageSize.trim().match(regExpo0to100)
+    const regExp = /^(100(?:\.0+)?|\d{1,2}(?:\.\d+)?)%$/ // Matches 0.0% to 100.0%
+    const match = imageSize.trim().match(regExp)
     if (match) {
       const percent = Number(match[1])
       normalized.imageSizePercent = percent

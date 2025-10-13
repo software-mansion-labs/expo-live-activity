@@ -207,12 +207,6 @@ public class ExpoLiveActivityModule: Module {
       do {
         let config = maybeConfig ?? LiveActivityConfig()
 
-        #if DEBUG
-          print(
-            "[ExpoLiveActivity] startActivity config imageSize=\(String(describing: config.imageSize)) imageSizePercent=\(String(describing: config.imageSizePercent)) imageAlign=\(String(describing: config.imageAlign)) imagePosition=\(String(describing: config.imagePosition)) padding=\(String(describing: config.padding)) paddingDetails=\(String(describing: config.paddingDetails))"
-          )
-        #endif
-
         let attributes = LiveActivityAttributes(
           name: "ExpoLiveActivity",
           backgroundColor: config.backgroundColor,
