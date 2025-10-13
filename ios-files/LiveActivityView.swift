@@ -18,7 +18,7 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
-    @State private var containerHeight: CGFloat?
+    @State private var textColumnHeight: CGFloat?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -37,12 +37,32 @@ import WidgetKit
 
     @ViewBuilder
     private func alignedImage(imageName: String) -> some View {
+      let defaultHeight: CGFloat = 64
+      let base = textColumnHeight ?? defaultHeight
+      let computedHeight: CGFloat = {
+        if let percent = attributes.imageSizePercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          return base * clamped
+        } else if let size = attributes.imageSize {
+          return CGFloat(size)
+        } else {
+          return defaultHeight
+        }
+      }()
+
       VStack(alignment: .trailing, spacing: 0) {
         resizableImage(imageName: imageName)
-          .applyImageSize(attributes.imageSize, percent: attributes.imageSizePercent, containerHeight: containerHeight)
+          .frame(height: computedHeight)
       }
       .frame(maxHeight: .infinity, alignment: imageAlignment)
       .fixedSize(horizontal: true, vertical: false)
+      .captureContainerHeight()
+      .onContainerHeight { h in
+        #if DEBUG
+          print("[ExpoLiveActivity] text column height: \(String(describing: h))")
+        #endif
+        if let h, h > 0 { textColumnHeight = h }
+      }
     }
 
     var body: some View {
@@ -82,6 +102,7 @@ import WidgetKit
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
+
         HStack(alignment: .center) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
@@ -114,7 +135,7 @@ import WidgetKit
             }
           }
 
-          if hasImage, !isLeftImage { // right side (default)
+          if hasImage, !isLeftImage {
             Spacer(minLength: 0)
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
@@ -123,7 +144,6 @@ import WidgetKit
         }
 
         if !effectiveStretch {
-          // Bottom progress (hidden when using Stretch variants where progress is inline)
           if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
               .tint(progressViewTint)
@@ -136,10 +156,6 @@ import WidgetKit
         }
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
-      .captureContainerHeight()
-      .onContainerHeight { h in
-        if let h, h > 0 { containerHeight = h }
-      }
     }
   }
 
