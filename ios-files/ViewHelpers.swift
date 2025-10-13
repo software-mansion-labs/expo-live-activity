@@ -72,7 +72,6 @@ extension View {
       }
     }()
 
-      return frame(height: resultingHeight)
-
+    return frame(height: resultingHeight)
   }
 }
