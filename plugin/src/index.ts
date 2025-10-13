@@ -9,7 +9,7 @@ import { withXcode } from './withXcode'
 
 const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) => {
   const deploymentTarget = '16.2'
-  const targetName = `${IOSConfig.XcodeUtils.sanitizedName(config.name)}LiveActivity`
+  const targetName = 'LiveActivity'
   const bundleIdentifier = `${config.ios?.bundleIdentifier}.${targetName}`
 
   config.ios = {
