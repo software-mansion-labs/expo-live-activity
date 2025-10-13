@@ -1,4 +1,4 @@
-import { IOSConfig, withPlugins } from 'expo/config-plugins'
+import { withPlugins } from 'expo/config-plugins'
 
 import type { LiveActivityConfigPlugin } from './types'
 import { withConfig } from './withConfig'
