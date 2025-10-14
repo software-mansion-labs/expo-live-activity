@@ -49,7 +49,11 @@ export type ImagePosition = 'left' | 'right' | 'leftStretch' | 'rightStretch'
 
 export type ImageAlign = 'top' | 'center' | 'bottom'
 
-export type ImageSize = number | `${number}%`
+export type ImageDimension = number | `${number}%`
+export type ImageSize = {
+  width: ImageDimension
+  height: ImageDimension
+}
 
 export type LiveActivityConfig = {
   backgroundColor?: string
@@ -103,7 +107,10 @@ function normalizeConfig(config?: LiveActivityConfig) {
   const { padding, imageSize, ...base } = config
   type NormalizedConfig = LiveActivityConfig & {
     paddingDetails?: Padding
-    imageSizePercent?: number
+    imageWidth?: number
+    imageHeight?: number
+    imageWidthPercent?: number
+    imageHeightPercent?: number
   }
   const normalized: NormalizedConfig = { ...base }
 
@@ -114,17 +121,32 @@ function normalizeConfig(config?: LiveActivityConfig) {
     normalized.paddingDetails = padding
   }
 
-  // Normalize imageSize: accept points (number) or percent string like '50%'
-  if (typeof imageSize === 'number') {
-    normalized.imageSize = imageSize
-  } else if (typeof imageSize === 'string') {
+  // Normalize imageSize: object with width/height each a number (points) or percent string like '50%'
+  if (imageSize) {
     const regExp = /^(100(?:\.0+)?|\d{1,2}(?:\.\d+)?)%$/ // Matches 0.0% to 100.0%
-    const match = imageSize.trim().match(regExp)
-    if (match) {
-      const percent = Number(match[1])
-      normalized.imageSizePercent = percent
-    } else {
-      throw new Error('imageSize percent string must be in format "0%" to "100%"')
+
+    const { width, height } = imageSize
+
+    if (typeof width === 'number') {
+      normalized.imageWidth = width
+    } else if (typeof width === 'string') {
+      const match = width.trim().match(regExp)
+      if (match) {
+        normalized.imageWidthPercent = Number(match[1])
+      } else {
+        throw new Error('imageSize.width percent string must be in format "0%" to "100%"')
+      }
+    }
+
+    if (typeof height === 'number') {
+      normalized.imageHeight = height
+    } else if (typeof height === 'string') {
+      const match = height.trim().match(regExp)
+      if (match) {
+        normalized.imageHeightPercent = Number(match[1])
+      } else {
+        throw new Error('imageSize.height percent string must be in format "0%" to "100%"')
+      }
     }
   }
 

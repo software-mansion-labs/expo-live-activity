@@ -6,9 +6,9 @@ func resizableImage(imageName: String) -> some View {
     .scaledToFit()
 }
 
-func resizableImage(imageName: String, height: CGFloat?) -> some View {
+func resizableImage(imageName: String, height: CGFloat?, width: CGFloat?) -> some View {
   resizableImage(imageName: imageName)
-    .frame(height: height)
+    .frame(width: width, height: height)
 }
 
 func computeImageHeight(size: Int?, percent: Double?, referenceHeight: CGFloat?, defaultHeight: CGFloat = 64) -> CGFloat {
@@ -33,45 +33,25 @@ func computeImageHeight(size: Int?, percent: Double?, referenceHeight: CGFloat?,
   return result
 }
 
-private struct ContainerHeightKey: PreferenceKey {
-  static var defaultValue: CGFloat?
-  static func reduce(value: inout CGFloat?, nextValue: () -> CGFloat?) {
+private struct ContainerSizeKey: PreferenceKey {
+  static var defaultValue: CGSize?
+  static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {
     value = nextValue() ?? value
   }
 }
 
 extension View {
-  func captureContainerHeight() -> some View {
+  func captureContainerSize() -> some View {
     background(
       GeometryReader { proxy in
-        Color.clear.preference(key: ContainerHeightKey.self, value: proxy.size.height)
+        Color.clear.preference(key: ContainerSizeKey.self, value: proxy.size)
       }
     )
   }
 
-  func onContainerHeight(_ perform: @escaping (CGFloat?) -> Void) -> some View {
-    onPreferenceChange(ContainerHeightKey.self, perform: perform)
+  func onContainerSize(_ perform: @escaping (CGSize?) -> Void) -> some View {
+    onPreferenceChange(ContainerSizeKey.self, perform: perform)
   }
 }
 
-extension View {
-  func applyImageSize(_ size: Int?, percent: Double?, containerHeight: CGFloat? = nil) -> some View {
-    let defaultHeight: CGFloat = 64
-
-    let resultingHeight: CGFloat = {
-      if let percent = percent {
-        let clampedPercent = min(max(percent, 0), 100)
-        let ratio = clampedPercent / 100.0
-        if let h = containerHeight, h > 0 {
-          return h * ratio
-        } else {
-          return defaultHeight * ratio
-        }
-      } else {
-        return CGFloat(size ?? Int(defaultHeight))
-      }
-    }()
-
-    return frame(height: resultingHeight)
-  }
-}
+// legacy helper removed; callers moved to explicit width/height sizing

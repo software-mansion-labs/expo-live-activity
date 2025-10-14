@@ -152,8 +152,8 @@ The `config` object should include:
    deepLinkUrl?: string;
    timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appearance on the dynamic island
    padding?: Padding // number | {top?: number bottom?: number ...}
-   imagePosition?: ImagePosition; // 'left' | 'right';
-   imageSize?: ImageSize // number (points maxHeight) | `${number}%` (relative height) | undefined (default size 64pt)
+  imagePosition?: ImagePosition; // 'left' | 'right';
+  imageSize?: ImageSize // { width: number|`${number}%`, height: number|`${number}%` } | undefined (defaults to 64pt height)
 };
 ```
 
@@ -186,7 +186,7 @@ const config: LiveActivity.LiveActivityConfig = {
   timerType: 'circular',
   padding: { horizontal: 20, top: 16, bottom: 16 },
   imagePosition: 'right',
-  imageSize: '50%', // e.g. 80 for points or '50%' for half of available height
+  imageSize: { height: '50%', width: '50%' }, // e.g. { height: 80 } for points or percent of available space
 }
 
 const activityId = LiveActivity.startActivity(state, config)

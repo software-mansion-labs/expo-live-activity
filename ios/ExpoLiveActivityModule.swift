@@ -56,13 +56,19 @@ public class ExpoLiveActivityModule: Module {
     var paddingDetails: PaddingDetails?
 
     @Field
-    var imagePosition: String?
+  var imagePosition: String?
 
     @Field
-    var imageSize: Int?
+    var imageWidth: Int?
 
     @Field
-    var imageSizePercent: Double?
+    var imageHeight: Int?
+
+    @Field
+    var imageWidthPercent: Double?
+
+    @Field
+    var imageHeightPercent: Double?
 
     @Field
     var imageAlign: String?
@@ -203,9 +209,16 @@ public class ExpoLiveActivityModule: Module {
       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
         throw LiveActivitiesNotEnabledException()
       }
+        
+
 
       do {
         let config = maybeConfig ?? LiveActivityConfig()
+          
+          print("imageWidth: \(String(describing: config.imageWidth))")
+          print("imageHeight: \(String(describing: config.imageHeight))")
+          print("imageWidthPercent: \(String(describing: config.imageWidthPercent))")
+          print("imageHeightPercent: \(String(describing: config.imageHeightPercent))")
 
         let attributes = LiveActivityAttributes(
           name: "ExpoLiveActivity",
@@ -228,8 +241,10 @@ public class ExpoLiveActivityModule: Module {
             )
           },
           imagePosition: config.imagePosition,
-          imageSize: config.imageSize,
-          imageSizePercent: config.imageSizePercent,
+          imageWidth: config.imageWidth,
+          imageHeight: config.imageHeight,
+          imageWidthPercent: config.imageWidthPercent,
+          imageHeightPercent: config.imageHeightPercent,
           imageAlign: config.imageAlign
         )
 

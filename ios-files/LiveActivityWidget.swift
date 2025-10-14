@@ -23,8 +23,11 @@ struct LiveActivityAttributes: ActivityAttributes {
   var padding: Int?
   var paddingDetails: PaddingDetails?
   var imagePosition: String?
-  var imageSize: Int?
-  var imageSizePercent: Double?
+
+  var imageWidth: Int?
+  var imageHeight: Int?
+  var imageWidthPercent: Double?
+  var imageHeightPercent: Double?
   var imageAlign: String?
 
   enum DynamicIslandTimerType: String, Codable {
@@ -141,7 +144,6 @@ struct LiveActivityWidget: Widget {
     VStack {
       Spacer()
       resizableImage(imageName: imageName)
-        .applyImageSize(64, percent: nil)
       Spacer()
     }
   }

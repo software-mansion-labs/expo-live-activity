@@ -32,7 +32,8 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
-  const [imageSize, setImageSize] = useState('')
+  const [imageWidth, setImageWidth] = useState('')
+  const [imageHeight, setImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
@@ -71,21 +72,37 @@ export default function CreateLiveActivityScreen() {
     if (/^\d*$/.test(text)) setter(text)
   }, [])
 
-  const onChangeImageSizeText = useCallback((text: string) => {
+  const onChangeImageWidthText = useCallback((text: string) => {
     if (/^\d*(?:\.\d*)?%?$/.test(text)) {
-      // do not allow multiple dots
       const dotCount = (text.match(/\./g) || []).length
-      if (dotCount <= 1) setImageSize(text)
+      if (dotCount <= 1) setImageWidth(text)
+    }
+  }, [])
+
+  const onChangeImageHeightText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setImageHeight(text)
     }
   }, [])
 
   const computeImageSize = useCallback((): LiveActivityConfig['imageSize'] | undefined => {
-    const raw = imageSize.trim()
-    if (raw === '') return undefined
-    if (/^-?\d+(?:\.\d+)?%$/.test(raw)) return raw as LiveActivityConfig['imageSize']
-    const n = parseInt(raw, 10)
-    return isNaN(n) ? undefined : n
-  }, [imageSize])
+    const wRaw = imageWidth.trim()
+    const hRaw = imageHeight.trim()
+    if (wRaw === '' && hRaw === '') return undefined
+
+    const parseDim = (raw: string) => {
+      if (raw === '') return undefined
+      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as any
+      const n = parseInt(raw, 10)
+      return isNaN(n) ? undefined : (n as any)
+    }
+
+    const w = parseDim(wRaw)
+    const h = parseDim(hRaw)
+
+    return { width: w, height: h }
+  }, [imageWidth, imageHeight])
 
   const computePadding = useCallback(() => {
     if (!showPaddingDetails) {
@@ -219,15 +236,26 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image max height (pt or %):</Text>
+          <Text style={styles.label}>Image width (pt or %):</Text>
         </View>
         <TextInput
           style={styles.input}
-          onChangeText={onChangeImageSizeText}
+          onChangeText={onChangeImageWidthText}
           keyboardType="default"
           autoCapitalize="none"
-          placeholder="Leave empty for default (64), e.g. 80 or 50%"
-          value={imageSize}
+          placeholder="e.g. 80 or 50%"
+          value={imageWidth}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image height (pt or %):</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeImageHeightText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="Leave empty to use default if width also empty; e.g. 80 or 50%"
+          value={imageHeight}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>
@@ -509,6 +537,15 @@ const styles = StyleSheet.create({
   },
   paddingCell: {
     width: '48%',
+  },
+  newField: {
+    height: 45,
+    width: '90%',
+    marginVertical: 12,
+    borderWidth: 1,
+    borderColor: 'blue',
+    borderRadius: 10,
+    padding: 10,
   },
 })
 
