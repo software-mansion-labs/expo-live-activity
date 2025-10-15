@@ -1,5 +1,11 @@
 import RNDateTimePicker from '@react-native-community/datetimepicker'
-import type { ImageAlign, ImagePosition, LiveActivityConfig, LiveActivityState } from 'expo-live-activity'
+import type {
+  ImageAlign,
+  ImageContentFit,
+  ImagePosition,
+  LiveActivityConfig,
+  LiveActivityState,
+} from 'expo-live-activity'
 import * as LiveActivity from 'expo-live-activity'
 import { useCallback, useState } from 'react'
 import {
@@ -35,7 +41,7 @@ export default function CreateLiveActivityScreen() {
   const [imageSize, setImageSize] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
-  const [contentFit, setContentFit] = useState<'cover' | 'contain' | 'fill' | 'none' | 'scale-down'>('cover')
+  const [contentFit, setContentFit] = useState<ImageContentFit>('cover')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
   const [paddingTop, setPaddingTop] = useState('')
@@ -246,7 +252,7 @@ export default function CreateLiveActivityScreen() {
         </View>
         <Dropdown
           value={contentFit}
-          onChange={(v) => setContentFit(v as typeof contentFit)}
+          onChange={(v) => setContentFit(v as ImageContentFit)}
           options={[
             { label: 'Cover', value: 'cover' },
             { label: 'Contain', value: 'contain' },
