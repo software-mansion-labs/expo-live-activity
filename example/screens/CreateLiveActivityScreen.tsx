@@ -251,7 +251,7 @@ export default function CreateLiveActivityScreen() {
           onChangeText={onChangeImageWidthText}
           keyboardType="default"
           autoCapitalize="none"
-          placeholder="e.g. 80 or 50%"
+          placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageWidth}
         />
         <View style={styles.labelWithSwitch}>
@@ -262,7 +262,7 @@ export default function CreateLiveActivityScreen() {
           onChangeText={onChangeImageHeightText}
           keyboardType="default"
           autoCapitalize="none"
-          placeholder="Leave empty to use default if width also empty; e.g. 80 or 50%"
+          placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageHeight}
         />
         <View style={styles.labelWithSwitch}>
