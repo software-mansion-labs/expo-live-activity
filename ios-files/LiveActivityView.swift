@@ -195,6 +195,7 @@ import WidgetKit
               }
             }
           }
+          .layoutPriority(1)
 
           if hasImage, !isLeftImage {
             if let imageName = contentState.imageName {
