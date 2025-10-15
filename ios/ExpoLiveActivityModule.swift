@@ -56,7 +56,7 @@ public class ExpoLiveActivityModule: Module {
     var paddingDetails: PaddingDetails?
 
     @Field
-  var imagePosition: String?
+    var imagePosition: String?
 
     @Field
     var imageWidth: Int?
@@ -73,8 +73,8 @@ public class ExpoLiveActivityModule: Module {
     @Field
     var imageAlign: String?
 
-  @Field
-  var contentFit: String?
+    @Field
+    var contentFit: String?
 
     struct PaddingDetails: Record {
       @Field var top: Int?
@@ -212,8 +212,6 @@ public class ExpoLiveActivityModule: Module {
       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
         throw LiveActivitiesNotEnabledException()
       }
-        
-
 
       do {
         let config = maybeConfig ?? LiveActivityConfig()

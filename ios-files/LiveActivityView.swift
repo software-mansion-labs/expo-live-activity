@@ -35,12 +35,12 @@ import WidgetKit
       }
     }
 
-  private func alignedImage(imageName: String) -> some View {
+    private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
 
-    let containerHeight = imageAvailableSize?.height
-    let containerWidth = imageAvailableSize?.width
+      let containerHeight = imageAvailableSize?.height
+      let containerWidth = imageAvailableSize?.width
 
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
 
@@ -72,7 +72,7 @@ import WidgetKit
         }
       }()
 
-  return ZStack(alignment: .center) {
+      return ZStack(alignment: .center) {
         Group {
           let fit = attributes.contentFit ?? "cover"
           switch fit {
