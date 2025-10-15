@@ -55,6 +55,8 @@ export type ImageSize = {
   height: ImageDimension
 }
 
+export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+
 export type LiveActivityConfig = {
   backgroundColor?: string
   titleColor?: string
@@ -67,7 +69,7 @@ export type LiveActivityConfig = {
   imagePosition?: ImagePosition
   imageAlign?: ImageAlign
   imageSize?: ImageSize
-  contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
+  contentFit?: ImageContentFit
 }
 
 export type ActivityTokenReceivedEvent = {
