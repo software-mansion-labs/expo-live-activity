@@ -67,6 +67,7 @@ export type LiveActivityConfig = {
   imagePosition?: ImagePosition
   imageAlign?: ImageAlign
   imageSize?: ImageSize
+  contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 }
 
 export type ActivityTokenReceivedEvent = {

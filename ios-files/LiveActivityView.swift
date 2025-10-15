@@ -82,16 +82,57 @@ import WidgetKit
 
 
   return ZStack(alignment: .center) {
-        // The image itself, sized using computed constraints
-        resizableImage(imageName: imageName)
-          .frame(width: computedWidth, height: computedHeight)
+        Group {
+          let fit = attributes.contentFit ?? "cover"
+          switch fit {
+          case "contain":
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFit()
+              .frame(width: computedWidth, height: computedHeight)
+          case "fill":
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .frame(
+                width: computedWidth ?? (imageAvailableSize?.width),
+                height: computedHeight ?? (imageAvailableSize?.height)
+              )
+          case "none":
+            Image.dynamic(assetNameOrPath: imageName)
+              .renderingMode(.original)
+              .frame(width: computedWidth, height: computedHeight)
+          case "scale-down":
+            let frameW = computedWidth ?? imageAvailableSize?.width
+            let frameH = computedHeight ?? imageAvailableSize?.height
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFit()
+              .frame(width: frameW, height: frameH)
+          default: // "cover"
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFill()
+              .frame(
+                width: computedWidth ?? (imageAvailableSize?.width),
+                height: computedHeight ?? (imageAvailableSize?.height)
+              )
+              .clipped()
+          }
+        }
       }
-      // Dedicated container that occupies all available space within the HStack cell
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
-      .captureContainerSize()
-      .onContainerSize { size in
-        if let size, size.width > 0, size.height > 0 { imageAvailableSize = size }
-      }
+      .background(
+        GeometryReader { proxy in
+          Color.clear
+            .onAppear {
+              let s = proxy.size
+              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+            }
+            .onChange(of: proxy.size) { s in
+              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+            }
+        }
+      )
       #if DEBUG
       .onAppear {
         print("computedWidth=\(String(describing: computedWidth)), computedHeight=\(String(describing: computedHeight))")
