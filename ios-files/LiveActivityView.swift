@@ -18,6 +18,7 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
+    @State private var imageAvailableSize: CGSize?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -34,13 +35,107 @@ import WidgetKit
       }
     }
 
-    @ViewBuilder
-    private func alignedImage(imageName: String) -> some View {
-      VStack {
-        resizableImage(imageName: imageName)
-          .applyImageSize(attributes.imageSize)
+  private func alignedImage(imageName: String) -> some View {
+      let defaultHeight: CGFloat = 64
+      let defaultWidth: CGFloat = 64
+
+    // Base sizes taken from the dedicated image container that fills its available space
+    let containerHeight = imageAvailableSize?.height
+    let containerWidth = imageAvailableSize?.width
+
+      // Height calculation: use new imageHeight/imageHeightPercent
+      let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
+
+      let computedHeight: CGFloat? = {
+        if let percent = attributes.imageHeightPercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          // Use the row height as a base. Fallback to default when row height is not measured yet.
+          let base = (containerHeight ?? defaultHeight)
+          return base * clamped
+        } else if let size = attributes.imageHeight {
+          return CGFloat(size)
+        } else if hasWidthConstraint {
+          // Mimic CSS: when only width is set, keep height automatic to preserve aspect ratio
+          return nil
+        } else {
+          return defaultHeight
+        }
+      }()
+
+  // Width calculation: imageWidth/imageWidthPercent
+      let computedWidth: CGFloat? = {
+        if let percent = attributes.imageWidthPercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          let base = (containerWidth ?? defaultWidth)
+          return base * clamped
+        } else if let size = attributes.imageWidth {
+          return CGFloat(size)
+        } else {
+          return nil // keep aspect fit based on height
+        }
+      }()
+
+    // Debug print moved to .onAppear below to avoid ViewBuilder issues
+
+
+
+  return ZStack(alignment: .center) {
+        Group {
+          let fit = attributes.contentFit ?? "cover"
+          switch fit {
+          case "contain":
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFit()
+              .frame(width: computedWidth, height: computedHeight)
+          case "fill":
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .frame(
+                width: computedWidth ?? (imageAvailableSize?.width),
+                height: computedHeight ?? (imageAvailableSize?.height)
+              )
+          case "none":
+            Image.dynamic(assetNameOrPath: imageName)
+              .renderingMode(.original)
+              .frame(width: computedWidth, height: computedHeight)
+          case "scale-down":
+            let frameW = computedWidth ?? imageAvailableSize?.width
+            let frameH = computedHeight ?? imageAvailableSize?.height
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFit()
+              .frame(width: frameW, height: frameH)
+          default: // "cover"
+            Image.dynamic(assetNameOrPath: imageName)
+              .resizable()
+              .scaledToFill()
+              .frame(
+                width: computedWidth ?? (imageAvailableSize?.width),
+                height: computedHeight ?? (imageAvailableSize?.height)
+              )
+              .clipped()
+          }
+        }
       }
-      .frame(maxHeight: .infinity, alignment: imageAlignment)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
+      .background(
+        GeometryReader { proxy in
+          Color.clear
+            .onAppear {
+              let s = proxy.size
+              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+            }
+            .onChange(of: proxy.size) { s in
+              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+            }
+        }
+      )
+      #if DEBUG
+      .onAppear {
+        print("computedWidth=\(String(describing: computedWidth)), computedHeight=\(String(describing: computedHeight))")
+      }
+      #endif
     }
 
     var body: some View {
@@ -80,6 +175,7 @@ import WidgetKit
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
+
         HStack(alignment: .center) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
@@ -121,7 +217,6 @@ import WidgetKit
         }
 
         if !effectiveStretch {
-          // Bottom progress (hidden when using Stretch variants where progress is inline)
           if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
               .tint(progressViewTint)

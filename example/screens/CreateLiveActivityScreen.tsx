@@ -35,6 +35,7 @@ export default function CreateLiveActivityScreen() {
   const [imageSize, setImageSize] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
+  const [contentFit, setContentFit] = useState<'cover' | 'contain' | 'fill' | 'none' | 'scale-down'>('cover')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
   const [paddingTop, setPaddingTop] = useState('')
@@ -125,6 +126,7 @@ export default function CreateLiveActivityScreen() {
         imageSize: toNum(imageSize),
         imagePosition,
         imageAlign,
+        contentFit,
         padding: computePadding(),
       })
       if (id) setActivityID(id)
@@ -236,6 +238,21 @@ export default function CreateLiveActivityScreen() {
             { label: 'Top', value: 'top' },
             { label: 'Center', value: 'center' },
             { label: 'Bottom', value: 'bottom' },
+          ]}
+        />
+
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image contentFit:</Text>
+        </View>
+        <Dropdown
+          value={contentFit}
+          onChange={(v) => setContentFit(v as typeof contentFit)}
+          options={[
+            { label: 'Cover', value: 'cover' },
+            { label: 'Contain', value: 'contain' },
+            { label: 'Fill', value: 'fill' },
+            { label: 'None', value: 'none' },
+            { label: 'Scale Down', value: 'scale-down' },
           ]}
         />
 
