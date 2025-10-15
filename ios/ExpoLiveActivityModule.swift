@@ -217,11 +217,6 @@ public class ExpoLiveActivityModule: Module {
 
       do {
         let config = maybeConfig ?? LiveActivityConfig()
-          
-          print("imageWidth: \(String(describing: config.imageWidth))")
-          print("imageHeight: \(String(describing: config.imageHeight))")
-          print("imageWidthPercent: \(String(describing: config.imageWidthPercent))")
-          print("imageHeightPercent: \(String(describing: config.imageHeightPercent))")
 
         let attributes = LiveActivityAttributes(
           name: "ExpoLiveActivity",

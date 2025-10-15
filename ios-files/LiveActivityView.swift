@@ -18,8 +18,6 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
-    @State private var rowSize: CGSize?
-    @State private var textColumnSize: CGSize?
     @State private var imageAvailableSize: CGSize?
 
     var progressViewTint: Color? {
@@ -41,11 +39,9 @@ import WidgetKit
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
 
-    // Base sizes taken from the dedicated image container that fills its available space
     let containerHeight = imageAvailableSize?.height
     let containerWidth = imageAvailableSize?.width
 
-      // Height calculation: use new imageHeight/imageHeightPercent
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
 
       let computedHeight: CGFloat? = {
@@ -64,7 +60,6 @@ import WidgetKit
         }
       }()
 
-  // Width calculation: imageWidth/imageWidthPercent
       let computedWidth: CGFloat? = {
         if let percent = attributes.imageWidthPercent {
           let clamped = min(max(percent, 0), 100) / 100.0
@@ -76,10 +71,6 @@ import WidgetKit
           return nil // keep aspect fit based on height
         }
       }()
-
-    // Debug print moved to .onAppear below to avoid ViewBuilder issues
-
-
 
   return ZStack(alignment: .center) {
         Group {
@@ -133,11 +124,6 @@ import WidgetKit
             }
         }
       )
-      #if DEBUG
-      .onAppear {
-        print("computedWidth=\(String(describing: computedWidth)), computedHeight=\(String(describing: computedHeight))")
-      }
-      #endif
     }
 
     var body: some View {
@@ -209,20 +195,12 @@ import WidgetKit
               }
             }
           }
-          .captureContainerSize()
-          .onContainerSize { size in
-            if let size { textColumnSize = size }
-          }
 
           if hasImage, !isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
             }
           }
-        }
-        .captureContainerSize()
-        .onContainerSize { size in
-          if let size { rowSize = size }
         }
 
         if !effectiveStretch {

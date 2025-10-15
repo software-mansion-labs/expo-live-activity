@@ -561,15 +561,6 @@ const styles = StyleSheet.create({
   paddingCell: {
     width: '48%',
   },
-  newField: {
-    height: 45,
-    width: '90%',
-    marginVertical: 12,
-    borderWidth: 1,
-    borderColor: 'blue',
-    borderRadius: 10,
-    padding: 10,
-  },
 })
 
 type DropdownOption = { label: string; value: string }
