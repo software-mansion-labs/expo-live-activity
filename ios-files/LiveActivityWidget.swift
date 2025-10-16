@@ -23,7 +23,6 @@ struct LiveActivityAttributes: ActivityAttributes {
   var padding: Int?
   var paddingDetails: PaddingDetails?
   var imagePosition: String?
-
   var imageWidth: Int?
   var imageHeight: Int?
   var imageWidthPercent: Double?
