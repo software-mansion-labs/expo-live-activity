@@ -35,51 +35,12 @@ import WidgetKit
       }
     }
 
-  private func alignedImage(imageName: String) -> some View {
+    private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
-      let defaultWidth: CGFloat = 64
+      let computedHeight: CGFloat? = CGFloat(attributes.imageSize ?? Int(defaultHeight))
+      let computedWidth: CGFloat? = nil
 
-    // Base sizes taken from the dedicated image container that fills its available space
-    let containerHeight = imageAvailableSize?.height
-    let containerWidth = imageAvailableSize?.width
-
-      // Height calculation: use new imageHeight/imageHeightPercent
-      let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
-
-      let computedHeight: CGFloat? = {
-        if let percent = attributes.imageHeightPercent {
-          let clamped = min(max(percent, 0), 100) / 100.0
-          // Use the row height as a base. Fallback to default when row height is not measured yet.
-          let base = (containerHeight ?? defaultHeight)
-          return base * clamped
-        } else if let size = attributes.imageHeight {
-          return CGFloat(size)
-        } else if hasWidthConstraint {
-          // Mimic CSS: when only width is set, keep height automatic to preserve aspect ratio
-          return nil
-        } else {
-          return defaultHeight
-        }
-      }()
-
-  // Width calculation: imageWidth/imageWidthPercent
-      let computedWidth: CGFloat? = {
-        if let percent = attributes.imageWidthPercent {
-          let clamped = min(max(percent, 0), 100) / 100.0
-          let base = (containerWidth ?? defaultWidth)
-          return base * clamped
-        } else if let size = attributes.imageWidth {
-          return CGFloat(size)
-        } else {
-          return nil // keep aspect fit based on height
-        }
-      }()
-
-    // Debug print moved to .onAppear below to avoid ViewBuilder issues
-
-
-
-  return ZStack(alignment: .center) {
+      return ZStack(alignment: .center) {
         Group {
           let fit = attributes.contentFit ?? "cover"
           switch fit {
@@ -131,11 +92,6 @@ import WidgetKit
             }
         }
       )
-      #if DEBUG
-      .onAppear {
-        print("computedWidth=\(String(describing: computedWidth)), computedHeight=\(String(describing: computedHeight))")
-      }
-      #endif
     }
 
     var body: some View {
@@ -180,6 +136,7 @@ import WidgetKit
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
+              Spacer()
             }
           }
 
