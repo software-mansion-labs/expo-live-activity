@@ -18,7 +18,7 @@ import WidgetKit
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
-    @State private var imageAvailableSize: CGSize?
+    @State private var imageContainerSize: CGSize?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -37,7 +37,7 @@ import WidgetKit
 
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
-      let computedHeight: CGFloat? = CGFloat(attributes.imageSize ?? Int(defaultHeight))
+      let computedHeight = CGFloat(attributes.imageSize ?? Int(defaultHeight))
       let computedWidth: CGFloat? = nil
 
       return ZStack(alignment: .center) {
@@ -53,27 +53,25 @@ import WidgetKit
             Image.dynamic(assetNameOrPath: imageName)
               .resizable()
               .frame(
-                width: computedWidth ?? (imageAvailableSize?.width),
-                height: computedHeight ?? (imageAvailableSize?.height)
+                width: computedWidth,
+                height: computedHeight
               )
           case "none":
             Image.dynamic(assetNameOrPath: imageName)
               .renderingMode(.original)
               .frame(width: computedWidth, height: computedHeight)
           case "scale-down":
-            let frameW = computedWidth ?? imageAvailableSize?.width
-            let frameH = computedHeight ?? imageAvailableSize?.height
             Image.dynamic(assetNameOrPath: imageName)
               .resizable()
               .scaledToFit()
-              .frame(width: frameW, height: frameH)
+              .frame(width: computedWidth, height: computedHeight)
           default: // "cover"
             Image.dynamic(assetNameOrPath: imageName)
               .resizable()
               .scaledToFill()
               .frame(
-                width: computedWidth ?? (imageAvailableSize?.width),
-                height: computedHeight ?? (imageAvailableSize?.height)
+                width: computedWidth,
+                height: computedHeight
               )
               .clipped()
           }
@@ -85,10 +83,10 @@ import WidgetKit
           Color.clear
             .onAppear {
               let s = proxy.size
-              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
             }
             .onChange(of: proxy.size) { s in
-              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
             }
         }
       )
