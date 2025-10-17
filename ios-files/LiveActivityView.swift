@@ -15,6 +15,16 @@ import WidgetKit
     }
   }
 
+  struct DebugLog: View {
+    init(_ message: String) {
+      #if DEBUG
+        print(message)
+      #endif
+    }
+
+    var body: some View { EmptyView() }
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
@@ -75,19 +85,15 @@ import WidgetKit
               )
               .clipped()
           default:
-            #if DEBUG
-              let _ = {
-                print("⚠️ [LiveActivityView] Unknown contentFit '\(fit)', falling back to 'cover'")
-              }()
-            #endif
+            DebugLog("⚠️ [LiveActivityView] Unknown contentFit '\(fit)', falling back to 'cover'")
             Image.dynamic(assetNameOrPath: imageName)
-            .resizable()
-            .scaledToFill()
-            .frame(
-              width: computedWidth,
-              height: computedHeight
-            )
-            .clipped()
+              .resizable()
+              .scaledToFill()
+              .frame(
+                width: computedWidth,
+                height: computedHeight
+              )
+              .clipped()
           }
         }
       }
