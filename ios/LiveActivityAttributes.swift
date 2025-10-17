@@ -24,6 +24,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   var imagePosition: String?
   var imageSize: Int?
   var imageAlign: String?
+  var contentFit: String?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular

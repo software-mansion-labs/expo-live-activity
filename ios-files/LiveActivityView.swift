@@ -15,9 +15,29 @@ import WidgetKit
     }
   }
 
+  struct DebugLog: View {
+    #if DEBUG
+      private let message: String
+      init(_ message: String) {
+        self.message = message
+        print(message)
+      }
+
+      var body: some View {
+        Text(message)
+          .font(.caption2)
+          .foregroundStyle(.red)
+      }
+    #else
+      init(_: String) {}
+      var body: some View { EmptyView() }
+    #endif
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
+    @State private var imageContainerSize: CGSize?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -34,13 +54,49 @@ import WidgetKit
       }
     }
 
-    @ViewBuilder
     private func alignedImage(imageName: String) -> some View {
-      VStack {
-        resizableImage(imageName: imageName)
-          .applyImageSize(attributes.imageSize)
+      let defaultHeight: CGFloat = 64
+      let computedHeight = CGFloat(attributes.imageSize ?? Int(defaultHeight))
+      let computedWidth: CGFloat? = nil
+
+      return ZStack(alignment: .center) {
+        Group {
+          let fit = attributes.contentFit ?? "cover"
+          switch fit {
+          case "contain":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+          case "fill":
+            Image.dynamic(assetNameOrPath: imageName).resizable().frame(
+              width: computedWidth,
+              height: computedHeight
+            )
+          case "none":
+            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
+          case "scale-down":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+          case "cover":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
+              width: computedWidth,
+              height: computedHeight
+            ).clipped()
+          default:
+            DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
+          }
+        }
       }
-      .frame(maxHeight: .infinity, alignment: imageAlignment)
+      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
+      .background(
+        GeometryReader { proxy in
+          Color.clear
+            .onAppear {
+              let s = proxy.size
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
+            }
+            .onChange(of: proxy.size) { s in
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
+            }
+        }
+      )
     }
 
     var body: some View {
@@ -80,10 +136,12 @@ import WidgetKit
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
+
         HStack(alignment: .center) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
+              Spacer()
             }
           }
 
@@ -111,6 +169,7 @@ import WidgetKit
               }
             }
           }
+          .layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
             Spacer()
@@ -121,7 +180,6 @@ import WidgetKit
         }
 
         if !effectiveStretch {
-          // Bottom progress (hidden when using Stretch variants where progress is inline)
           if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
               .tint(progressViewTint)
@@ -136,5 +194,4 @@ import WidgetKit
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
-
 #endif
