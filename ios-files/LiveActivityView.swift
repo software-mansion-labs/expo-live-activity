@@ -15,10 +15,29 @@ import WidgetKit
     }
   }
 
+  struct DebugLog: View {
+    #if DEBUG
+      private let message: String
+      init(_ message: String) {
+        self.message = message
+        print(message)
+      }
+
+      var body: some View {
+        Text(message)
+          .font(.caption2)
+          .foregroundStyle(.red)
+      }
+    #else
+      init(_: String) {}
+      var body: some View { EmptyView() }
+    #endif
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
-    @State private var imageAvailableSize: CGSize?
+    @State private var imageContainerSize: CGSize?
 
     var progressViewTint: Color? {
       attributes.progressViewTint.map { Color(hex: $0) }
@@ -34,13 +53,13 @@ import WidgetKit
         return .top
       }
     }
-
+      
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
 
-      let containerHeight = imageAvailableSize?.height
-      let containerWidth = imageAvailableSize?.width
+      let containerHeight = imageContainerSize?.height
+      let containerWidth = imageContainerSize?.width
 
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
 
@@ -72,55 +91,41 @@ import WidgetKit
         }
       }()
 
-      return ZStack(alignment: .center) {
-        Group {
-          let fit = attributes.contentFit ?? "cover"
-          switch fit {
-          case "contain":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFit()
-              .frame(width: computedWidth, height: computedHeight)
-          case "fill":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .frame(
-                width: computedWidth ?? (imageAvailableSize?.width),
-                height: computedHeight ?? (imageAvailableSize?.height)
-              )
-          case "none":
-            Image.dynamic(assetNameOrPath: imageName)
-              .renderingMode(.original)
-              .frame(width: computedWidth, height: computedHeight)
-          case "scale-down":
-            let frameW = computedWidth ?? imageAvailableSize?.width
-            let frameH = computedHeight ?? imageAvailableSize?.height
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFit()
-              .frame(width: frameW, height: frameH)
-          default: // "cover"
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFill()
-              .frame(
-                width: computedWidth ?? (imageAvailableSize?.width),
-                height: computedHeight ?? (imageAvailableSize?.height)
-              )
-              .clipped()
-          }
+        return ZStack(alignment: .center) {
+            Group {
+                let fit = attributes.contentFit ?? "cover"
+                switch fit {
+                case "contain":
+                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+                case "fill":
+                    Image.dynamic(assetNameOrPath: imageName).resizable().frame(
+                        width: computedWidth,
+                        height: computedHeight
+                    )
+                case "none":
+                    Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
+                case "scale-down":
+                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+                case "cover":
+                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
+                        width: computedWidth,
+                        height: computedHeight
+                    ).clipped()
+                default:
+                    DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
+                }
+            }
         }
-      }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
       .background(
         GeometryReader { proxy in
           Color.clear
             .onAppear {
               let s = proxy.size
-              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
             }
             .onChange(of: proxy.size) { s in
-              if s.width > 0, s.height > 0 { imageAvailableSize = s }
+              if s.width > 0, s.height > 0 { imageContainerSize = s }
             }
         }
       )
@@ -197,7 +202,8 @@ import WidgetKit
           }
           .layoutPriority(1)
 
-          if hasImage, !isLeftImage {
+          if hasImage, !isLeftImage { // right side (default)
+            Spacer()
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
             }
