@@ -65,7 +65,7 @@ import WidgetKit
               .resizable()
               .scaledToFit()
               .frame(width: computedWidth, height: computedHeight)
-          default: // "cover"
+          case "cover":
             Image.dynamic(assetNameOrPath: imageName)
               .resizable()
               .scaledToFill()
@@ -74,6 +74,20 @@ import WidgetKit
                 height: computedHeight
               )
               .clipped()
+          default:
+            #if DEBUG
+              let _ = {
+                print("⚠️ [LiveActivityView] Unknown contentFit '\(fit)', falling back to 'cover'")
+              }()
+            #endif
+            Image.dynamic(assetNameOrPath: imageName)
+            .resizable()
+            .scaledToFill()
+            .frame(
+              width: computedWidth,
+              height: computedHeight
+            )
+            .clipped()
           }
         }
       }
