@@ -57,8 +57,6 @@ export type ImageSize = {
 
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 
-export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
-
 export type LiveActivityConfig = {
   backgroundColor?: string
   titleColor?: string

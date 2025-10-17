@@ -53,7 +53,7 @@ import WidgetKit
         return .top
       }
     }
-      
+
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
@@ -91,31 +91,31 @@ import WidgetKit
         }
       }()
 
-        return ZStack(alignment: .center) {
-            Group {
-                let fit = attributes.contentFit ?? "cover"
-                switch fit {
-                case "contain":
-                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
-                case "fill":
-                    Image.dynamic(assetNameOrPath: imageName).resizable().frame(
-                        width: computedWidth,
-                        height: computedHeight
-                    )
-                case "none":
-                    Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
-                case "scale-down":
-                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
-                case "cover":
-                    Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
-                        width: computedWidth,
-                        height: computedHeight
-                    ).clipped()
-                default:
-                    DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
-                }
-            }
+      return ZStack(alignment: .center) {
+        Group {
+          let fit = attributes.contentFit ?? "cover"
+          switch fit {
+          case "contain":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+          case "fill":
+            Image.dynamic(assetNameOrPath: imageName).resizable().frame(
+              width: computedWidth,
+              height: computedHeight
+            )
+          case "none":
+            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
+          case "scale-down":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+          case "cover":
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
+              width: computedWidth,
+              height: computedHeight
+            ).clipped()
+          default:
+            DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
+          }
         }
+      }
       .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
       .background(
         GeometryReader { proxy in
