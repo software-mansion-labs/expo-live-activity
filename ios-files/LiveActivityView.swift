@@ -16,13 +16,22 @@ import WidgetKit
   }
 
   struct DebugLog: View {
-    init(_ message: String) {
-      #if DEBUG
+    #if DEBUG
+      private let message: String
+      init(_ message: String) {
+        self.message = message
         print(message)
-      #endif
-    }
+      }
 
-    var body: some View { EmptyView() }
+      var body: some View {
+        Text(message)
+          .font(.caption2)
+          .foregroundStyle(.red)
+      }
+    #else
+      init(_: String) {}
+      var body: some View { EmptyView() }
+    #endif
   }
 
   struct LiveActivityView: View {
@@ -55,45 +64,23 @@ import WidgetKit
           let fit = attributes.contentFit ?? "cover"
           switch fit {
           case "contain":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFit()
-              .frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
           case "fill":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .frame(
-                width: computedWidth,
-                height: computedHeight
-              )
+            Image.dynamic(assetNameOrPath: imageName).resizable().frame(
+              width: computedWidth,
+              height: computedHeight
+            )
           case "none":
-            Image.dynamic(assetNameOrPath: imageName)
-              .renderingMode(.original)
-              .frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
           case "scale-down":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFit()
-              .frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
           case "cover":
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFill()
-              .frame(
-                width: computedWidth,
-                height: computedHeight
-              )
-              .clipped()
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
+              width: computedWidth,
+              height: computedHeight
+            ).clipped()
           default:
-            DebugLog("⚠️ [LiveActivityView] Unknown contentFit '\(fit)', falling back to 'cover'")
-            Image.dynamic(assetNameOrPath: imageName)
-              .resizable()
-              .scaledToFill()
-              .frame(
-                width: computedWidth,
-                height: computedHeight
-              )
-              .clipped()
+            DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
           }
         }
       }
@@ -207,5 +194,4 @@ import WidgetKit
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
-
 #endif
