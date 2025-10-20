@@ -200,7 +200,6 @@ import WidgetKit
               }
             }
           }
-          .layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
             Spacer()
