@@ -57,10 +57,8 @@ import WidgetKit
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
-
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
-
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
 
       let computedHeight: CGFloat? = {
@@ -75,6 +73,9 @@ import WidgetKit
           // Mimic CSS: when only width is set, keep height automatic to preserve aspect ratio
           return nil
         } else {
+          // Mimic CSS: this works against CSS but provides a better default behavior.
+          // When no width/height is set, use a default size (64pt)
+          // Width will adjust automatically base on aspect ratio
           return defaultHeight
         }
       }()
@@ -87,7 +88,7 @@ import WidgetKit
         } else if let size = attributes.imageWidth {
           return CGFloat(size)
         } else {
-          return nil // keep aspect fit based on height
+          return nil // Keep aspect fit based on height
         }
       }()
 
