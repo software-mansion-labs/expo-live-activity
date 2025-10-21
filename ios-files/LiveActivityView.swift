@@ -73,14 +73,32 @@ import WidgetKit
           case "none":
             Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
           case "scale-down":
-            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+            if let uiImage = UIImage.dynamic(assetNameOrPath: imageName) {
+              // Determine the target box. When width/height are nil, we use image's intrinsic dimension for comparison.
+              let targetHeight = computedHeight ?? uiImage.size.height
+              let targetWidth = computedWidth ?? uiImage.size.width
+              let shouldScaleDown = uiImage.size.height > targetHeight || uiImage.size.width > targetWidth
+
+              if shouldScaleDown {
+                Image(uiImage: uiImage)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: computedWidth, height: computedHeight)
+              } else {
+                Image(uiImage: uiImage)
+                  .renderingMode(.original)
+                  .frame(width: min(uiImage.size.width, targetWidth), height: min(uiImage.size.height, targetHeight))
+              }
+            } else {
+              DebugLog("⚠️[ExpoLiveActivity] assetNameOrPath couldn't resolve to UIImage")
+            }
           case "cover":
             Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
               width: computedWidth,
               height: computedHeight
             ).clipped()
           default:
-            DebugLog("⚠️ [ExpoLiveActivity] Unknown contentFit '\(fit)'")
+            DebugLog("⚠️[ExpoLiveActivity] Unknown contentFit '\(fit)'")
           }
         }
       }
@@ -141,7 +159,6 @@ import WidgetKit
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName)
-              Spacer()
             }
           }
 
@@ -168,8 +185,7 @@ import WidgetKit
                   .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
               }
             }
-          }
-          .layoutPriority(1)
+          }.layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
             Spacer()
