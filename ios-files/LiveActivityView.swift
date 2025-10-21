@@ -185,7 +185,8 @@ import WidgetKit
                   .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
               }
             }
-          }.layoutPriority(1)
+          }
+          .layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
             Spacer()
