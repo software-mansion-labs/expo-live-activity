@@ -250,9 +250,7 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text testID={'input-image-width-label'} style={styles.label}>
-            Image width (pt or %):
-          </Text>
+          <Text style={styles.label} testID={'input-image-width-label'}>Image width (pt or %):</Text>
         </View>
         <TextInput
           style={styles.input}
@@ -264,7 +262,7 @@ export default function CreateLiveActivityScreen() {
           value={imageWidth}
         />
         <View style={styles.labelWithSwitch}>
-          <Text testID="input-image-height-label" style={styles.label}>
+          <Text style={styles.label} testID="input-image-height-label">
             Image height (pt or %):
           </Text>
         </View>
