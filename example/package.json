@@ -11,7 +11,8 @@
     "typecheck": "tsc",
     "generateTests": "node ./tests/scripts/generateFlows.js",
     "run1Test": "maestro test tests/generated/fit-contain-50x50.yaml",
-    "runAllTests": "tests/scripts/runAllTests.sh"
+    "runAllTests": "tests/scripts/runAllTests.sh",
+    "generateTestReport": "node tests/scripts/generateReport.js"
   },
   "dependencies": {
     "@react-native-community/datetimepicker": "8.4.4",
@@ -28,6 +29,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.1.0",
+    "pdf-lib": "^1.17.1",
     "typescript": "~5.9.2"
   },
   "private": true,

@@ -50,7 +50,7 @@ appId: ${APP_ID}
     text: "Allow"
     delay: 500
 
-- takeScreenshot: tests/screenshots/${id}.png
+- takeScreenshot: tests/screenshots/${id}
 `
 
   fs.writeFileSync(`./tests/generated/${id}.yaml`, yaml.trim())

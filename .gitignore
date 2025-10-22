@@ -60,3 +60,4 @@ yarn-error.log
 plugin/tsconfig.tsbuildinfo
 example/tests/generated/
 example/tests/screenshots/
+example/reports/live-activity-report.pdf
