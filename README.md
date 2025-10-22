@@ -153,7 +153,9 @@ The `config` object should include:
    timerType?: DynamicIslandTimerType; // "circular" | "digital" - defines timer appearance on the dynamic island
    padding?: Padding // number | {top?: number bottom?: number ...}
    imagePosition?: ImagePosition; // 'left' | 'right';
-   imageSize?: ImageSize // 'default' | number (points maxHeight)
+   imageAlign?: ImageAlign; // 'top' | 'center' | 'bottom'
+   imageSize?: ImageSize // { width: number|`${number}%`, height: number|`${number}%` } | undefined (defaults to 64pt)
+   contentFit?: ImageContentFit; // 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 };
 ```
 
@@ -186,7 +188,9 @@ const config: LiveActivity.LiveActivityConfig = {
   timerType: 'circular',
   padding: { horizontal: 20, top: 16, bottom: 16 },
   imagePosition: 'right',
-  imageSize: 'default', // or a number e.g. 80 for custom image height
+  imageAlign: 'center',
+  imageSize: { height: '50%', width: '50%' }, // number (pt) or percentage of the image container, if empty by default is 64pt.
+  contentFit: 'cover',
 }
 
 const activityId = LiveActivity.startActivity(state, config)

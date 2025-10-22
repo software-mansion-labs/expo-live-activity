@@ -38,7 +38,8 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
-  const [imageSize, setImageSize] = useState('')
+  const [imageWidth, setImageWidth] = useState('')
+  const [imageHeight, setImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [contentFit, setContentFit] = useState<ImageContentFit>('cover')
@@ -77,6 +78,38 @@ export default function CreateLiveActivityScreen() {
   const onChangeNumeric = useCallback((text: string, setter: (val: string) => void) => {
     if (/^\d*$/.test(text)) setter(text)
   }, [])
+
+  const onChangeImageWidthText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setImageWidth(text)
+    }
+  }, [])
+
+  const onChangeImageHeightText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setImageHeight(text)
+    }
+  }, [])
+
+  const computeImageSize = useCallback((): LiveActivityConfig['imageSize'] | undefined => {
+    const wRaw = imageWidth.trim()
+    const hRaw = imageHeight.trim()
+    if (wRaw === '' && hRaw === '') return undefined
+
+    const parseDim = (raw: string) => {
+      if (raw === '') return undefined
+      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as any
+      const n = parseInt(raw, 10)
+      return isNaN(n) ? undefined : (n as any)
+    }
+
+    const w = parseDim(wRaw)
+    const h = parseDim(hRaw)
+
+    return { width: w, height: h }
+  }, [imageWidth, imageHeight])
 
   const computePadding = useCallback(() => {
     if (!showPaddingDetails) {
@@ -129,7 +162,7 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize: toNum(imageSize),
+        imageSize: computeImageSize(),
         imagePosition,
         imageAlign,
         contentFit,
@@ -211,14 +244,26 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image max height (pt):</Text>
+          <Text style={styles.label}>Image width (pt or %):</Text>
         </View>
         <TextInput
           style={styles.input}
-          onChangeText={(t) => onChangeNumeric(t, setImageSize)}
-          keyboardType="number-pad"
-          placeholder="Leave empty for default (64)"
-          value={imageSize}
+          onChangeText={onChangeImageWidthText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="e.g. 80 or 50% or empty (default 64pt)"
+          value={imageWidth}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Image height (pt or %):</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeImageHeightText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="e.g. 80 or 50% or empty (default 64pt)"
+          value={imageHeight}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>
