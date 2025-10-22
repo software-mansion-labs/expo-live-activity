@@ -59,7 +59,16 @@ public class ExpoLiveActivityModule: Module {
     var imagePosition: String?
 
     @Field
-    var imageSize: Int?
+    var imageWidth: Int?
+
+    @Field
+    var imageHeight: Int?
+
+    @Field
+    var imageWidthPercent: Double?
+
+    @Field
+    var imageHeightPercent: Double?
 
     @Field
     var imageAlign: String?
@@ -228,7 +237,10 @@ public class ExpoLiveActivityModule: Module {
             )
           },
           imagePosition: config.imagePosition,
-          imageSize: config.imageSize,
+          imageWidth: config.imageWidth,
+          imageHeight: config.imageHeight,
+          imageWidthPercent: config.imageWidthPercent,
+          imageHeightPercent: config.imageHeightPercent,
           imageAlign: config.imageAlign,
           contentFit: config.contentFit
         )

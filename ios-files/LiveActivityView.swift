@@ -56,8 +56,41 @@ import WidgetKit
 
     private func alignedImage(imageName: String) -> some View {
       let defaultHeight: CGFloat = 64
-      let computedHeight = CGFloat(attributes.imageSize ?? Int(defaultHeight))
-      let computedWidth: CGFloat? = nil
+      let defaultWidth: CGFloat = 64
+      let containerHeight = imageContainerSize?.height
+      let containerWidth = imageContainerSize?.width
+      let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
+
+      let computedHeight: CGFloat? = {
+        if let percent = attributes.imageHeightPercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          // Use the row height as a base. Fallback to default when row height is not measured yet.
+          let base = (containerHeight ?? defaultHeight)
+          return base * clamped
+        } else if let size = attributes.imageHeight {
+          return CGFloat(size)
+        } else if hasWidthConstraint {
+          // Mimic CSS: when only width is set, keep height automatic to preserve aspect ratio
+          return nil
+        } else {
+          // Mimic CSS: this works against CSS but provides a better default behavior.
+          // When no width/height is set, use a default size (64pt)
+          // Width will adjust automatically base on aspect ratio
+          return defaultHeight
+        }
+      }()
+
+      let computedWidth: CGFloat? = {
+        if let percent = attributes.imageWidthPercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          let base = (containerWidth ?? defaultWidth)
+          return base * clamped
+        } else if let size = attributes.imageWidth {
+          return CGFloat(size)
+        } else {
+          return nil // Keep aspect fit based on height
+        }
+      }()
 
       return ZStack(alignment: .center) {
         Group {
@@ -185,8 +218,7 @@ import WidgetKit
                   .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
               }
             }
-          }
-          .layoutPriority(1)
+          }.layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
             Spacer()
@@ -211,4 +243,5 @@ import WidgetKit
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
+
 #endif

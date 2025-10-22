@@ -23,7 +23,10 @@ struct LiveActivityAttributes: ActivityAttributes {
   var padding: Int?
   var paddingDetails: PaddingDetails?
   var imagePosition: String?
-  var imageSize: Int?
+  var imageWidth: Int?
+  var imageHeight: Int?
+  var imageWidthPercent: Double?
+  var imageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
 
@@ -141,7 +144,6 @@ struct LiveActivityWidget: Widget {
     VStack {
       Spacer()
       resizableImage(imageName: imageName)
-        .frame(maxHeight: 64)
       Spacer()
     }
   }
