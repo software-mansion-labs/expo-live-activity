@@ -38,7 +38,7 @@ async function generateReport() {
     const { width, height } = page.getSize()
 
     // Draw title
-    page.drawText(`Test number:${index}\nTest id:${test.id}\nTest title:${test.title}`, {
+    page.drawText(`Test number: ${index}\nTest id: ${test.id}\nTest title: ${test.title}`, {
       x: 50,
       y: height - 50,
       size: 18,
