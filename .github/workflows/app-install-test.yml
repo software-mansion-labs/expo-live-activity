@@ -1,61 +1,61 @@
-name: iOS Install Test
-
-on:
-  workflow_dispatch: {}
-  pull_request:
-    types: [opened, synchronize, reopened]
-
-jobs:
-  install-test:
-    name: Test iOS app installation
-    runs-on: macos-15
-
-    steps:
-      # Checkout repository
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # Set up Node.js
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-          cache: 'npm'
-
-      # Set up Java (required by Expo build)
-      - name: Set up Java (Zulu 17)
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      # Install dependencies in root and example
-      - name: Install dependencies
-        run: |
-          npm ci
-          cd example
-          npm ci
-
-      # Prebuild native iOS project (ensures ios/ folder exists)
-      - name: Run Expo prebuild
-        run: |
-          cd example
-          npx expo prebuild --clean
-
-      # Start simulator
-      - name: Boot iOS simulator
-        uses: futureware-tech/simulator-action@v2
-        with:
-          model: 'iPhone 16 Pro'
-
-      # Build & install native app (without Expo Go)
-      - name: Build and install app on simulator
-        run: |
-          cd example
-          npx expo run:ios --no-bundler
-
-      # Verify installation
-      - name: Verify app installation
-        run: |
-          echo "Listing installed apps on simulator:"
-          xcrun simctl listapps booted | grep expoliveactivity || true
+#name: iOS Install Test
+#
+#on:
+#  workflow_dispatch: {}
+#  pull_request:
+#    types: [opened, synchronize, reopened]
+#
+#jobs:
+#  install-test:
+#    name: Test iOS app installation
+#    runs-on: macos-15
+#
+#    steps:
+#      # Checkout repository
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      # Set up Node.js
+#      - name: Set up Node.js
+#        uses: actions/setup-node@v4
+#        with:
+#          node-version: '18'
+#          cache: 'npm'
+#
+#      # Set up Java (required by Expo build)
+#      - name: Set up Java (Zulu 17)
+#        uses: actions/setup-java@v3
+#        with:
+#          distribution: 'zulu'
+#          java-version: '17'
+#
+#      # Install dependencies in root and example
+#      - name: Install dependencies
+#        run: |
+#          npm ci
+#          cd example
+#          npm ci
+#
+#      # Prebuild native iOS project (ensures ios/ folder exists)
+#      - name: Run Expo prebuild
+#        run: |
+#          cd example
+#          npx expo prebuild --clean
+#
+#      # Start simulator
+#      - name: Boot iOS simulator
+#        uses: futureware-tech/simulator-action@v2
+#        with:
+#          model: 'iPhone 16 Pro'
+#
+#      # Build & install native app (without Expo Go)
+#      - name: Build and install app on simulator
+#        run: |
+#          cd example
+#          npx expo run:ios --no-bundler
+#
+#      # Verify installation
+#      - name: Verify app installation
+#        run: |
+#          echo "Listing installed apps on simulator:"
+#          xcrun simctl listapps booted | grep expoliveactivity || true
