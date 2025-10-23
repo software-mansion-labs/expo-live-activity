@@ -11,167 +11,65 @@ jobs:
     runs-on: macos-14
 
     steps:
+      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
+          cache: 'npm'
 
+      # Install project dependencies
       - name: Install dependencies
-        run: |
-          npm ci
+        run: npm ci
 
-      - name: Generate tests (flows)
+      # Generate Maestro test flows
+      - name: Generate test flows
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
-        run: |
-          npm run generateTests
+        run: npm run generateTests
 
-      - name: Set up Java (required by some maestro components)
+      # Set up Java (Zulu 17)
+      - name: Set up Java (Zulu 17)
         uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '11'
+          distribution: 'zulu'
+          java-version: '17'
 
-      - name: Diagnostic - list available simulators
-        run: |
-          echo "--- xcrun simctl list runtimes ---"
-          xcrun simctl list runtimes || true
-          echo "--- xcrun simctl list devices ---"
-          xcrun simctl list devices || true
-
-      - name: Start iOS simulator
+      # Start an iOS simulator
+      - name: Start iOS Simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: 'iPhone 16 Pro'
 
-      - name: Fallback - try booting any available simulator (diagnostic)
-        if: ${{ failure() }}
+      # Install Maestro CLI using the official installer
+      - name: Install Maestro CLI
         run: |
-          echo "Attempting to boot the first available simulator"
-          # Extract a UDID-looking string from simctl output (no jq required)
-          UDID=$(xcrun simctl list devices | grep -Eo '\\b[0-9A-Fa-f\-]{36}\\b' | head -n 1)
-          if [ -n "$UDID" ]; then
-            echo "Booting simulator $UDID"
-            xcrun simctl boot "$UDID" || true
-            open -a Simulator || true
-          else
-            echo "No available simulator UDID found"
-            xcrun simctl list || true
-            exit 1
-          fi
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+          maestro --version
 
-      - name: Install prerequisites
-        run: |
-          brew update || true
-          brew install jq || true
-          # ensure unzip/tar are available
-          which unzip || true
-          which tar || true
+      # Wait a few seconds to ensure the simulator is fully booted
+      - name: Wait for iOS simulator to boot
+        run: sleep 20
 
-      - name: Download and cache idb_companion (with retries)
-        env:
-          IDB_VERSION: '1.1.8'
-          IDB_URL: "https://github.com/facebook/idb/releases/download/v${{ env.IDB_VERSION }}/idb-companion.universal.tar.gz"
-          IDB_DEST: ${{ runner.temp }}/idb-companion.universal.tar.gz
-        run: |
-          set -euo pipefail
-          attempts=0
-          max_attempts=5
-          until [ $attempts -ge $max_attempts ]
-          do
-            attempts=$((attempts+1))
-            echo "Downloading idb_companion, attempt $attempts"
-            if curl -fSL "$IDB_URL" -o "$IDB_DEST"; then
-              echo "Downloaded idb_companion"
-              break
-            else
-              echo "Download failed (attempt $attempts). Retrying in $((attempts * 5))s..."
-              sleep $((attempts * 5))
-            fi
-          done
-          if [ ! -f "$IDB_DEST" ]; then
-            echo "Failed to download idb_companion after $max_attempts attempts"
-            exit 1
-          fi
-          mkdir -p "$RUNNER_TEMP/idb_extracted"
-          tar -xzf "$IDB_DEST" -C "$RUNNER_TEMP/idb_extracted"
-          # Expect bin under idb-companion.universal/bin or similar
-          if [ -d "$RUNNER_TEMP/idb_extracted/idb-companion.universal/bin" ]; then
-            export IDB_BIN="$RUNNER_TEMP/idb_extracted/idb-companion.universal/bin"
-          else
-            # fallback: find any idb_companion binary
-            IDB_BIN=$(find "$RUNNER_TEMP/idb_extracted" -type f -name 'idb_companion' -exec dirname {} \; | head -n1 || true)
-          fi
-          if [ -z "$IDB_BIN" ]; then
-            echo "Could not locate idb_companion binary after extraction"
-            ls -la "$RUNNER_TEMP/idb_extracted" || true
-            exit 1
-          fi
-          echo "Adding idb bin to PATH: $IDB_BIN"
-          echo "$IDB_BIN" >> $GITHUB_PATH
-
-      - name: Download and install Maestro CLI (with retries)
-        env:
-          MAESTRO_VERSION: 'latest'
-          MAESTRO_DOWNLOAD_DIR: ${{ runner.temp }}/maestro
-        run: |
-          set -euo pipefail
-          mkdir -p "$MAESTRO_DOWNLOAD_DIR"
-          # resolve latest version if requested
-          if [ "${MAESTRO_VERSION}" = "latest" ]; then
-            MAESTRO_VERSION_RESOLVED=$(curl -sSfL https://api.github.com/repos/mobile-dev-inc/maestro/releases/latest | jq -r .tag_name)
-            MAESTRO_VERSION_RESOLVED=${MAESTRO_VERSION_RESOLVED#cli-}
-          else
-            MAESTRO_VERSION_RESOLVED=${MAESTRO_VERSION}
-          fi
-          echo "Resolved maestro version: $MAESTRO_VERSION_RESOLVED"
-          MAESTRO_URL="https://github.com/mobile-dev-inc/maestro/releases/download/cli-${MAESTRO_VERSION_RESOLVED}/maestro.zip"
-          MAESTRO_ZIP="$MAESTRO_DOWNLOAD_DIR/maestro.zip"
-          attempts=0
-          max_attempts=5
-          until [ $attempts -ge $max_attempts ]
-          do
-            attempts=$((attempts+1))
-            echo "Downloading maestro (attempt $attempts) from $MAESTRO_URL"
-            if curl -fSL "$MAESTRO_URL" -o "$MAESTRO_ZIP"; then
-              echo "Downloaded maestro"
-              break
-            else
-              echo "Download failed (attempt $attempts). Retrying in $((attempts * 5))s..."
-              sleep $((attempts * 5))
-            fi
-          done
-          if [ ! -f "$MAESTRO_ZIP" ]; then
-            echo "Failed to download maestro after $max_attempts attempts"
-            exit 1
-          fi
-          unzip -q "$MAESTRO_ZIP" -d "$MAESTRO_DOWNLOAD_DIR"
-          # maestro binary should be in maestro/bin
-          if [ -x "$MAESTRO_DOWNLOAD_DIR/maestro/bin/maestro" ]; then
-            echo "Adding maestro to PATH"
-            echo "$MAESTRO_DOWNLOAD_DIR/maestro/bin" >> $GITHUB_PATH
-          else
-            echo "maestro binary not found after unzip"
-            ls -la "$MAESTRO_DOWNLOAD_DIR" || true
-            exit 1
-          fi
-
-      - name: Run tests (maestro CLI)
+      # Run all Maestro E2E tests
+      - name: Run all Maestro tests
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
         run: |
-          set -euo pipefail
-          chmod +x example/tests/scripts/runAllTests.sh || true
-          ./example/tests/scripts/runAllTests.sh || true
+          chmod +x example/tests/scripts/runAllTests.sh
+          ./example/tests/scripts/runAllTests.sh
 
+      # Generate a PDF test report
       - name: Generate PDF report
-        run: |
-          npm run generateTestReport
+        run: npm run generateTestReport
 
-      - name: Upload PDF report artifact
+      # Upload the PDF report as an artifact
+      - name: Upload PDF report
         if: always()
         uses: actions/upload-artifact@v4
         with:
