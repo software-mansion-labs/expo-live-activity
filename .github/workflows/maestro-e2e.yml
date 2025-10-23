@@ -23,50 +23,32 @@ jobs:
         run: |
           npm ci
 
-      - name: Install Maestro CLI
-        run: |
-          # Ensure jq is available for parsing GitHub API responses
-          brew install jq || true
-
-          # Try installing Maestro via Homebrew if available, otherwise fall back to downloading a release
-          if brew info maestro &>/dev/null; then
-            brew install maestro || true
-          else
-            echo "Homebrew formula for maestro not found; installing via GitHub release"
-            API_JSON=$(curl -s https://api.github.com/repos/maestro-mobile/maestro/releases/latest)
-            MAESTRO_LATEST_URL=$(echo "$API_JSON" | jq -r '.assets[] | select(.name|test("darwin|macos|mac";"i") and (.name|test("tar.gz|tgz|zip"))) | .browser_download_url' | head -n 1)
-            if [ -z "$MAESTRO_LATEST_URL" ]; then
-              echo "Could not find maestro release for macOS in GitHub releases";
-              exit 1;
-            fi
-            curl -L "$MAESTRO_LATEST_URL" -o /tmp/maestro_archive
-            mkdir -p /tmp/maestro && tar -xzf /tmp/maestro_archive -C /tmp/maestro || unzip -q /tmp/maestro_archive -d /tmp/maestro || true
-            # attempt to find the binary inside the extracted archive
-            MAESTRO_BIN=$(find /tmp/maestro -type f -name maestro -print -quit)
-            if [ -z "$MAESTRO_BIN" ]; then
-              echo "No maestro binary found in the release archive";
-              ls -la /tmp/maestro || true
-              exit 1;
-            fi
-            sudo cp "$MAESTRO_BIN" /usr/local/bin/maestro
-            sudo chmod +x /usr/local/bin/maestro
-          fi
-
-      - name: Verify Maestro
-        run: |
-          maestro --version || true
-
       - name: Generate tests (flows)
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
         run: |
           npm run generateTests
 
-      - name: Run all tests
-        # runAllTests runs shell script which executes `maestro test` for each generated flow
-        run: |
-          chmod +x ./example/tests/scripts/runAllTests.sh
-          ./example/tests/scripts/runAllTests.sh
+      - name: Set up Java (required by some maestro components)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+
+      - name: Start iOS simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: 'iPhone 14 Pro'
+
+      - name: Run Maestro flows via maestro-test-action
+        uses: dniHze/maestro-test-action@v1
+        with:
+          flow: example/tests/generated
+          screenshots-dir: example/tests/screenshots
+          report: example/tests/maestro/report.xml
+          version: latest
+          env: |
+            MAESTRO_APP_ID=com.swmansion.expoliveactivity.example
 
       - name: Generate PDF report
         run: |
