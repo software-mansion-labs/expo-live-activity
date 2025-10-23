@@ -57,7 +57,16 @@ jobs:
       - name: Wait for iOS simulator to boot
         run: sleep 20
 
-      # Run all Maestro E2E tests
+      # Install app on the simulator
+      - name: Build and install example app
+        run: |
+          cd example
+          npm ci
+          npx expo prebuild --clean
+          npx expo run:ios --no-bundler
+  
+
+  # Run all Maestro E2E tests
       - name: Run all Maestro tests
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
