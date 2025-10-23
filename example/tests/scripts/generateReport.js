@@ -3,17 +3,18 @@ const path = require('path')
 const { PDFDocument, StandardFonts } = require('pdf-lib')
 
 async function generateReport() {
-  const configsPath = path.resolve('tests/configs.json')
-  const screenshotsDir = path.resolve('tests/screenshots')
-  const reportsDir = path.resolve('reports')
+  const mainPath = './example/tests'
+  const configsPath = path.resolve(`${mainPath}/configs.json`)
+  const screenshotsDir = path.resolve(`${mainPath}/screenshots`)
+  const reportsDir = path.resolve(`${mainPath}/reports`)
 
   if (!fs.existsSync(configsPath)) {
-    console.error('❌ tests/configs.json not found!')
+    console.error(`❌ ${mainPath}/configs.json not found!`)
     process.exit(1)
   }
 
   if (!fs.existsSync(screenshotsDir)) {
-    console.error('❌ tests/screenshots folder not found!')
+    console.error(`❌ ${mainPath}/screenshots folder not found!`)
     process.exit(1)
   }
 

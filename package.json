@@ -16,7 +16,10 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "generateTests": "node ./example/tests/scripts/generateFlows.js",
+    "runAllTests": "./example/tests/scripts/runAllTests.sh",
+    "generateTestReport": "node ./example/tests/scripts/generateReport.js"
   },
   "keywords": [
     "react-native",
@@ -47,7 +50,8 @@
     "expo": "~54.0.0",
     "expo-module-scripts": "^5.0.3",
     "prettier": "^3.6.2",
-    "react-native": "0.81.4"
+    "react-native": "0.81.4",
+    "pdf-lib": "^1.17.1"
   },
   "peerDependencies": {
     "expo": "*",

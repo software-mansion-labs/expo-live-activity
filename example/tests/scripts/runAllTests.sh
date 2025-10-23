@@ -9,7 +9,7 @@ i=0
 passed=0
 failed=0
 interrupted=false
-files=(tests/generated/*.yaml)
+files=(example/tests/generated/*.yaml)
 total=${#files[@]}
 
 trap 'echo -e "\n${RED}🛑 Tests interrupted by user.${NC}"; interrupted=true; break' SIGINT

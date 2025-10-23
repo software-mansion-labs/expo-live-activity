@@ -1,9 +1,9 @@
 // scripts/generateFlows.js
 const fs = require('fs')
-
+const mainPath = './example/tests'
 const APP_ID = process.env.MAESTRO_APP_ID || 'com.swmansion.expoliveactivity.example' // <- podmień envem
-const configs = JSON.parse(fs.readFileSync('./tests/configs.json', 'utf-8'))
-fs.mkdirSync('./tests/generated', { recursive: true })
+const configs = JSON.parse(fs.readFileSync(`${mainPath}/configs.json`, 'utf-8'))
+fs.mkdirSync(`${mainPath}/generated`, { recursive: true })
 
 for (const test of configs) {
   const { id, title, config } = test
@@ -50,9 +50,9 @@ appId: ${APP_ID}
     text: "Allow"
     delay: 500
 
-- takeScreenshot: tests/screenshots/${id}
+- takeScreenshot: ${mainPath}/screenshots/${id}
 `
 
-  fs.writeFileSync(`./tests/generated/${id}.yaml`, yaml.trim())
+  fs.writeFileSync(`${mainPath}/generated/${id}.yaml`, yaml.trim())
   console.log(`✅ generated flow for: ${title}`)
 }
