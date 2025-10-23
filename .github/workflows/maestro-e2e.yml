@@ -63,15 +63,109 @@ jobs:
             exit 1
           fi
 
-      - name: Run Maestro flows via maestro-test-action
-        uses: dniHze/maestro-test-action@v1
-        with:
-          flow: example/tests/generated
-          screenshots-dir: example/tests/screenshots
-          report: example/tests/maestro/report.xml
-          version: latest
-          env: |
-            MAESTRO_APP_ID=com.swmansion.expoliveactivity.example
+      - name: Install prerequisites
+        run: |
+          brew update || true
+          brew install jq || true
+          # ensure unzip/tar are available
+          which unzip || true
+          which tar || true
+
+      - name: Download and cache idb_companion (with retries)
+        env:
+          IDB_VERSION: '1.1.8'
+          IDB_URL: "https://github.com/facebook/idb/releases/download/v${{ env.IDB_VERSION }}/idb-companion.universal.tar.gz"
+          IDB_DEST: ${{ runner.temp }}/idb-companion.universal.tar.gz
+        run: |
+          set -euo pipefail
+          attempts=0
+          max_attempts=5
+          until [ $attempts -ge $max_attempts ]
+          do
+            attempts=$((attempts+1))
+            echo "Downloading idb_companion, attempt $attempts"
+            if curl -fSL "$IDB_URL" -o "$IDB_DEST"; then
+              echo "Downloaded idb_companion"
+              break
+            else
+              echo "Download failed (attempt $attempts). Retrying in $((attempts * 5))s..."
+              sleep $((attempts * 5))
+            fi
+          done
+          if [ ! -f "$IDB_DEST" ]; then
+            echo "Failed to download idb_companion after $max_attempts attempts"
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/idb_extracted"
+          tar -xzf "$IDB_DEST" -C "$RUNNER_TEMP/idb_extracted"
+          # Expect bin under idb-companion.universal/bin or similar
+          if [ -d "$RUNNER_TEMP/idb_extracted/idb-companion.universal/bin" ]; then
+            export IDB_BIN="$RUNNER_TEMP/idb_extracted/idb-companion.universal/bin"
+          else
+            # fallback: find any idb_companion binary
+            IDB_BIN=$(find "$RUNNER_TEMP/idb_extracted" -type f -name 'idb_companion' -exec dirname {} \; | head -n1 || true)
+          fi
+          if [ -z "$IDB_BIN" ]; then
+            echo "Could not locate idb_companion binary after extraction"
+            ls -la "$RUNNER_TEMP/idb_extracted" || true
+            exit 1
+          fi
+          echo "Adding idb bin to PATH: $IDB_BIN"
+          echo "$IDB_BIN" >> $GITHUB_PATH
+
+      - name: Download and install Maestro CLI (with retries)
+        env:
+          MAESTRO_VERSION: 'latest'
+          MAESTRO_DOWNLOAD_DIR: ${{ runner.temp }}/maestro
+        run: |
+          set -euo pipefail
+          mkdir -p "$MAESTRO_DOWNLOAD_DIR"
+          # resolve latest version if requested
+          if [ "${MAESTRO_VERSION}" = "latest" ]; then
+            MAESTRO_VERSION_RESOLVED=$(curl -sSfL https://api.github.com/repos/mobile-dev-inc/maestro/releases/latest | jq -r .tag_name)
+            MAESTRO_VERSION_RESOLVED=${MAESTRO_VERSION_RESOLVED#cli-}
+          else
+            MAESTRO_VERSION_RESOLVED=${MAESTRO_VERSION}
+          fi
+          echo "Resolved maestro version: $MAESTRO_VERSION_RESOLVED"
+          MAESTRO_URL="https://github.com/mobile-dev-inc/maestro/releases/download/cli-${MAESTRO_VERSION_RESOLVED}/maestro.zip"
+          MAESTRO_ZIP="$MAESTRO_DOWNLOAD_DIR/maestro.zip"
+          attempts=0
+          max_attempts=5
+          until [ $attempts -ge $max_attempts ]
+          do
+            attempts=$((attempts+1))
+            echo "Downloading maestro (attempt $attempts) from $MAESTRO_URL"
+            if curl -fSL "$MAESTRO_URL" -o "$MAESTRO_ZIP"; then
+              echo "Downloaded maestro"
+              break
+            else
+              echo "Download failed (attempt $attempts). Retrying in $((attempts * 5))s..."
+              sleep $((attempts * 5))
+            fi
+          done
+          if [ ! -f "$MAESTRO_ZIP" ]; then
+            echo "Failed to download maestro after $max_attempts attempts"
+            exit 1
+          fi
+          unzip -q "$MAESTRO_ZIP" -d "$MAESTRO_DOWNLOAD_DIR"
+          # maestro binary should be in maestro/bin
+          if [ -x "$MAESTRO_DOWNLOAD_DIR/maestro/bin/maestro" ]; then
+            echo "Adding maestro to PATH"
+            echo "$MAESTRO_DOWNLOAD_DIR/maestro/bin" >> $GITHUB_PATH
+          else
+            echo "maestro binary not found after unzip"
+            ls -la "$MAESTRO_DOWNLOAD_DIR" || true
+            exit 1
+          fi
+
+      - name: Run tests (maestro CLI)
+        env:
+          MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+        run: |
+          set -euo pipefail
+          chmod +x example/tests/scripts/runAllTests.sh || true
+          ./example/tests/scripts/runAllTests.sh || true
 
       - name: Generate PDF report
         run: |
