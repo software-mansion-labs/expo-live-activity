@@ -8,7 +8,7 @@ on:
 jobs:
   e2e:
     name: Run Maestro E2E on macOS
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout repository
@@ -35,10 +35,33 @@ jobs:
           distribution: 'adopt'
           java-version: '11'
 
+      - name: Diagnostic - list available simulators
+        run: |
+          echo "--- xcrun simctl list runtimes ---"
+          xcrun simctl list runtimes || true
+          echo "--- xcrun simctl list devices ---"
+          xcrun simctl list devices || true
+
       - name: Start iOS simulator
         uses: futureware-tech/simulator-action@v2
         with:
-          model: 'iPhone 14 Pro'
+          model: 'iPhone 16 Pro'
+
+      - name: Fallback - try booting any available simulator (diagnostic)
+        if: ${{ failure() }}
+        run: |
+          echo "Attempting to boot the first available simulator"
+          # Extract a UDID-looking string from simctl output (no jq required)
+          UDID=$(xcrun simctl list devices | grep -Eo '\\b[0-9A-Fa-f\-]{36}\\b' | head -n 1)
+          if [ -n "$UDID" ]; then
+            echo "Booting simulator $UDID"
+            xcrun simctl boot "$UDID" || true
+            open -a Simulator || true
+          else
+            echo "No available simulator UDID found"
+            xcrun simctl list || true
+            exit 1
+          fi
 
       - name: Run Maestro flows via maestro-test-action
         uses: dniHze/maestro-test-action@v1
