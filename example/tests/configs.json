@@ -15,5 +15,33 @@
   { "id": "fit-contain-50pct-x-50", "title": "contain | 50% x 50px", "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "contain" } },
   { "id": "fit-fill-50pct-x-50", "title": "fill | 50% x 50px", "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "fill" } },
   { "id": "fit-none-50pct-x-50", "title": "none | 50% x 50px", "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "none" } },
-  { "id": "fit-scaledown-50pct-x-50", "title": "scale-down | 50% x 50px", "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "scale-down" } }
+  { "id": "fit-scaledown-50pct-x-50", "title": "scale-down | 50% x 50px", "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "scale-down" } },
+
+
+  { "id": "padding-single-16", "title": "padding: 16 | contentFit: fill | imageSize: {width: '50%', height: 50}", "config": { "padding": 16, "contentFit": "fill", "imageSize": { "width": "50%", "height": 50 } } },
+  { "id": "padding-top-8", "title": "padding.top: 8 | contentFit: contain | imageSize: {width: 80, height: '40%'}", "config": { "padding": { "top": 8 }, "contentFit": "contain", "imageSize": { "width": 80, "height": "40%" } } },
+  { "id": "padding-bottom-8", "title": "padding.bottom: 8 | contentFit: cover | imageSize: {width: '60%', height: 70}", "config": { "padding": { "bottom": 8 }, "contentFit": "cover", "imageSize": { "width": "60%", "height": 70 } } },
+  { "id": "padding-left-8", "title": "padding.left: 8 | contentFit: scale-down | imageSize: {width: 100, height: '30%'}", "config": { "padding": { "left": 8 }, "contentFit": "scale-down", "imageSize": { "width": 100, "height": "30%" } } },
+  { "id": "padding-right-8", "title": "padding.right: 8 | contentFit: none | imageSize: {width: '70%', height: 60}", "config": { "padding": { "right": 8 }, "contentFit": "none", "imageSize": { "width": "70%", "height": 60 } } },
+  { "id": "padding-vertical-6", "title": "padding.vertical: 6 | contentFit: fill | imageSize: {width: 90, height: '40%'}", "config": { "padding": { "vertical": 6 }, "contentFit": "fill", "imageSize": { "width": 90, "height": "40%" } } },
+  { "id": "padding-horizontal-6", "title": "padding.horizontal: 6 | contentFit: contain | imageSize: {width: '55%', height: 55}", "config": { "padding": { "horizontal": 6 }, "contentFit": "contain", "imageSize": { "width": "55%", "height": 55 } } },
+
+  { "id": "image-align-top", "title": "imageAlign: top | contentFit: cover | imageSize: {width: '50%', height: 50}", "config": { "imageAlign": "top", "contentFit": "cover", "imageSize": { "width": "50%", "height": 50 } } },
+  { "id": "image-align-center", "title": "imageAlign: center | contentFit: scale-down | imageSize: {width: 120, height: '60%'}", "config": { "imageAlign": "center", "contentFit": "scale-down", "imageSize": { "width": 120, "height": "60%" } } },
+  { "id": "image-align-bottom", "title": "imageAlign: bottom | contentFit: none | imageSize: {width: '65%', height: 80}", "config": { "imageAlign": "bottom", "contentFit": "none", "imageSize": { "width": "65%", "height": 80 } } },
+
+  { "id": "image-position-left", "title": "imagePosition: left | contentFit: fill | imageSize: {width: 100, height: '50%'}", "config": { "imagePosition": "left", "contentFit": "fill", "imageSize": { "width": 100, "height": "50%" } } },
+  { "id": "image-position-right", "title": "imagePosition: right | contentFit: contain | imageSize: {width: '60%', height: 90}", "config": { "imagePosition": "right", "contentFit": "contain", "imageSize": { "width": "60%", "height": 90 } } },
+  { "id": "image-position-left-stretch", "title": "imagePosition: leftStretch | contentFit: cover | imageSize: {width: 80, height: '35%'}", "config": { "imagePosition": "leftStretch", "contentFit": "cover", "imageSize": { "width": 80, "height": "35%" } } },
+  { "id": "image-position-right-stretch", "title": "imagePosition: rightStretch | contentFit: scale-down | imageSize: {width: '45%', height: 100}", "config": { "imagePosition": "rightStretch", "contentFit": "scale-down", "imageSize": { "width": "45%", "height": 100 } } },
+
+  { "id": "title-small", "title": "titleText: 'S' | contentFit: none | imageSize: {width: '50%', height: 50}", "config": { "titleText": "S", "contentFit": "none", "imageSize": { "width": "50%", "height": 50 } } },
+  { "id": "title-medium", "title": "titleText: 'Medium title example' | contentFit: fill | imageSize: {width: 75, height: '45%'}", "config": { "titleText": "Medium title example", "contentFit": "fill", "imageSize": { "width": 75, "height": "45%" } } },
+  { "id": "title-long", "title": "titleText: 'This is a very long title used for testing the long text handling in the live activity UI' | contentFit: contain | imageSize: {width: '55%', height: 65}", "config": { "titleText": "This is a very long title used for testing the long text handling in the live activity UI", "contentFit": "contain", "imageSize": { "width": "55%", "height": 65 } } },
+
+  { "id": "subtitle-small", "title": "subtitleText: 's' | contentFit: cover | imageSize: {width: 100, height: '50%'}", "config": { "subtitleText": "s", "contentFit": "cover", "imageSize": { "width": 100, "height": "50%" } } },
+  { "id": "subtitle-medium", "title": "subtitleText: 'Medium subtitle example' | contentFit: scale-down | imageSize: {width: '65%', height: 70}", "config": { "subtitleText": "Medium subtitle example", "contentFit": "scale-down", "imageSize": { "width": "65%", "height": 70 } } },
+  { "id": "subtitle-long", "title": "subtitleText: 'This is a longer subtitle used to verify truncation and wrapping in different parts of the live activity UI' | contentFit: none | imageSize: {width: 85, height: '40%'}", "config": { "subtitleText": "This is a longer subtitle used to verify truncation and wrapping in different parts of the live activity UI", "contentFit": "none", "imageSize": { "width": 85, "height": "40%" } } }
+
 ]
+

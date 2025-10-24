@@ -221,7 +221,13 @@ export default function CreateLiveActivityScreen() {
         <Text testID="input-title-label" style={styles.label}>
           Set Live Activity title:
         </Text>
-        <TextInput style={styles.input} onChangeText={onChangeTitle} placeholder="Live activity title" value={title} />
+        <TextInput
+          testID="input-title"
+          style={styles.input}
+          onChangeText={onChangeTitle}
+          placeholder="Live activity title"
+          value={title}
+        />
         <View style={styles.labelWithSwitch}>
           <Text testID="input-subtitle-label" style={styles.label}>
             Set Live Activity subtitle:
@@ -229,6 +235,7 @@ export default function CreateLiveActivityScreen() {
           <Switch onValueChange={() => setPassSubtitle(toggle)} value={passSubtitle} />
         </View>
         <TextInput
+          testID="input-subtitle"
           style={passSubtitle ? styles.input : styles.diabledInput}
           onChangeText={onChangeSubtitle}
           placeholder="Live activity title"
@@ -250,7 +257,9 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label} testID={'input-image-width-label'}>Image width (pt or %):</Text>
+          <Text style={styles.label} testID={'input-image-width-label'}>
+            Image width (pt or %):
+          </Text>
         </View>
         <TextInput
           style={styles.input}
@@ -279,6 +288,7 @@ export default function CreateLiveActivityScreen() {
           <Text style={styles.label}>Image position:</Text>
         </View>
         <Dropdown
+          testID="dropdown-image-position"
           value={imagePosition}
           onChange={(v) => setImagePosition(v as ImagePosition)}
           options={[
@@ -293,6 +303,7 @@ export default function CreateLiveActivityScreen() {
           <Text style={styles.label}>Image vertical align:</Text>
         </View>
         <Dropdown
+          testID="dropdown-image-align"
           value={imageAlign}
           onChange={(v) => setImageAlign(v as 'top' | 'center' | 'bottom')}
           options={[
@@ -320,12 +331,17 @@ export default function CreateLiveActivityScreen() {
 
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Show padding details:</Text>
-          <Switch onValueChange={() => setShowPaddingDetails(toggle)} value={showPaddingDetails} />
+          <Switch
+            testID="switch-show-padding-details"
+            onValueChange={() => setShowPaddingDetails(toggle)}
+            value={showPaddingDetails}
+          />
         </View>
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Padding:</Text>
         </View>
         <TextInput
+          testID="input-padding-single"
           style={styles.input}
           onChangeText={(t) => onChangeNumeric(t, setPaddingSingle)}
           keyboardType="number-pad"
@@ -338,6 +354,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Top</Text>
                 <TextInput
+                  testID="input-padding-top"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingTop)}
                   keyboardType="number-pad"
@@ -348,6 +365,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Bottom</Text>
                 <TextInput
+                  testID="input-padding-bottom"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingBottom)}
                   keyboardType="number-pad"
@@ -360,6 +378,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Left</Text>
                 <TextInput
+                  testID="input-padding-left"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingLeft)}
                   keyboardType="number-pad"
@@ -370,6 +389,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Right</Text>
                 <TextInput
+                  testID="input-padding-right"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingRight)}
                   keyboardType="number-pad"
@@ -382,6 +402,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Vertical</Text>
                 <TextInput
+                  testID="input-padding-vertical"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingVertical)}
                   keyboardType="number-pad"
@@ -392,6 +413,7 @@ export default function CreateLiveActivityScreen() {
               <View style={styles.paddingCell}>
                 <Text style={styles.smallLabel}>Horizontal</Text>
                 <TextInput
+                  testID="input-padding-horizontal"
                   style={styles.input}
                   onChangeText={(t) => onChangeNumeric(t, setPaddingHorizontal)}
                   keyboardType="number-pad"
