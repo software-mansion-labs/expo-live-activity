@@ -14,8 +14,10 @@ jobs:
       # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      # Cache dependencies (npm, Pods, Xcode derived data)
+      # Cache dependencies (npm, Pods, Xcode derived data, built app)
       - name: Cache dependencies
         uses: actions/cache@v4
         with:
@@ -25,9 +27,18 @@ jobs:
             example/node_modules
             example/ios/Pods
             ~/Library/Developer/Xcode/DerivedData
-          key: ${{ runner.os }}-expo-${{ hashFiles('example/package-lock.json', 'example/ios/Podfile.lock', 'example/app.json', 'example/ios/**') }}
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-expo-build-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
           restore-keys: |
             ${{ runner.os }}-expo-
+
+      # Restore cached built app (if exists)
+      - name: Restore cached .app build
+        id: app-cache
+        uses: actions/cache@v4
+        with:
+          path: example/ios/build/Release-iphonesimulator
+          key: ${{ runner.os }}-expo-app-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
 
       # Set up Node.js
       - name: Set up Node.js
@@ -79,23 +90,21 @@ jobs:
           export PATH="$PATH:$HOME/.maestro/bin"
           maestro --version
 
-
       # Wait for simulator to boot
       - name: Wait for iOS simulator
         run: sleep 20
 
-        # Build and install the example app (Release, skip prebuild if no native changes)
+      # Build and install the example app (Release, skip prebuild if no native changes)
       - name: Build and install example app
+        if: steps.app-cache.outputs.cache-hit != 'true'
         env:
           EXPO_NO_DEV_SERVER: 1   # Prevent Metro bundler connection attempts
+          EXPO_TARGET: bare
         run: |
           cd example
           npm ci
           
           echo "🔍 Checking for native changes (ios/, ios-files/, example/ios/, example/android/, app.json)..."
-
-          # Ensure we have enough Git history for diff to work
-          git fetch --unshallow || true
 
           # Detect if any native-related files changed
           if git diff --quiet HEAD^ HEAD -- \
@@ -112,6 +121,21 @@ jobs:
 
           echo "🏗️ Building and installing the app (Release, no Metro)..."
           npx expo run:ios --configuration Release --no-bundler
+
+      # If app was cached, just install it on simulator
+      - name: Install cached app
+        if: steps.app-cache.outputs.cache-hit == 'true'
+        run: |
+          echo "✅ Using cached build — installing app directly..."
+          xcrun simctl install booted example/ios/build/Release-iphonesimulator/*.app
+
+      # Cache built .app for next runs
+      - name: Cache built app
+        if: steps.app-cache.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: example/ios/build/Release-iphonesimulator
+          key: ${{ runner.os }}-expo-app-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
 
       # Run all Maestro E2E tests
       - name: Run all Maestro tests
