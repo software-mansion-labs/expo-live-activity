@@ -11,26 +11,30 @@ jobs:
     runs-on: macos-15
 
     steps:
-      # Checkout the repository
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Set up Node.js environment
+      # Cache dependencies (npm, Pods, Xcode derived data)
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            example/node_modules
+            example/ios/Pods
+            ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-expo-${{ hashFiles('example/package-lock.json', 'example/ios/Podfile.lock', 'example/app.json', 'example/ios/**') }}
+          restore-keys: |
+            ${{ runner.os }}-expo-
+
+      # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '18'
           cache: 'npm'
-
-      # Install project dependencies
-      - name: Install dependencies
-        run: npm ci
-
-      # Generate Maestro test flows
-      - name: Generate test flows
-        env:
-          MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
-        run: npm run generateTests
 
       # Set up Java (Zulu 17)
       - name: Set up Java (Zulu 17)
@@ -39,13 +43,23 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      # Start an iOS simulator
+      # Install dependencies (root)
+      - name: Install root dependencies
+        run: npm ci
+
+      # Generate Maestro test flows
+      - name: Generate test flows
+        env:
+          MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+        run: npm run generateTests
+
+      # Start iOS simulator
       - name: Start iOS Simulator
         uses: futureware-tech/simulator-action@v2
         with:
           model: 'iPhone 16 Pro'
 
-      # Install Maestro CLI using the official installer
+      # Install Maestro CLI
       - name: Install Maestro CLI
         run: |
           curl -Ls "https://get.maestro.mobile.dev" | bash
@@ -53,18 +67,37 @@ jobs:
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
           maestro --version
 
-      # Wait a few seconds to ensure the simulator is fully booted
-      - name: Wait for iOS simulator to boot
+      # Wait for simulator to boot
+      - name: Wait for iOS simulator
         run: sleep 20
 
-      # Install app on the simulator
+        # Build and install the example app (Release, skip prebuild if no native changes)
       - name: Build and install example app
         env:
-          EXPO_NO_DEV_SERVER: 1
+          EXPO_NO_DEV_SERVER: 1   # Prevent Metro bundler connection attempts
         run: |
           cd example
           npm ci
-          npx expo prebuild --clean
+          
+          echo "🔍 Checking for native changes (ios/, ios-files/, example/ios/, example/android/, app.json)..."
+
+          # Ensure we have enough Git history for diff to work
+          git fetch --unshallow || true
+
+          # Detect if any native-related files changed
+          if git diff --quiet HEAD^ HEAD -- \
+              ../ios \
+              ../ios-files \
+              ios \
+              android \
+              app.json; then
+            echo "✅ No native changes detected — skipping expo prebuild"
+          else
+            echo "⚙️ Native changes detected — running expo prebuild"
+            npx expo prebuild --clean
+          fi
+
+          echo "🏗️ Building and installing the app (Release, no Metro)..."
           npx expo run:ios --configuration Release --no-bundler
 
       # Run all Maestro E2E tests
@@ -75,7 +108,7 @@ jobs:
           chmod +x example/tests/scripts/runAllTests.sh
           ./example/tests/scripts/runAllTests.sh
 
-      # Upload Maestro debug artifacts
+      # Upload Maestro debug artifacts (logs, screenshots)
       - name: Upload Maestro debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
@@ -83,11 +116,12 @@ jobs:
           name: maestro-debug
           path: ~/.maestro/tests/
 
-      # Generate a PDF test report
+      # Generate PDF report (always, even if tests fail)
       - name: Generate PDF report
+        if: always()
         run: npm run generateTestReport
 
-      # Upload the PDF report as an artifact
+      # Upload the PDF report artifact
       - name: Upload PDF report
         if: always()
         uses: actions/upload-artifact@v4
