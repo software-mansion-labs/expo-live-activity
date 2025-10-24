@@ -49,6 +49,7 @@ appId: ${APP_ID}
 - tapOn:
     text: "Allow"
     delay: 500
+    optional: true
 
 - takeScreenshot: ${mainPath}/screenshots/${id}
 `
