@@ -63,7 +63,7 @@ jobs:
           cd example
           npm ci
           npx expo prebuild --clean
-          npx expo run:ios --no-bundler
+          npx expo run:ios --no-bundler --configuration Release
   
 
   # Run all Maestro E2E tests
