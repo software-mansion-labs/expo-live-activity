@@ -59,14 +59,15 @@ jobs:
 
       # Install app on the simulator
       - name: Build and install example app
+        env:
+          EXPO_NO_DEV_SERVER: 1
         run: |
           cd example
           npm ci
           npx expo prebuild --clean
-          npx expo run:ios --no-bundler --configuration Release
-  
+          npx expo run:ios --configuration Release --no-bundler
 
-  # Run all Maestro E2E tests
+      # Run all Maestro E2E tests
       - name: Run all Maestro tests
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
@@ -74,14 +75,13 @@ jobs:
           chmod +x example/tests/scripts/runAllTests.sh
           ./example/tests/scripts/runAllTests.sh
 
-      # Upload Maestro debugartifacts
+      # Upload Maestro debug artifacts
       - name: Upload Maestro debug artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: maestro-debug
           path: ~/.maestro/tests/
-
 
       # Generate a PDF test report
       - name: Generate PDF report
