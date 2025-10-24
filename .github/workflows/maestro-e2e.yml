@@ -59,13 +59,26 @@ jobs:
         with:
           model: 'iPhone 16 Pro'
 
-      # Install Maestro CLI
-      - name: Install Maestro CLI
+      # Install Maestro CLI (cached)
+      - name: Install Maestro CLI (cached)
+        uses: actions/cache@v4
+        id: maestro-cache
+        with:
+          path: ~/.maestro/bin
+          key: ${{ runner.os }}-maestro-${{ hashFiles('example/package-lock.json') }}
+
+      - name: Install Maestro CLI (download if missing)
+        if: steps.maestro-cache.outputs.cache-hit != 'true'
         run: |
+          echo "Downloading Maestro CLI..."
           curl -Ls "https://get.maestro.mobile.dev" | bash
-          export PATH="$PATH:$HOME/.maestro/bin"
           echo "$HOME/.maestro/bin" >> $GITHUB_PATH
+
+      - name: Verify Maestro CLI
+        run: |
+          export PATH="$PATH:$HOME/.maestro/bin"
           maestro --version
+
 
       # Wait for simulator to boot
       - name: Wait for iOS simulator
