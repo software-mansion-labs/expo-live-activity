@@ -250,7 +250,9 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label} testID={'input-image-width-label'}>Image width (pt or %):</Text>
+          <Text style={styles.label} testID={'input-image-width-label'}>
+            Image width (pt or %):
+          </Text>
         </View>
         <TextInput
           style={styles.input}

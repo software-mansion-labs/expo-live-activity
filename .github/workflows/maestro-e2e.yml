@@ -98,12 +98,12 @@ jobs:
       - name: Build and install example app
         if: steps.app-cache.outputs.cache-hit != 'true'
         env:
-          EXPO_NO_DEV_SERVER: 1   # Prevent Metro bundler connection attempts
+          EXPO_NO_DEV_SERVER: 1 # Prevent Metro bundler connection attempts
           EXPO_TARGET: bare
         run: |
           cd example
           npm ci
-          
+
           echo "🔍 Checking for native changes (ios/, ios-files/, example/ios/, example/android/, app.json)..."
 
           # Detect if any native-related files changed
