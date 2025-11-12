@@ -9,8 +9,6 @@ jobs:
   e2e:
     name: Run Maestro E2E on macOS
     runs-on: macos-15
-    env:
-      PATH: $HOME/.maestro/bin:${{ env.PATH }}
 
     steps:
       # Checkout repository
@@ -88,10 +86,12 @@ jobs:
           echo "⬇️ Downloading Maestro CLI..."
           curl -Ls "https://get.maestro.mobile.dev" | bash
 
+      - name: Add Maestro to PATH
+        run: echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: Verify Maestro CLI
         run: |
-          export PATH="$PATH:$HOME/.maestro/bin"
+          which maestro || true
           maestro --version
 
       # Wait for simulator to boot
