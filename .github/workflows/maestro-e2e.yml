@@ -10,7 +10,7 @@ jobs:
     name: Run Maestro E2E on macOS
     runs-on: macos-15
     env:
-      PATH: $HOME/.maestro/bin:$PATH
+      PATH: $HOME/.maestro/bin:${{ env.PATH }}
 
     steps:
       # Checkout repository
