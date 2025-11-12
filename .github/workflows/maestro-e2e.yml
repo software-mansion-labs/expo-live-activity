@@ -1,4 +1,4 @@
-name: Run Maestro E2E tests and generate Report
+name: Run Maestro E2E tests and generate report
 
 on:
   workflow_dispatch: {}
