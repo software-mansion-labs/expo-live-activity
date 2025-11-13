@@ -47,8 +47,9 @@ appId: ${APP_ID}
 - tapOn:
       point: 50%,50%
       delay: 100
-- assertVisible:
-    text: "Title"
+- extendedWaitUntil:
+    visible: "Title"
+    timeout: 10000
     optional: true
 - tapOn:
     text: "Allow"
