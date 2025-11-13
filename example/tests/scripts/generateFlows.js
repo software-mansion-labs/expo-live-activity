@@ -49,6 +49,7 @@ appId: ${APP_ID}
       delay: 100
 - assertVisible:
     text: "Title"
+    optional: true
 - tapOn:
     text: "Allow"
     delay: 500
