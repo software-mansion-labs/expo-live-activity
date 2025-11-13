@@ -46,7 +46,7 @@ appId: ${APP_ID}
       duration: 200
 - tapOn:
       point: 50%,50%
-      delay: 100
+      delay: 10000
 - extendedWaitUntil:
     visible: "Title"
     timeout: 20000
