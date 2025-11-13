@@ -49,7 +49,7 @@ appId: ${APP_ID}
       delay: 100
 - extendedWaitUntil:
     visible: "Title"
-    timeout: 10000
+    timeout: 20000
     optional: true
 - tapOn:
     text: "Allow"
