@@ -1,4 +1,4 @@
-name: Run Maestro E2E tests and generate report
+name: Run cached Maestro E2E tests and generate report
 
 on:
   workflow_dispatch: {}
@@ -30,6 +30,15 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: '17'
+
+      # Cache node_modules (root)
+      - name: Cache node_modules (root)
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node18-root-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node18-root-
 
       # Install dependencies (root)
       - name: Install root dependencies
@@ -63,15 +72,27 @@ jobs:
       - name: Wait for iOS simulator
         run: sleep 20
 
-      # Build and install the example app
-      - name: Build and install example app
+      # Cache node_modules (example)
+      - name: Cache node_modules (example)
+        uses: actions/cache@v4
+        with:
+          path: example/node_modules
+          key: ${{ runner.os }}-node18-example-${{ hashFiles('example/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node18-example-
+
+      # Install example dependencies
+      - name: Install example dependencies
+        working-directory: example
+        run: npm ci
+
+      # Check for native changes and run prebuild if needed
+      - name: Check for native changes
+        working-directory: example
         env:
           EXPO_NO_DEV_SERVER: 1
           EXPO_TARGET: bare
         run: |
-          cd example
-          npm ci
-
           echo "🔍 Checking for native changes (ios/, ios-files/, example/ios/, example/android/, app.json)..."
 
           # Detect if any native-related files changed
@@ -87,6 +108,43 @@ jobs:
             npx expo prebuild --clean
           fi
 
+      # Cache CocoaPods
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            example/ios/Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('example/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      # Cache Xcode DerivedData
+      - name: Cache Xcode DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('example/ios/Podfile.lock', 'example/ios/**/*.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+
+      # Cache Xcode Build Cache
+      - name: Cache Xcode Build Cache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/com.apple.dt.Xcode
+          key: ${{ runner.os }}-xcode-cache-${{ hashFiles('example/ios/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-xcode-cache-
+
+      # Build and install the example app
+      - name: Build and install example app
+        working-directory: example
+        env:
+          EXPO_NO_DEV_SERVER: 1
+          EXPO_TARGET: bare
+        run: |
           echo "🏗️ Building and installing the app (Release, no Metro)..."
           npx expo run:ios --configuration Release --no-bundler
 
