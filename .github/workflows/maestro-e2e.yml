@@ -17,29 +17,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Cache dependencies (npm, Pods, Xcode derived data, built app)
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            example/node_modules
-            example/ios/Pods
-            ~/Library/Developer/Xcode/DerivedData
-            ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-expo-build-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
-          restore-keys: |
-            ${{ runner.os }}-expo-
-
-      # Restore cached built app (if exists)
-      - name: Restore cached .app build
-        id: app-cache
-        uses: actions/cache@v4
-        with:
-          path: example/ios/build/Release-iphonesimulator
-          key: ${{ runner.os }}-expo-app-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
-
       # Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -70,24 +47,12 @@ jobs:
         with:
           model: 'iPhone 16 Pro'
 
-      # Install Maestro CLI (cached)
-      - name: Cache Maestro CLI
-        id: maestro-cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.maestro/bin
-            ~/.maestro/maestro.jar
-          key: ${{ runner.os }}-maestro-${{ hashFiles('example/package-lock.json') }}
-
-      - name: Install Maestro CLI (download if missing)
-        if: steps.maestro-cache.outputs.cache-hit != 'true'
+      # Install Maestro CLI
+      - name: Install Maestro CLI
         run: |
           echo "⬇️ Downloading Maestro CLI..."
           curl -Ls "https://get.maestro.mobile.dev" | bash
-
-      - name: Add Maestro to PATH
-        run: echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
 
       - name: Verify Maestro CLI
         run: |
@@ -98,11 +63,10 @@ jobs:
       - name: Wait for iOS simulator
         run: sleep 20
 
-      # Build and install the example app (Release, skip prebuild if no native changes)
+      # Build and install the example app
       - name: Build and install example app
-        if: steps.app-cache.outputs.cache-hit != 'true'
         env:
-          EXPO_NO_DEV_SERVER: 1 # Prevent Metro bundler connection attempts
+          EXPO_NO_DEV_SERVER: 1
           EXPO_TARGET: bare
         run: |
           cd example
@@ -125,21 +89,6 @@ jobs:
 
           echo "🏗️ Building and installing the app (Release, no Metro)..."
           npx expo run:ios --configuration Release --no-bundler
-
-      # If app was cached, just install it on simulator
-      - name: Install cached app
-        if: steps.app-cache.outputs.cache-hit == 'true'
-        run: |
-          echo "✅ Using cached build — installing app directly..."
-          xcrun simctl install booted example/ios/build/Release-iphonesimulator/*.app
-
-      # Cache built .app for next runs
-      - name: Cache built app
-        if: steps.app-cache.outputs.cache-hit != 'true'
-        uses: actions/cache@v4
-        with:
-          path: example/ios/build/Release-iphonesimulator
-          key: ${{ runner.os }}-expo-app-${{ hashFiles('example/ios/Podfile.lock', 'ios/**', 'ios-files/**') }}
 
       # Run all Maestro E2E tests
       - name: Run all Maestro tests
