@@ -19,7 +19,8 @@
     "typecheck": "tsc",
     "generateTests": "node ./example/tests/scripts/generateFlows.js",
     "runAllTests": "./example/tests/scripts/runAllTests.sh",
-    "generateTestReport": "node ./example/tests/scripts/generateReport.js"
+    "generateTestReport": "node ./example/tests/scripts/generateReport.js",
+    "runE2E": "npm run generateTests && npm run runAllTests && npm run generateTestReport"
   },
   "keywords": [
     "react-native",
