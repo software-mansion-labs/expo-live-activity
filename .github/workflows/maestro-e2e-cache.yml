@@ -164,12 +164,20 @@ jobs:
           name: maestro-debug
           path: ~/.maestro/tests/
 
-      # Generate PDF report (always, even if tests fail)
+      # Upload Maestro videos
+      - name: Upload Maestro videos
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-videos
+          path: example/tests/videos
+
+      # Generate PDF report
       - name: Generate PDF report
         if: always()
         run: npm run generateTestReport
 
-      # Upload the PDF report artifact
+      # Upload the PDF report
       - name: Upload PDF report
         if: always()
         uses: actions/upload-artifact@v4

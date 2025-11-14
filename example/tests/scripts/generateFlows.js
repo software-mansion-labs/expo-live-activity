@@ -1,9 +1,12 @@
-// scripts/generateFlows.js
 const fs = require('fs')
 const mainPath = './example/tests'
-const APP_ID = process.env.MAESTRO_APP_ID || 'com.swmansion.expoliveactivity.example' // <- podmień envem
+const APP_ID = process.env.MAESTRO_APP_ID || 'com.swmansion.expoliveactivity.example'
+
 const configs = JSON.parse(fs.readFileSync(`${mainPath}/configs.json`, 'utf-8'))
+
 fs.mkdirSync(`${mainPath}/generated`, { recursive: true })
+fs.mkdirSync(`${mainPath}/videos`, { recursive: true })
+fs.mkdirSync(`${mainPath}/screenshots`, { recursive: true })
 
 for (const test of configs) {
   const { id, title, config } = test
@@ -12,6 +15,7 @@ for (const test of configs) {
   const yaml = `
 appId: ${APP_ID}
 ---
+- startRecording
 - launchApp:
       clearState: true
       permissions:
@@ -56,8 +60,8 @@ appId: ${APP_ID}
 - tapOn:
     text: "Allow"
     optional: true
-
 - takeScreenshot: ${mainPath}/screenshots/${id}
+- stopRecording: ${mainPath}/videos/${id}.mp4
 `
 
   fs.writeFileSync(`${mainPath}/generated/${id}.yaml`, yaml.trim())
