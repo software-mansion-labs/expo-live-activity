@@ -28,6 +28,7 @@ const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
 
 export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [title, onChangeTitle] = useState('Title')
   const [subtitle, onChangeSubtitle] = useState('This is a subtitle')
   const [imageName, onChangeImageName] = useState('logo')
@@ -159,6 +160,7 @@ export default function CreateLiveActivityScreen() {
     }
 
     try {
+      setErrorMessage(null)
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
@@ -170,7 +172,9 @@ export default function CreateLiveActivityScreen() {
       })
       if (id) setActivityID(id)
     } catch (e) {
-      console.error('Starting activity failed! ' + e)
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error('Starting activity failed! ' + msg)
+      setErrorMessage(msg)
     }
   }
 
@@ -187,8 +191,11 @@ export default function CreateLiveActivityScreen() {
     try {
       activityId && LiveActivity.stopActivity(activityId, state)
       setActivityID(null)
+      setErrorMessage(null)
     } catch (e) {
-      console.error('Stopping activity failed! ' + e)
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error('Stopping activity failed! ' + msg)
+      setErrorMessage(msg)
     }
   }
 
@@ -210,8 +217,11 @@ export default function CreateLiveActivityScreen() {
     }
     try {
       activityId && LiveActivity.updateActivity(activityId, state)
+      setErrorMessage(null)
     } catch (e) {
-      console.error('Updating activity failed! ' + e)
+      const msg = e instanceof Error ? e.message : String(e)
+      console.error('Updating activity failed! ' + msg)
+      setErrorMessage(msg)
     }
   }
 
@@ -467,6 +477,7 @@ export default function CreateLiveActivityScreen() {
             disabled={title === '' || !!activityId}
             testID="btn-start-activity"
           />
+          {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
           <Button title="Stop Activity" onPress={stopActivity} disabled={!activityId} />
           <Button title="Update Activity" onPress={updateActivity} disabled={!activityId} />
         </View>
@@ -578,6 +589,11 @@ const styles = StyleSheet.create({
   },
   paddingCell: {
     width: '48%',
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 8,
+    fontSize: 13,
   },
 })
 
