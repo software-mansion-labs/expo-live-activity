@@ -38,6 +38,7 @@ appId: ${APP_ID}
         id: "btn-start-activity"
 - tapOn:
     id: "btn-start-activity"
+    repeat: 2
     delay: 10000
 - stopApp
 - swipe:
@@ -46,6 +47,7 @@ appId: ${APP_ID}
       duration: 200
 - tapOn:
       point: 50%,50%
+      repeat: 2
       delay: 3000
 - extendedWaitUntil:
     visible: "Title"
@@ -53,7 +55,6 @@ appId: ${APP_ID}
     optional: true
 - tapOn:
     text: "Allow"
-    delay: 500
     optional: true
 
 - takeScreenshot: ${mainPath}/screenshots/${id}
