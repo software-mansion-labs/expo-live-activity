@@ -38,7 +38,7 @@ appId: ${APP_ID}
         id: "btn-start-activity"
 - tapOn:
     id: "btn-start-activity"
-    delay: 3000
+    delay: 10000
 - stopApp
 - swipe:
       start: 20%, 2%
@@ -46,10 +46,10 @@ appId: ${APP_ID}
       duration: 200
 - tapOn:
       point: 50%,50%
-      delay: 10000
+      delay: 3000
 - extendedWaitUntil:
     visible: "Title"
-    timeout: 20000
+    timeout: 3000
     optional: true
 - tapOn:
     text: "Allow"
