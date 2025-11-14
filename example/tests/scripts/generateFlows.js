@@ -15,7 +15,8 @@ for (const test of configs) {
   const yaml = `
 appId: ${APP_ID}
 ---
-- startRecording
+- startRecording:
+    path: ${mainPath}/videos/${id}.mp4
 - launchApp:
       clearState: true
       permissions:
@@ -61,7 +62,7 @@ appId: ${APP_ID}
     text: "Allow"
     optional: true
 - takeScreenshot: ${mainPath}/screenshots/${id}
-- stopRecording: ${mainPath}/videos/${id}.mp4
+- stopRecording
 `
 
   fs.writeFileSync(`${mainPath}/generated/${id}.yaml`, yaml.trim())

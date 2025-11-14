@@ -63,3 +63,4 @@ plugin/tsconfig.tsbuildinfo
 example/tests/generated/
 example/tests/screenshots/
 example/tests/reports
+example/tests/videos
