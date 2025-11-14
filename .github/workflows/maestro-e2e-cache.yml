@@ -129,15 +129,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-deriveddata-
 
-      # Cache Xcode Build Cache
-      - name: Cache Xcode Build Cache
-        uses: actions/cache@v4
-        with:
-          path: ~/Library/Caches/com.apple.dt.Xcode
-          key: ${{ runner.os }}-xcode-cache-${{ hashFiles('example/ios/Podfile.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-xcode-cache-
-
       # Build and install the example app
       - name: Build and install example app
         working-directory: example
