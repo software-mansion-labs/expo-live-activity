@@ -62,11 +62,14 @@ The module comes with a built-in config plugin that creates a target in iOS with
 2. **Assets configuration:**
    Place images intended for Live Activities in the `assets/liveActivity` folder. The plugin manages these assets automatically.
 
-Then prebuild your app with:
+   Then prebuild your app with:
 
-```sh
-npx expo prebuild --clean
-```
+   ```sh
+   npx expo prebuild --clean
+   ```
+
+> [!NOTE]
+> Because of iOS limitations, the assets can't be bigger than 4KB ([native Live Activity documentation](https://developer.apple.com/documentation/activitykit/displaying-live-data-with-live-activities#Understand-constraints))
 
 ### Step 3: Usage in Your React Native App
 
