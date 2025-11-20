@@ -1,0 +1,120 @@
+name: Run Maestro E2E tests and generate report
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  e2e:
+    name: Run Maestro E2E on macOS
+    runs-on: macos-15
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # Set up Java (Zulu 17)
+      - name: Set up Java (Zulu 17)
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Install dependencies (root)
+      - name: Install root dependencies
+        run: npm ci
+
+      # Generate Maestro test flows
+      - name: Generate test flows
+        env:
+          MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+        run: npm run generateTests
+
+      # Start iOS simulator
+      - name: Start iOS Simulator
+        uses: futureware-tech/simulator-action@v2
+        with:
+          model: 'iPhone 16 Pro'
+
+      # Install Maestro CLI
+      - name: Install Maestro CLI
+        run: |
+          echo "⬇️ Downloading Maestro CLI..."
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Verify Maestro CLI
+        run: |
+          which maestro || true
+          maestro --version
+
+      # Wait for simulator to boot
+      - name: Wait for iOS simulator
+        run: sleep 20
+
+      # Build and install the example app
+      - name: Build and install example app
+        env:
+          EXPO_NO_DEV_SERVER: 1
+          EXPO_TARGET: bare
+        run: |
+          cd example
+          npm ci
+
+          echo "🔍 Checking for native changes (ios/, ios-files/, example/ios/, example/android/, app.json)..."
+
+          # Detect if any native-related files changed
+          if git diff --quiet HEAD^ HEAD -- \
+              ../ios \
+              ../ios-files \
+              ios \
+              android \
+              app.json; then
+            echo "✅ No native changes detected — skipping expo prebuild"
+          else
+            echo "⚙️ Native changes detected — running expo prebuild"
+            npx expo prebuild --clean
+          fi
+
+          echo "🏗️ Building and installing the app (Release, no Metro)..."
+          npx expo run:ios --configuration Release --no-bundler
+
+      # Run all Maestro E2E tests
+      - name: Run all Maestro tests
+        env:
+          MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+        run: |
+          chmod +x example/tests/scripts/runAllTests.sh
+          ./example/tests/scripts/runAllTests.sh
+
+      # Upload Maestro debug artifacts (logs, screenshots)
+      - name: Upload Maestro debug artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-debug
+          path: ~/.maestro/tests/
+
+      # Generate PDF report (always, even if tests fail)
+      - name: Generate PDF report
+        if: always()
+        run: npm run generateTestReport
+
+      # Upload the PDF report artifact
+      - name: Upload PDF report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-activity-report
+          path: example/tests/reports/live-activity-report.pdf
