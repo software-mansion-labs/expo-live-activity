@@ -141,6 +141,9 @@ public class ExpoLiveActivityModule: Module {
   private func observePushToStartToken() {
     guard #available(iOS 17.2, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
 
+    let initialToken = Activity<LiveActivityAttributes>.pushToStartToken.reduce("") { $0 + String(format: "%02x", $1) }
+    sendPushToStartToken(activityPushToStartToken: initialToken)
+
     print("Observing push to start token updates...")
     Task {
       for await data in Activity<LiveActivityAttributes>.pushToStartTokenUpdates {
@@ -196,14 +199,21 @@ public class ExpoLiveActivityModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
-    OnCreate {
-      if pushNotificationsEnabled {
-        observePushToStartToken()
-      }
+    OnStartObserving("onTokenReceived") {
       observeLiveActivityUpdates()
     }
 
+    OnStartObserving("onPushToStartTokenReceived") {
+      if pushNotificationsEnabled {
+        observePushToStartToken()
+      }
+    }
+
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
+
+    Property("pushToStartToken") {
+      return Activity<LiveActivityAttributes>.pushToStartToken.reduce("") { $0 + String(format: "%02x", $1) }
+    }
 
     Function("startActivity") {
       (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
