@@ -6,5 +6,11 @@ let package = Package(
   name: "ExpoLiveActivity",
   platforms: [.iOS(.v16)],
   products: [.library(name: "ExpoLiveActivity", targets: ["ExpoLiveActivity"])],
-  targets: [.target(name: "ExpoLiveActivity", path: "ios-files", exclude: ["LiveActivityWidgetBundle.swift"])]
+  targets: [
+    .target(
+      name: "ExpoLiveActivity",
+      path: "ios-files",
+      exclude: ["LiveActivityWidgetBundle.swift"]
+    )
+  ]
 )
