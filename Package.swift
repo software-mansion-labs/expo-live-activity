@@ -11,6 +11,6 @@ let package = Package(
       name: "ExpoLiveActivity",
       path: "ios-files",
       exclude: ["LiveActivityWidgetBundle.swift"]
-    )
+    ),
   ]
 )
