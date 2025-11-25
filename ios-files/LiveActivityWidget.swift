@@ -2,14 +2,30 @@ import ActivityKit
 import SwiftUI
 import WidgetKit
 
-struct LiveActivityAttributes: ActivityAttributes {
-  struct ContentState: Codable, Hashable {
+public struct LiveActivityAttributes: ActivityAttributes {
+  public struct ContentState: Codable, Hashable {
     var title: String
     var subtitle: String?
     var timerEndDateInMilliseconds: Double?
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+
+    public init(
+      title: String,
+      subtitle: String? = nil,
+      timerEndDateInMilliseconds: Double? = nil,
+      progress: Double? = nil,
+      imageName: String? = nil,
+      dynamicIslandImageName: String? = nil
+    ) {
+      self.title = title
+      self.subtitle = subtitle
+      self.timerEndDateInMilliseconds = timerEndDateInMilliseconds
+      self.progress = progress
+      self.imageName = imageName
+      self.dynamicIslandImageName = dynamicIslandImageName
+    }
   }
 
   var name: String
@@ -30,23 +46,78 @@ struct LiveActivityAttributes: ActivityAttributes {
   var imageAlign: String?
   var contentFit: String?
 
-  enum DynamicIslandTimerType: String, Codable {
+  public init(
+    name: String,
+    backgroundColor: String? = nil,
+    titleColor: String? = nil,
+    subtitleColor: String? = nil,
+    progressViewTint: String? = nil,
+    progressViewLabelColor: String? = nil,
+    deepLinkUrl: String? = nil,
+    timerType: DynamicIslandTimerType? = nil,
+    padding: Int? = nil,
+    paddingDetails: PaddingDetails? = nil,
+    imagePosition: String? = nil,
+    imageWidth: Int? = nil,
+    imageHeight: Int? = nil,
+    imageWidthPercent: Double? = nil,
+    imageHeightPercent: Double? = nil,
+    imageAlign: String? = nil,
+    contentFit: String? = nil
+  ) {
+    self.name = name
+    self.backgroundColor = backgroundColor
+    self.titleColor = titleColor
+    self.subtitleColor = subtitleColor
+    self.progressViewTint = progressViewTint
+    self.progressViewLabelColor = progressViewLabelColor
+    self.deepLinkUrl = deepLinkUrl
+    self.timerType = timerType
+    self.padding = padding
+    self.paddingDetails = paddingDetails
+    self.imagePosition = imagePosition
+    self.imageWidth = imageWidth
+    self.imageHeight = imageHeight
+    self.imageWidthPercent = imageWidthPercent
+    self.imageHeightPercent = imageHeightPercent
+    self.imageAlign = imageAlign
+    self.contentFit = contentFit
+  }
+
+  public enum DynamicIslandTimerType: String, Codable {
     case circular
     case digital
   }
 
-  struct PaddingDetails: Codable, Hashable {
+  public struct PaddingDetails: Codable, Hashable {
     var top: Int?
     var bottom: Int?
     var left: Int?
     var right: Int?
     var vertical: Int?
     var horizontal: Int?
+
+    public init(
+      top: Int? = nil,
+      bottom: Int? = nil,
+      left: Int? = nil,
+      right: Int? = nil,
+      vertical: Int? = nil,
+      horizontal: Int? = nil
+    ) {
+      self.top = top
+      self.bottom = bottom
+      self.left = left
+      self.right = right
+      self.vertical = vertical
+      self.horizontal = horizontal
+    }
   }
 }
 
-struct LiveActivityWidget: Widget {
-  var body: some WidgetConfiguration {
+@available(iOS 16.1, *)
+public struct LiveActivityWidget: Widget {
+  public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityView(contentState: context.state, attributes: context.attributes)
         .activityBackgroundTint(
@@ -103,6 +174,8 @@ struct LiveActivityWidget: Widget {
       }
     }
   }
+
+  public init() {}
 
   @ViewBuilder
   private func compactTimer(
