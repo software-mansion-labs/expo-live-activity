@@ -58,3 +58,9 @@ yarn-error.log
 
 # TypeScript
 plugin/tsconfig.tsbuildinfo
+
+# Tests
+example/tests/generated/
+example/tests/screenshots/
+example/tests/reports
+example/tests/videos
