@@ -79,7 +79,7 @@ export type ActivityTokenReceivedEvent = {
 }
 
 export type ActivityPushToStartTokenReceivedEvent = {
-  activityPushToStartToken: string
+  activityPushToStartToken: string | null
 }
 
 type ActivityState = 'active' | 'dismissed' | 'pending' | 'stale' | 'ended'
@@ -181,21 +181,34 @@ export function updateActivity(id: string, state: LiveActivityState) {
   if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state)
 }
 
+/**
+ * @param {function} updateTokenListener The listener function that will be called when an update token is received.
+ */
 export function addActivityTokenListener(
-  listener: (event: ActivityTokenReceivedEvent) => void
+  updateTokenListener: (event: ActivityTokenReceivedEvent) => void
 ): Voidable<EventSubscription> {
-  if (assertIOS('addActivityTokenListener')) return ExpoLiveActivityModule.addListener('onTokenReceived', listener)
+  if (assertIOS('addActivityTokenListener'))
+    return ExpoLiveActivityModule.addListener('onTokenReceived', updateTokenListener)
 }
 
+/**
+ * Adds a listener that is called when a push-to-start token is received. Supported only on iOS > 17.2.
+ * On earlier iOS versions, the listener will return null as a token.
+ * @param {function} pushPushToStartTokenListener The listener function that will be called when the observer starts and then when a push-to-start token is received.
+ */
 export function addActivityPushToStartTokenListener(
-  listener: (event: ActivityPushToStartTokenReceivedEvent) => void
+  pushPushToStartTokenListener: (event: ActivityPushToStartTokenReceivedEvent) => void
 ): Voidable<EventSubscription> {
   if (assertIOS('addActivityPushToStartTokenListener'))
-    return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener)
+    return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', pushPushToStartTokenListener)
 }
 
+/**
+ * @param {function} statusListener The listener function that will be called when an activity status changes.
+ */
 export function addActivityUpdatesListener(
-  listener: (event: ActivityUpdateEvent) => void
+  statusListener: (event: ActivityUpdateEvent) => void
 ): Voidable<EventSubscription> {
-  if (assertIOS('addActivityUpdatesListener')) return ExpoLiveActivityModule.addListener('onStateChange', listener)
+  if (assertIOS('addActivityUpdatesListener'))
+    return ExpoLiveActivityModule.addListener('onStateChange', statusListener)
 }
