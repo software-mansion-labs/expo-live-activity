@@ -132,14 +132,20 @@ The `state` object should include:
 {
   title: string;
   subtitle?: string;
-  progressBar: { // Only one property, either date or progress, is available at a time as they share a single progress bar component
-    date?: number; // Set as epoch time in milliseconds. This is used as an end date in a timer.
-    progress?: number; //Set amount of progress in the progress bar
+  progressBar: { // Only one timer type (date or startDate) or progress can be used at a time
+    date?: number; // Countdown timer: epoch time in milliseconds for the end date
+    startDate?: number; // Elapsed timer: epoch time in milliseconds for the start date (counts UP)
+    progress?: number; // Static progress bar (0.0 to 1.0)
   };
   imageName?: string; // Matches the name of the image in 'assets/liveActivity'
   dynamicIslandImageName?: string; // Matches the name of the image in 'assets/liveActivity'
 };
 ```
+
+#### Timer Types
+
+- **Countdown timer (`date`)**: Shows time remaining until a target date. Use for delivery ETAs, cooking timers, etc.
+- **Elapsed timer (`startDate`)**: Shows time elapsed since a start date. Use for tracking work time, exercise duration, etc. The timer automatically updates even when the phone is locked, as it uses iOS native timer rendering.
 
 ### Config Object Structure
 
@@ -168,14 +174,14 @@ The `config` object should include:
 
 ## Example Usage
 
-Managing a Live Activity:
+### Countdown Timer (counting down to a target time)
 
 ```typescript
 const state: LiveActivity.LiveActivityState = {
-  title: 'Title',
-  subtitle: 'This is a subtitle',
+  title: 'Delivery arriving',
+  subtitle: 'Your order is on the way',
   progressBar: {
-    date: new Date(Date.now() + 60 * 1000 * 5).getTime(),
+    date: new Date(Date.now() + 60 * 1000 * 5).getTime(), // 5 minutes from now
   },
   imageName: 'live_activity_image',
   dynamicIslandImageName: 'dynamic_island_image',
@@ -192,15 +198,42 @@ const config: LiveActivity.LiveActivityConfig = {
   padding: { horizontal: 20, top: 16, bottom: 16 },
   imagePosition: 'right',
   imageAlign: 'center',
-  imageSize: { height: '50%', width: '50%' }, // number (pt) or percentage of the image container, if empty by default is 64pt.
+  imageSize: { height: '50%', width: '50%' },
   contentFit: 'cover',
 }
 
 const activityId = LiveActivity.startActivity(state, config)
-// Store activityId for future reference
 ```
 
-This will initiate a Live Activity with the specified title, subtitle, image from your configured assets folder and a time to which there will be a countdown in a progress view.
+### Elapsed Timer (counting up from a start time)
+
+Perfect for tracking work shifts, exercise sessions, or any duration-based activity:
+
+```typescript
+const clockInTime = new Date() // When the user started
+
+const state: LiveActivity.LiveActivityState = {
+  title: 'On duty',
+  subtitle: 'Working',
+  progressBar: {
+    startDate: clockInTime.getTime(), // Timer counts UP from this time
+  },
+  imageName: 'live_activity_image',
+  dynamicIslandImageName: 'dynamic_island_image',
+}
+
+const config: LiveActivity.LiveActivityConfig = {
+  backgroundColor: '#1A1A2E',
+  titleColor: '#FFFFFF',
+  subtitleColor: '#AAAAAA',
+  timerType: 'digital', // Shows elapsed time as "0:45:30"
+  deepLinkUrl: '/timesheet',
+}
+
+const activityId = LiveActivity.startActivity(state, config)
+```
+
+The elapsed timer automatically updates on the lock screen and Dynamic Island, even when the app is in the background, because it uses iOS native `Text(date, style: .timer)` rendering.
 
 Subscribing to push token changes:
 
@@ -234,7 +267,7 @@ By default, starting and updating Live Activity is possible only via API. If you
 > [!NOTE]
 > PushToStart works only for iOS 17.2 and higher.
 
-Example payload for starting Live Activity:
+Example payload for starting Live Activity with countdown timer:
 
 ```json
 {
@@ -248,7 +281,7 @@ Example payload for starting Live Activity:
       "imageName": "live_activity_image",
       "dynamicIslandImageName": "dynamic_island_image"
     },
-    "timestamp": 1754491435000, // timestamp of when the push notification was sent
+    "timestamp": 1754491435000,
     "attributes-type": "LiveActivityAttributes",
     "attributes": {
       "name": "Test",
@@ -259,7 +292,7 @@ Example payload for starting Live Activity:
       "progressViewLabelColor": "FFFFFF",
       "deepLinkUrl": "/dashboard",
       "timerType": "digital",
-      "padding": 24, // or use object to control each side: { "horizontal": 20, "top": 16, "bottom": 16 }
+      "padding": 24,
       "imagePosition": "right",
       "imageSize": "default"
     },
@@ -267,6 +300,33 @@ Example payload for starting Live Activity:
       "title": "",
       "body": "",
       "sound": "default"
+    }
+  }
+}
+```
+
+Example payload for starting Live Activity with elapsed timer:
+
+```json
+{
+  "aps": {
+    "event": "start",
+    "content-state": {
+      "title": "On duty",
+      "subtitle": "Working",
+      "timerStartDateInMilliseconds": 1754400000000,
+      "imageName": "live_activity_image",
+      "dynamicIslandImageName": "dynamic_island_image"
+    },
+    "timestamp": 1754491435000,
+    "attributes-type": "LiveActivityAttributes",
+    "attributes": {
+      "name": "Timesheet",
+      "backgroundColor": "1A1A2E",
+      "titleColor": "FFFFFF",
+      "subtitleColor": "AAAAAA",
+      "timerType": "digital",
+      "deepLinkUrl": "/timesheet"
     }
   }
 }
@@ -285,12 +345,15 @@ Example payload for updating Live Activity:
       "imageName": "live_activity_image",
       "dynamicIslandImageName": "dynamic_island_image"
     },
-    "timestamp": 1754063621319 // timestamp of when the push notification was sent
+    "timestamp": 1754063621319
   }
 }
 ```
 
-Where `timerEndDateInMilliseconds` value is a timestamp in milliseconds corresponding to the target point of the counter displayed in Live Activity view.
+#### Timer Fields in Push Notifications
+
+- `timerEndDateInMilliseconds`: Countdown timer - timestamp in milliseconds for the target end time
+- `timerStartDateInMilliseconds`: Elapsed timer - timestamp in milliseconds for when the timer started (counts up from this time)
 
 ## Image support
 
