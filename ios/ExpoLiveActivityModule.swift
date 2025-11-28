@@ -17,6 +17,9 @@ public class ExpoLiveActivityModule: Module {
       var date: Double?
 
       @Field
+      var startDate: Double?
+
+      @Field
       var progress: Double?
     }
 
@@ -256,6 +259,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
+          timerStartDateInMilliseconds: state.progressBar?.startDate,
           progress: state.progressBar?.progress
         )
 
@@ -292,6 +296,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
+          timerStartDateInMilliseconds: state.progressBar?.startDate,
           progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)
@@ -319,6 +324,7 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
+          timerStartDateInMilliseconds: state.progressBar?.startDate,
           progress: state.progressBar?.progress
         )
         try await updateImages(state: state, newState: &newState)

@@ -7,6 +7,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var title: String
     var subtitle: String?
     var timerEndDateInMilliseconds: Double?
+    var timerStartDateInMilliseconds: Double?
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
@@ -15,6 +16,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       title: String,
       subtitle: String? = nil,
       timerEndDateInMilliseconds: Double? = nil,
+      timerStartDateInMilliseconds: Double? = nil,
       progress: Double? = nil,
       imageName: String? = nil,
       dynamicIslandImageName: String? = nil
@@ -22,6 +24,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.title = title
       self.subtitle = subtitle
       self.timerEndDateInMilliseconds = timerEndDateInMilliseconds
+      self.timerStartDateInMilliseconds = timerStartDateInMilliseconds
       self.progress = progress
       self.imageName = imageName
       self.dynamicIslandImageName = dynamicIslandImageName
@@ -147,6 +150,12 @@ public struct LiveActivityWidget: Widget {
             )
             .padding(.horizontal, 5)
             .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else if let startDate = context.state.timerStartDateInMilliseconds {
+            dynamicIslandExpandedBottomElapsed(
+              startDate: startDate, progressViewTint: context.attributes.progressViewTint
+            )
+            .padding(.horizontal, 5)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
       } compactLeading: {
@@ -162,12 +171,24 @@ public struct LiveActivityWidget: Widget {
             timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let startDate = context.state.timerStartDateInMilliseconds {
+          compactElapsedTimer(
+            startDate: startDate,
+            timerType: context.attributes.timerType ?? .digital,
+            progressViewTint: context.attributes.progressViewTint
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
         if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
+            progressViewTint: context.attributes.progressViewTint
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let startDate = context.state.timerStartDateInMilliseconds {
+          compactElapsedTimer(
+            startDate: startDate,
+            timerType: context.attributes.timerType ?? .digital,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
@@ -231,6 +252,48 @@ public struct LiveActivityWidget: Widget {
   private func circularTimer(endDate: Double) -> some View {
     ProgressView(
       timerInterval: Date.toTimerInterval(miliseconds: endDate),
+      countsDown: false,
+      label: { EmptyView() },
+      currentValueLabel: {
+        EmptyView()
+      }
+    )
+    .progressViewStyle(.circular)
+  }
+
+  @ViewBuilder
+  private func compactElapsedTimer(
+    startDate: Double,
+    timerType: LiveActivityAttributes.DynamicIslandTimerType,
+    progressViewTint: String?
+  ) -> some View {
+    if timerType == .digital {
+      Text(Date(timeIntervalSince1970: startDate / 1000), style: .timer)
+        .font(.system(size: 15))
+        .minimumScaleFactor(0.8)
+        .fontWeight(.semibold)
+        .frame(maxWidth: 60)
+        .multilineTextAlignment(.trailing)
+    } else {
+      circularElapsedTimer(startDate: startDate)
+        .tint(progressViewTint.map { Color(hex: $0) })
+    }
+  }
+
+  private func dynamicIslandExpandedBottomElapsed(startDate: Double, progressViewTint: String?) -> some View {
+    HStack {
+      Text("Elapsed:")
+        .foregroundStyle(.white.opacity(0.75))
+      Text(Date(timeIntervalSince1970: startDate / 1000), style: .timer)
+        .foregroundStyle(.white)
+        .fontWeight(.semibold)
+    }
+    .padding(.top, 5)
+  }
+
+  private func circularElapsedTimer(startDate: Double) -> some View {
+    ProgressView(
+      timerInterval: Date.toElapsedTimerInterval(miliseconds: startDate),
       countsDown: false,
       label: { EmptyView() },
       currentValueLabel: {
