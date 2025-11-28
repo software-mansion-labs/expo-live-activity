@@ -218,10 +218,14 @@ export default function CreateLiveActivityScreen() {
   return (
     <ScrollView style={styles.scroll}>
       <View style={styles.container}>
-        <Text style={styles.label}>Set Live Activity title:</Text>
+        <Text testID="input-title-label" style={styles.label}>
+          Set Live Activity title:
+        </Text>
         <TextInput style={styles.input} onChangeText={onChangeTitle} placeholder="Live activity title" value={title} />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Set Live Activity subtitle:</Text>
+          <Text testID="input-subtitle-label" style={styles.label}>
+            Set Live Activity subtitle:
+          </Text>
           <Switch onValueChange={() => setPassSubtitle(toggle)} value={passSubtitle} />
         </View>
         <TextInput
@@ -232,7 +236,9 @@ export default function CreateLiveActivityScreen() {
           editable={passSubtitle}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Set Live Activity image:</Text>
+          <Text testID="input-image-name-label" style={styles.label}>
+            Set Live Activity image:
+          </Text>
           <Switch onValueChange={() => setPassImage(toggle)} value={passImage} />
         </View>
         <TextInput
@@ -244,24 +250,30 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image width (pt or %):</Text>
+          <Text style={styles.label} testID={'input-image-width-label'}>
+            Image width (pt or %):
+          </Text>
         </View>
         <TextInput
           style={styles.input}
           onChangeText={onChangeImageWidthText}
           keyboardType="default"
           autoCapitalize="none"
+          testID="input-image-width"
           placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageWidth}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Image height (pt or %):</Text>
+          <Text style={styles.label} testID="input-image-height-label">
+            Image height (pt or %):
+          </Text>
         </View>
         <TextInput
           style={styles.input}
           onChangeText={onChangeImageHeightText}
           keyboardType="default"
           autoCapitalize="none"
+          testID="input-image-height"
           placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageHeight}
         />
@@ -298,6 +310,7 @@ export default function CreateLiveActivityScreen() {
         <Dropdown
           value={contentFit}
           onChange={(v) => setContentFit(v as ImageContentFit)}
+          testID="dropdown-content-fit"
           options={[
             { label: 'Cover', value: 'cover' },
             { label: 'Contain', value: 'contain' },
@@ -448,7 +461,12 @@ export default function CreateLiveActivityScreen() {
           </>
         )}
         <View style={styles.buttonsContainer}>
-          <Button title="Start Activity" onPress={startActivity} disabled={title === '' || !!activityId} />
+          <Button
+            title="Start Activity"
+            onPress={startActivity}
+            disabled={title === '' || !!activityId}
+            testID="btn-start-activity"
+          />
           <Button title="Stop Activity" onPress={stopActivity} disabled={!activityId} />
           <Button title="Update Activity" onPress={updateActivity} disabled={!activityId} />
         </View>
@@ -569,16 +587,18 @@ function Dropdown({
   value,
   onChange,
   options,
+  testID,
 }: {
   value: string
   onChange: (val: string) => void
   options: DropdownOption[]
+  testID?: string
 }) {
   const [open, setOpen] = useState(false)
   const selected = options.find((o) => o.value === value) ?? options[0]
 
   return (
-    <View style={styles.dropdown}>
+    <View style={styles.dropdown} testID={testID}>
       <Pressable
         style={styles.dropdownHeader}
         onPress={() => {
