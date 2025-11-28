@@ -10,10 +10,12 @@ export type DynamicIslandTimerType = 'circular' | 'digital'
 type ProgressBarType =
   | {
       date?: number
+      startDate?: number
       progress?: undefined
     }
   | {
       date?: undefined
+      startDate?: undefined
       progress?: number
     }
 
@@ -29,6 +31,7 @@ export type NativeLiveActivityState = {
   title: string
   subtitle?: string
   date?: number
+  startDate?: number
   progress?: number
   imageName?: string
   dynamicIslandImageName?: string
