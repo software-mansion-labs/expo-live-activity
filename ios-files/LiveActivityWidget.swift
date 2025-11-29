@@ -280,7 +280,7 @@ public struct LiveActivityWidget: Widget {
     }
   }
 
-  private func dynamicIslandExpandedBottomElapsed(startDate: Double, progressViewTint: String?) -> some View {
+  private func dynamicIslandExpandedBottomElapsed(startDate: Double, progressViewTint _: String?) -> some View {
     HStack {
       Text("Elapsed:")
         .foregroundStyle(.white.opacity(0.75))
