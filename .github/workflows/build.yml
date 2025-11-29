@@ -21,7 +21,9 @@ jobs:
         run: npm ci
 
       - name: Build project
-        run: npm run build
+        run: |
+          npm run build
+          cd plugin && npx tsc
 
       - name: Commit build artifacts
         run: |

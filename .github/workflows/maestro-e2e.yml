@@ -37,7 +37,9 @@ jobs:
 
       # Build the library and plugin
       - name: Build library and plugin
-        run: npm run build
+        run: |
+          npm run build
+          cd plugin && npx tsc
 
       # Generate Maestro test flows
       - name: Generate test flows
