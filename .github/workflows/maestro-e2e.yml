@@ -35,6 +35,10 @@ jobs:
       - name: Install root dependencies
         run: npm ci
 
+      # Build the library and plugin
+      - name: Build library and plugin
+        run: npm run build
+
       # Generate Maestro test flows
       - name: Generate test flows
         env:
