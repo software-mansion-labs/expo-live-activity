@@ -132,9 +132,12 @@ The `state` object should include:
 {
   title: string;
   subtitle?: string;
-  progressBar: { // Only one property, either date or progress, is available at a time as they share a single progress bar component
-    date?: number; // Set as epoch time in milliseconds. This is used as an end date in a timer.
-    progress?: number; //Set amount of progress in the progress bar
+  progressBar: { // Only one property (date, progress, or elapsedTimer) is available at a time
+    date?: number; // Set as epoch time in milliseconds. This is used as an end date in a countdown timer.
+    progress?: number; // Set amount of progress in the progress bar (0-1)
+    elapsedTimer?: { // NEW: Count UP timer (elapsed time from start)
+      startDate: number; // Epoch time in milliseconds when the timer started
+    };
   };
   imageName?: string; // Matches the name of the image in 'assets/liveActivity'
   dynamicIslandImageName?: string; // Matches the name of the image in 'assets/liveActivity'
@@ -202,6 +205,29 @@ const activityId = LiveActivity.startActivity(state, config)
 
 This will initiate a Live Activity with the specified title, subtitle, image from your configured assets folder and a time to which there will be a countdown in a progress view.
 
+Using an elapsed timer:
+
+```typescript
+const elapsedTimerState: LiveActivity.LiveActivityState = {
+  title: 'Walk in Progress',
+  subtitle: 'With Max the Dog',
+  progressBar: {
+    elapsedTimer: {
+      startDate: Date.now() - 5 * 60 * 1000, // Started 5 minutes ago
+    },
+  },
+  imageName: 'dog_walking',
+  dynamicIslandImageName: 'dog_icon',
+}
+
+const activityId = LiveActivity.startActivity(elapsedTimerState, config)
+```
+
+The elapsed timer will automatically update every second. The `format` option controls how the time is displayed:
+
+- `'friendly'` (default): Shows "7min 27sec" or "1hr 23min" for longer durations
+- `'digital'`: Shows "07:27" or "1:23:45" for longer durations
+
 Subscribing to push token changes:
 
 ```typescript
@@ -246,7 +272,8 @@ Example payload for starting Live Activity:
       "timerEndDateInMilliseconds": 1754410997000,
       "progress": 0.5,
       "imageName": "live_activity_image",
-      "dynamicIslandImageName": "dynamic_island_image"
+      "dynamicIslandImageName": "dynamic_island_image",
+      "elapsedTimerStartDateInMilliseconds": null
     },
     "timestamp": 1754491435000, // timestamp of when the push notification was sent
     "attributes-type": "LiveActivityAttributes",
@@ -290,7 +317,36 @@ Example payload for updating Live Activity:
 }
 ```
 
-Where `timerEndDateInMilliseconds` value is a timestamp in milliseconds corresponding to the target point of the counter displayed in Live Activity view.
+Where `timerEndDateInMilliseconds` value is a timestamp in milliseconds corresponding to the target point of the countdown displayed in Live Activity view.
+
+Example payload for starting Live Activity with elapsed timer:
+
+```json
+{
+  "aps": {
+    "event": "start",
+    "content-state": {
+      "title": "Walk in Progress",
+      "subtitle": "With Max",
+      "timerEndDateInMilliseconds": null,
+      "progress": null,
+      "imageName": "dog_walking",
+      "dynamicIslandImageName": "dog_icon",
+      "elapsedTimerStartDateInMilliseconds": 1754410997000
+    },
+    "timestamp": 1754491435000,
+    "attributes-type": "LiveActivityAttributes",
+    "attributes": {
+      "name": "WalkActivity",
+      "backgroundColor": "001A72",
+      "titleColor": "EBEBF0",
+      "progressViewLabelColor": "FFFFFF"
+    }
+  }
+}
+```
+
+Where `elapsedTimerStartDateInMilliseconds` is the timestamp (in milliseconds) when the elapsed timer started counting up.
 
 ## Image support
 

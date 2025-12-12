@@ -7,14 +7,25 @@ type Voidable<T> = T | void
 
 export type DynamicIslandTimerType = 'circular' | 'digital'
 
+export type ElapsedTimer = {
+  startDate: number // milliseconds timestamp (past time when timer started)
+}
+
 type ProgressBarType =
   | {
       date?: number
       progress?: undefined
+      elapsedTimer?: undefined
     }
   | {
       date?: undefined
       progress?: number
+      elapsedTimer?: undefined
+    }
+  | {
+      date?: undefined
+      progress?: undefined
+      elapsedTimer?: ElapsedTimer
     }
 
 export type LiveActivityState = {

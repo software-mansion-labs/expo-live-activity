@@ -9,6 +9,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+    var elapsedTimerStartDateInMilliseconds: Double?
   }
 
   var name: String
