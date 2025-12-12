@@ -25,6 +25,36 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var dynamicIslandImageName: String?
+
+    @Field
+    var custom: [String: CustomValue]?
+
+    enum CustomValue: Convertible, Hashable {
+      case string(String)
+      case number(Double)
+      case bool(Bool)
+
+      static func convert(from value: Any?, appContext: AppContext) throws -> CustomValue {
+        if let boolValue = value as? Bool {
+          return .bool(boolValue)
+        } else if let doubleValue = value as? Double {
+          return .number(doubleValue)
+        } else if let intValue = value as? Int {
+          return .number(Double(intValue))
+        } else if let stringValue = value as? String {
+          return .string(stringValue)
+        }
+        throw ConversionException(stringValue: String(describing: value))
+      }
+
+      func toLiveActivityValue() -> LiveActivityAttributes.CustomFieldValue {
+        switch self {
+        case .string(let value): return .string(value)
+        case .number(let value): return .number(value)
+        case .bool(let value): return .bool(value)
+        }
+      }
+    }
   }
 
   struct LiveActivityConfig: Record {
@@ -75,6 +105,9 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var contentFit: String?
+
+    @Field
+    var dynamicIslandJSON: String?
 
     struct PaddingDetails: Record {
       @Field var top: Int?
@@ -154,6 +187,36 @@ public class ExpoLiveActivityModule: Module {
     }
   }
 
+  private var buttonPressObserver: NSObjectProtocol?
+
+  private func observeButtonPresses() {
+    // Remove existing observer if any
+    if let observer = buttonPressObserver {
+      NotificationCenter.default.removeObserver(observer)
+    }
+
+    // Listen for button press notifications from the widget extension
+    buttonPressObserver = NotificationCenter.default.addObserver(
+      forName: Notification.Name("DIButtonPressed"),
+      object: nil,
+      queue: .main
+    ) { [weak self] notification in
+      guard let buttonId = notification.userInfo?["buttonId"] as? String else { return }
+
+      // Find the current active activity to get the activity ID
+      if #available(iOS 16.2, *) {
+        let activityId = Activity<LiveActivityAttributes>.activities.first?.id ?? "unknown"
+        self?.sendEvent(
+          "onButtonPress",
+          [
+            "activityId": activityId,
+            "buttonId": buttonId,
+          ]
+        )
+      }
+    }
+  }
+
   private func observeLiveActivityUpdates() {
     guard #available(iOS 16.2, *) else { return }
 
@@ -210,7 +273,11 @@ public class ExpoLiveActivityModule: Module {
       }
     }
 
-    Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
+    Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange", "onButtonPress")
+
+    OnStartObserving("onButtonPress") {
+      observeButtonPresses()
+    }
 
     Function("startActivity") {
       (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
@@ -249,14 +316,16 @@ public class ExpoLiveActivityModule: Module {
           imageWidthPercent: config.imageWidthPercent,
           imageHeightPercent: config.imageHeightPercent,
           imageAlign: config.imageAlign,
-          contentFit: config.contentFit
+          contentFit: config.contentFit,
+          dynamicIslandJSON: config.dynamicIslandJSON
         )
 
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          customFields: state.custom?.mapValues { $0.toLiveActivityValue() }
         )
 
         let activity = try Activity.request(
@@ -292,7 +361,8 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          customFields: state.custom?.mapValues { $0.toLiveActivityValue() }
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -319,7 +389,8 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          customFields: state.custom?.mapValues { $0.toLiveActivityValue() }
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))

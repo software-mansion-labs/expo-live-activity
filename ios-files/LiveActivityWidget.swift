@@ -10,6 +10,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+    /// Custom fields for Dynamic Island DSL bindings
+    var customFields: [String: CustomFieldValue]?
 
     public init(
       title: String,
@@ -17,7 +19,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
       timerEndDateInMilliseconds: Double? = nil,
       progress: Double? = nil,
       imageName: String? = nil,
-      dynamicIslandImageName: String? = nil
+      dynamicIslandImageName: String? = nil,
+      customFields: [String: CustomFieldValue]? = nil
     ) {
       self.title = title
       self.subtitle = subtitle
@@ -25,6 +28,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.progress = progress
       self.imageName = imageName
       self.dynamicIslandImageName = dynamicIslandImageName
+      self.customFields = customFields
     }
   }
 
@@ -45,6 +49,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
   var imageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
+  /// JSON-encoded Dynamic Island DSL configuration
+  var dynamicIslandJSON: String?
 
   public init(
     name: String,
@@ -63,7 +69,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
     imageWidthPercent: Double? = nil,
     imageHeightPercent: Double? = nil,
     imageAlign: String? = nil,
-    contentFit: String? = nil
+    contentFit: String? = nil,
+    dynamicIslandJSON: String? = nil
   ) {
     self.name = name
     self.backgroundColor = backgroundColor
@@ -82,6 +89,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
     self.imageHeightPercent = imageHeightPercent
     self.imageAlign = imageAlign
     self.contentFit = contentFit
+    self.dynamicIslandJSON = dynamicIslandJSON
   }
 
   public enum DynamicIslandTimerType: String, Codable {
@@ -113,6 +121,63 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.horizontal = horizontal
     }
   }
+
+  /// Wrapper for custom field values that can be String, Number, or Bool
+  public enum CustomFieldValue: Codable, Hashable {
+    case string(String)
+    case number(Double)
+    case bool(Bool)
+
+    public init(from decoder: Decoder) throws {
+      let container = try decoder.singleValueContainer()
+      if let boolValue = try? container.decode(Bool.self) {
+        self = .bool(boolValue)
+      } else if let doubleValue = try? container.decode(Double.self) {
+        self = .number(doubleValue)
+      } else if let stringValue = try? container.decode(String.self) {
+        self = .string(stringValue)
+      } else {
+        throw DecodingError.typeMismatch(
+          CustomFieldValue.self,
+          DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Expected String, Number, or Bool")
+        )
+      }
+    }
+
+    public func encode(to encoder: Encoder) throws {
+      var container = encoder.singleValueContainer()
+      switch self {
+      case .string(let value):
+        try container.encode(value)
+      case .number(let value):
+        try container.encode(value)
+      case .bool(let value):
+        try container.encode(value)
+      }
+    }
+
+    public var stringValue: String {
+      switch self {
+      case .string(let value): return value
+      case .number(let value): return String(value)
+      case .bool(let value): return String(value)
+      }
+    }
+
+    public var doubleValue: Double? {
+      switch self {
+      case .number(let value): return value
+      case .string(let value): return Double(value)
+      case .bool: return nil
+      }
+    }
+  }
+
+  /// Decode the Dynamic Island DSL configuration from JSON
+  public func decodeDynamicIslandConfig() -> DynamicIslandDSLConfig? {
+    guard let json = dynamicIslandJSON else { return nil }
+    return DynamicIslandDSLConfig.from(json: json)
+  }
 }
 
 @available(iOS 16.1, *)
@@ -126,22 +191,53 @@ public struct LiveActivityWidget: Widget {
         .activitySystemActionForegroundColor(Color.black)
         .applyWidgetURL(from: context.attributes.deepLinkUrl)
     } dynamicIsland: { context in
+      let renderer = DIRenderer(state: context.state, attributes: context.attributes)
+      let dslConfig = context.attributes.decodeDynamicIslandConfig()
+
       DynamicIsland {
-        DynamicIslandExpandedRegion(.leading, priority: 1) {
-          dynamicIslandExpandedLeading(title: context.state.title, subtitle: context.state.subtitle)
-            .dynamicIsland(verticalPlacement: .belowIfTooWide)
-            .padding(.leading, 5)
-            .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        // MARK: - Expanded Leading
+        DynamicIslandExpandedRegion(.leading, priority: dslConfig?.expanded?.leadingPriority ?? 1) {
+          if let content = dslConfig?.expanded?.leading {
+            renderer.render(content)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else {
+            // Fallback to existing behavior
+            dynamicIslandExpandedLeading(title: context.state.title, subtitle: context.state.subtitle)
+              .dynamicIsland(verticalPlacement: .belowIfTooWide)
+              .padding(.leading, 5)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          }
         }
-        DynamicIslandExpandedRegion(.trailing) {
-          if let imageName = context.state.imageName {
+
+        // MARK: - Expanded Trailing
+        DynamicIslandExpandedRegion(.trailing, priority: dslConfig?.expanded?.trailingPriority ?? 0) {
+          if let content = dslConfig?.expanded?.trailing {
+            renderer.render(content)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else if let imageName = context.state.imageName {
+            // Fallback to existing behavior
             dynamicIslandExpandedTrailing(imageName: imageName)
               .padding(.trailing, 5)
               .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
+
+        // MARK: - Expanded Center
+        DynamicIslandExpandedRegion(.center) {
+          if let content = dslConfig?.expanded?.center {
+            renderer.render(content)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          }
+          // No fallback - center region is new
+        }
+
+        // MARK: - Expanded Bottom
         DynamicIslandExpandedRegion(.bottom) {
-          if let date = context.state.timerEndDateInMilliseconds {
+          if let content = dslConfig?.expanded?.bottom {
+            renderer.render(content)
+              .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else if let date = context.state.timerEndDateInMilliseconds {
+            // Fallback to existing behavior
             dynamicIslandExpandedBottom(
               endDate: date, progressViewTint: context.attributes.progressViewTint
             )
@@ -150,13 +246,23 @@ public struct LiveActivityWidget: Widget {
           }
         }
       } compactLeading: {
-        if let dynamicIslandImageName = context.state.dynamicIslandImageName {
+        // MARK: - Compact Leading
+        if let content = dslConfig?.compact?.leading {
+          renderer.render(content)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let dynamicIslandImageName = context.state.dynamicIslandImageName {
+          // Fallback to existing behavior
           resizableImage(imageName: dynamicIslandImageName)
             .frame(maxWidth: 23, maxHeight: 23)
             .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } compactTrailing: {
-        if let date = context.state.timerEndDateInMilliseconds {
+        // MARK: - Compact Trailing
+        if let content = dslConfig?.compact?.trailing {
+          renderer.render(content)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let date = context.state.timerEndDateInMilliseconds {
+          // Fallback to existing behavior
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
@@ -164,7 +270,12 @@ public struct LiveActivityWidget: Widget {
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
-        if let date = context.state.timerEndDateInMilliseconds {
+        // MARK: - Minimal
+        if let content = dslConfig?.minimal?.content {
+          renderer.render(content)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let date = context.state.timerEndDateInMilliseconds {
+          // Fallback to existing behavior
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
