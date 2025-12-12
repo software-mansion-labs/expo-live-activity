@@ -44,7 +44,7 @@ The module comes with a built-in config plugin that creates a target in iOS with
      }
    }
    ```
-   If you want to update Live Acitivity with push notifications you can add option `"enablePushNotifications": true`:
+   If you want to update Live Activity with push notifications you can add option `"enablePushNotifications": true`:
    ```json
    {
      "expo": {
