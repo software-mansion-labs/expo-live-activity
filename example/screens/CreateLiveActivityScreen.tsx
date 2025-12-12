@@ -229,7 +229,7 @@ export default function CreateLiveActivityScreen() {
           <Switch onValueChange={() => setPassSubtitle(toggle)} value={passSubtitle} />
         </View>
         <TextInput
-          style={passSubtitle ? styles.input : styles.diabledInput}
+          style={passSubtitle ? styles.input : styles.disabledInput}
           onChangeText={onChangeSubtitle}
           placeholder="Live activity title"
           value={subtitle}
@@ -242,7 +242,7 @@ export default function CreateLiveActivityScreen() {
           <Switch onValueChange={() => setPassImage(toggle)} value={passImage} />
         </View>
         <TextInput
-          style={passImage ? styles.input : styles.diabledInput}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeImageName}
           autoCapitalize="none"
           placeholder="Live activity image"
@@ -451,7 +451,7 @@ export default function CreateLiveActivityScreen() {
               />
             </View>
             <TextInput
-              style={passProgress ? styles.input : styles.diabledInput}
+              style={passProgress ? styles.input : styles.disabledInput}
               onChangeText={onChangeProgress}
               keyboardType="numeric"
               placeholder="Progress (0-1)"
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10,
   },
-  diabledInput: {
+  disabledInput: {
     height: 45,
     width: '90%',
     margin: 12,

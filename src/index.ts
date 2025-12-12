@@ -194,13 +194,13 @@ export function addActivityTokenListener(
 /**
  * Adds a listener that is called when a push-to-start token is received. Supported only on iOS > 17.2.
  * On earlier iOS versions, the listener will return null as a token.
- * @param {function} pushPushToStartTokenListener The listener function that will be called when the observer starts and then when a push-to-start token is received.
+ * @param {function} listener The listener function that will be called when the observer starts and then when a push-to-start token is received.
  */
 export function addActivityPushToStartTokenListener(
-  pushPushToStartTokenListener: (event: ActivityPushToStartTokenReceivedEvent) => void
+  listener: (event: ActivityPushToStartTokenReceivedEvent) => void
 ): Voidable<EventSubscription> {
   if (assertIOS('addActivityPushToStartTokenListener'))
-    return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', pushPushToStartTokenListener)
+    return ExpoLiveActivityModule.addListener('onPushToStartTokenReceived', listener)
 }
 
 /**
