@@ -8,6 +8,10 @@ export type WidgetFiles = {
   assetDirectories: string[]
   intentFiles: string[]
   otherFiles: string[]
+  /** Subdirectories containing Swift files (e.g., 'DSL') */
+  swiftSubdirectories: string[]
+  /** Swift files from subdirectories with relative paths (e.g., 'DSL/DIRenderer.swift') */
+  subdirectorySwiftFiles: string[]
 }
 
 export function getWidgetFiles(targetPath: string) {
@@ -27,6 +31,8 @@ export function getWidgetFiles(targetPath: string) {
     assetDirectories: [],
     intentFiles: [],
     otherFiles: [],
+    swiftSubdirectories: [],
+    subdirectorySwiftFiles: [],
   }
 
   if (!fs.existsSync(targetPath)) {
@@ -37,16 +43,31 @@ export function getWidgetFiles(targetPath: string) {
     const files = fs.readdirSync(liveActivityFilesPath)
 
     files.forEach((file) => {
+      const fullPath = path.join(liveActivityFilesPath, file)
+      const isDirectory = fs.lstatSync(fullPath).isDirectory()
       const fileExtension = file.split('.').pop()
 
-      if (fileExtension === 'swift') {
+      if (isDirectory) {
+        // Check if directory contains Swift files (e.g., DSL/)
+        if (fileExtension !== 'xcassets') {
+          const subFiles = fs.readdirSync(fullPath)
+          const swiftFilesInDir = subFiles.filter((f) => f.endsWith('.swift'))
+          if (swiftFilesInDir.length > 0) {
+            widgetFiles.swiftSubdirectories.push(file)
+            // Collect Swift files with relative paths
+            swiftFilesInDir.forEach((swiftFile) => {
+              widgetFiles.subdirectorySwiftFiles.push(`${file}/${swiftFile}`)
+            })
+          }
+        } else {
+          widgetFiles.assetDirectories.push(file)
+        }
+      } else if (fileExtension === 'swift') {
         widgetFiles.swiftFiles.push(file)
       } else if (fileExtension === 'entitlements') {
         widgetFiles.entitlementFiles.push(file)
       } else if (fileExtension === 'plist') {
         widgetFiles.plistFiles.push(file)
-      } else if (fileExtension === 'xcassets') {
-        widgetFiles.assetDirectories.push(file)
       } else if (fileExtension === 'intentdefinition') {
         widgetFiles.intentFiles.push(file)
       } else {
@@ -65,6 +86,12 @@ export function getWidgetFiles(targetPath: string) {
   ].forEach((file) => {
     const source = path.join(liveActivityFilesPath, file)
     copyFileSync(source, targetPath)
+  })
+
+  // Copy Swift subdirectories (e.g., DSL/)
+  widgetFiles.swiftSubdirectories.forEach((subdir) => {
+    const source = path.join(liveActivityFilesPath, subdir)
+    copyFolderRecursiveSync(source, targetPath)
   })
 
   // Copy assets directory
