@@ -94,7 +94,7 @@ import WidgetKit
 
       return ZStack(alignment: .center) {
         Group {
-          let fit = attributes.contentFit ?? "cover"
+          let fit = attributes.contentFit ?? "contain"
           switch fit {
           case "contain":
             Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
