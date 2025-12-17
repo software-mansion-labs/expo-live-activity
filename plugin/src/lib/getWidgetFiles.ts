@@ -78,7 +78,7 @@ export function getWidgetFiles(targetPath: string) {
     const files = fs.readdirSync(imageAssetsPath)
 
     files.forEach((file) => {
-      if (path.extname(file).match(/\.(png|jpg|jpeg)$/)) {
+      if (path.extname(file).match(/\.(png|jpg|jpeg|svg)$/)) {
         const source = path.join(imageAssetsPath, file)
         const imageSetDir = path.join(imagesXcassetsTarget, `${path.basename(file, path.extname(file))}.imageset`)
 
