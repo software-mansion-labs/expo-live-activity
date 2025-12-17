@@ -9,6 +9,7 @@
     "clean": "expo-module clean",
     "clean:plugin": "rm -rf plugin/build plugin/tsconfig.tsbuildinfo",
     "format:check": "prettier --check .",
+    "format:check:all": "npm run format:check && swiftformat --exclude \"**/node_modules/\" --lint --reporter github-actions-log .",
     "lint": "expo-module eslint",
     "lint:libOnly": "expo-module eslint --ignore-pattern 'example/*'",
     "test": "expo-module test",
