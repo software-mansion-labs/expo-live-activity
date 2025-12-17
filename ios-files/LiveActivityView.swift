@@ -43,7 +43,7 @@ import WidgetKit
       attributes.progressViewTint.map { Color(hex: $0) }
     }
 
-    private var imageAlignment: Alignment {
+    private var imageVerticalAlignment: VerticalAlignment {
       switch attributes.imageAlign {
       case "center":
         return .center
@@ -54,7 +54,7 @@ import WidgetKit
       }
     }
 
-    private func alignedImage(imageName: String) -> some View {
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
       let defaultHeight: CGFloat = 64
       let defaultWidth: CGFloat = 64
       let containerHeight = imageContainerSize?.height
@@ -135,7 +135,11 @@ import WidgetKit
           }
         }
       }
-      .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: imageAlignment)
+      .frame(
+        maxWidth: .infinity,
+        maxHeight: .infinity,
+        alignment: Alignment(horizontal: horizontalAlignment, vertical: imageVerticalAlignment)
+      )
       .background(
         GeometryReader { proxy in
           Color.clear
@@ -191,7 +195,7 @@ import WidgetKit
         HStack(alignment: .center) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName)
+              alignedImage(imageName: imageName, horizontalAlignment: .leading)
             }
           }
 
@@ -221,9 +225,8 @@ import WidgetKit
           }.layoutPriority(1)
 
           if hasImage, !isLeftImage { // right side (default)
-            Spacer()
             if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName)
+              alignedImage(imageName: imageName, horizontalAlignment: .trailing)
             }
           }
         }
