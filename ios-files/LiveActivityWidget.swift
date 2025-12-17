@@ -147,6 +147,12 @@ public struct LiveActivityWidget: Widget {
             )
             .padding(.horizontal, 5)
             .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else if let progress = context.state.progress {
+            dynamicIslandExpandedBottomProgress(
+              progress: progress, progressViewTint: context.attributes.progressViewTint
+            )
+            .padding(.horizontal, 5)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
           }
         }
       } compactLeading: {
@@ -162,12 +168,22 @@ public struct LiveActivityWidget: Widget {
             timerType: context.attributes.timerType ?? .circular,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let progress = context.state.progress {
+          compactProgress(
+            progress: progress,
+            progressViewTint: context.attributes.progressViewTint
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
         if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
+            progressViewTint: context.attributes.progressViewTint
+          ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let progress = context.state.progress {
+          compactProgress(
+            progress: progress,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
@@ -238,5 +254,21 @@ public struct LiveActivityWidget: Widget {
       }
     )
     .progressViewStyle(.circular)
+  }
+
+  private func compactProgress(
+    progress: Double,
+    progressViewTint: String?
+  ) -> some View {
+    ProgressView(value: progress)
+      .progressViewStyle(.circular)
+      .tint(progressViewTint.map { Color(hex: $0) })
+  }
+
+  private func dynamicIslandExpandedBottomProgress(progress: Double, progressViewTint: String?) -> some View {
+    ProgressView(value: progress)
+      .foregroundStyle(.white)
+      .tint(progressViewTint.map { Color(hex: $0) })
+      .padding(.top, 5)
   }
 }
