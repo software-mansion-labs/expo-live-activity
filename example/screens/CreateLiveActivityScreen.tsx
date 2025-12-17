@@ -42,7 +42,7 @@ export default function CreateLiveActivityScreen() {
   const [imageHeight, setImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
-  const [contentFit, setContentFit] = useState<ImageContentFit>('cover')
+  const [contentFit, setContentFit] = useState<ImageContentFit>('contain')
   const [showPaddingDetails, setShowPaddingDetails] = useState(false)
   const [paddingSingle, setPaddingSingle] = useState('')
   const [paddingTop, setPaddingTop] = useState('')
