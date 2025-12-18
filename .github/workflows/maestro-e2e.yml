@@ -115,7 +115,7 @@ jobs:
           INPUT_TEST_SCOPE: ${{ inputs.test_scope }}
         run: |
           chmod +x example/tests/scripts/runAllTests.sh
-          
+
           # Determine test scope
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             TEST_SCOPE="basic"
@@ -124,7 +124,7 @@ jobs:
           else
             TEST_SCOPE="full"
           fi
-          
+
           if [ "$TEST_SCOPE" = "basic" ]; then
             echo "🔍 Running basic tests only..."
             ./example/tests/scripts/runAllTests.sh --basic
