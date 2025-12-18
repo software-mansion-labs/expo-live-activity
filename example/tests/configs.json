@@ -2,6 +2,7 @@
   {
     "id": "fit-cover-50x50",
     "title": "cover | 50x50px",
+    "basic": true,
     "config": { "imageSize": { "width": 50, "height": 50 }, "contentFit": "cover" }
   },
   {
@@ -28,6 +29,7 @@
   {
     "id": "fit-cover-100x100",
     "title": "cover | 100x100px",
+    "basic": true,
     "config": { "imageSize": { "width": 100, "height": 100 }, "contentFit": "cover" }
   },
   {
@@ -54,6 +56,7 @@
   {
     "id": "fit-cover-50pct-x-50",
     "title": "cover | 50% x 50px",
+    "basic": true,
     "config": { "imageSize": { "width": "50%", "height": 50 }, "contentFit": "cover" }
   },
   {

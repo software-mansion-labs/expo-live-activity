@@ -5,11 +5,31 @@ RED="\033[0;31m"
 YELLOW="\033[1;33m"
 NC="\033[0m"
 
+# Parse command line arguments
+BASIC_ONLY=false
+for arg in "$@"; do
+  case $arg in
+    --basic)
+      BASIC_ONLY=true
+      shift
+      ;;
+  esac
+done
+
 i=0
 passed=0
 failed=0
 interrupted=false
-files=(example/tests/generated/*.yaml)
+
+# Filter files based on --basic flag
+if [ "$BASIC_ONLY" = true ]; then
+  files=(example/tests/generated/basic-*.yaml)
+  echo -e "${YELLOW}🔍 Running only basic tests...${NC}"
+else
+  files=(example/tests/generated/*.yaml)
+  echo -e "${YELLOW}🔍 Running all tests...${NC}"
+fi
+
 total=${#files[@]}
 
 trap 'echo -e "\n${RED}🛑 Tests interrupted by user.${NC}"; interrupted=true; break' SIGINT
