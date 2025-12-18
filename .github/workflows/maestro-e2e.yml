@@ -25,6 +25,8 @@ jobs:
   e2e:
     name: Run Maestro E2E on macOS
     runs-on: macos-15
+    permissions:
+      contents: read
 
     steps:
       # Checkout repository
