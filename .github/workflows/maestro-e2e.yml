@@ -110,14 +110,17 @@ jobs:
       - name: Run Maestro tests
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+          INPUT_TEST_SCOPE: ${{ inputs.test_scope }}
         run: |
           chmod +x example/tests/scripts/runAllTests.sh
           
           # Determine test scope
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             TEST_SCOPE="basic"
+          elif [ -n "$INPUT_TEST_SCOPE" ]; then
+            TEST_SCOPE="$INPUT_TEST_SCOPE"
           else
-            TEST_SCOPE="${{ inputs.test_scope || 'full' }}"
+            TEST_SCOPE="full"
           fi
           
           if [ "$TEST_SCOPE" = "basic" ]; then

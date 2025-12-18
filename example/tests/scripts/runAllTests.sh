@@ -7,13 +7,11 @@ NC="\033[0m"
 
 # Parse command line arguments
 BASIC_ONLY=false
-for arg in "$@"; do
-  case $arg in
-    --basic)
-      BASIC_ONLY=true
-      shift
-      ;;
+while [[ "$#" -gt 0 ]]; do
+  case $1 in
+    --basic) BASIC_ONLY=true ;;
   esac
+  shift
 done
 
 i=0
