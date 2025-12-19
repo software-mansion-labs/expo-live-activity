@@ -7,8 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
+  e2e:
+    name: Run Full E2E Test Suite
+    uses: ./.github/workflows/maestro-e2e.yml
+    with:
+      test_scope: full
+
   publish:
+    needs: e2e
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

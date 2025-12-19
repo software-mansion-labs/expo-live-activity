@@ -6,8 +6,10 @@ const configs = JSON.parse(fs.readFileSync(`${mainPath}/configs.json`, 'utf-8'))
 fs.mkdirSync(`${mainPath}/generated`, { recursive: true })
 
 for (const test of configs) {
-  const { id, title, config } = test
+  const { id, title, config, basic } = test
   const configJson = JSON.stringify(config).replace(/'/g, "''")
+  // Prefix basic tests with "basic-" for easy filtering
+  const filename = basic ? `basic-${id}` : id
 
   const yaml = `
 appId: ${APP_ID}
@@ -59,6 +61,6 @@ appId: ${APP_ID}
 - takeScreenshot: ${mainPath}/screenshots/${id}
 `
 
-  fs.writeFileSync(`${mainPath}/generated/${id}.yaml`, yaml.trim())
-  console.log(`✅ generated flow for: ${title}`)
+  fs.writeFileSync(`${mainPath}/generated/${filename}.yaml`, yaml.trim())
+  console.log(`✅ generated flow for: ${title}${basic ? ' (basic)' : ''}`)
 }

@@ -1,7 +1,23 @@
 name: Run Maestro E2E tests and generate report
 
 on:
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: 'Test scope to run'
+        required: false
+        default: 'basic'
+        type: choice
+        options:
+          - basic
+          - full
+  workflow_call:
+    inputs:
+      test_scope:
+        description: 'Test scope to run'
+        required: false
+        default: 'full'
+        type: string
   pull_request:
     types: [opened, synchronize, reopened]
 
@@ -9,6 +25,8 @@ jobs:
   e2e:
     name: Run Maestro E2E on macOS
     runs-on: macos-15
+    permissions:
+      contents: read
 
     steps:
       # Checkout repository
@@ -90,13 +108,30 @@ jobs:
           echo "🏗️ Building and installing the app (Release, no Metro)..."
           npx expo run:ios --configuration Release --no-bundler
 
-      # Run all Maestro E2E tests
-      - name: Run all Maestro tests
+      # Determine test scope - PRs run basic tests, workflow_call/dispatch use inputs
+      - name: Run Maestro tests
         env:
           MAESTRO_APP_ID: com.swmansion.expoliveactivity.example
+          INPUT_TEST_SCOPE: ${{ inputs.test_scope }}
         run: |
           chmod +x example/tests/scripts/runAllTests.sh
-          ./example/tests/scripts/runAllTests.sh
+
+          # Determine test scope
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            TEST_SCOPE="basic"
+          elif [ -n "$INPUT_TEST_SCOPE" ]; then
+            TEST_SCOPE="$INPUT_TEST_SCOPE"
+          else
+            TEST_SCOPE="full"
+          fi
+
+          if [ "$TEST_SCOPE" = "basic" ]; then
+            echo "🔍 Running basic tests only..."
+            ./example/tests/scripts/runAllTests.sh --basic
+          else
+            echo "🔍 Running full test suite..."
+            ./example/tests/scripts/runAllTests.sh
+          fi
 
       # Upload Maestro debug artifacts (logs, screenshots)
       - name: Upload Maestro debug artifacts

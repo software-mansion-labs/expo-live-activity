@@ -7,6 +7,7 @@
   {
     "id": "fit-contain-50x50",
     "title": "contain | 50x50px",
+    "basic": true,
     "config": { "imageSize": { "width": 50, "height": 50 }, "contentFit": "contain" }
   },
   {
