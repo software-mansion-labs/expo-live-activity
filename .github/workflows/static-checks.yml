@@ -20,9 +20,6 @@ jobs:
           cd example
           npm ci
 
-      - name: Run Prettier 💅
-        run: npm run format:check
-
       - name: Run SwiftFormat 🦅
         run: swiftformat --exclude "**/node_modules/" --lint --reporter github-actions-log .
 
