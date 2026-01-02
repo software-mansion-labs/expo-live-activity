@@ -23,6 +23,8 @@ export type LiveActivityState = {
   progressBar?: ProgressBarType
   imageName?: string
   dynamicIslandImageName?: string
+  currentStep?: number
+  totalSteps?: number
 }
 
 export type NativeLiveActivityState = {
@@ -70,6 +72,8 @@ export type LiveActivityConfig = {
   imageAlign?: ImageAlign
   imageSize?: ImageSize
   contentFit?: ImageContentFit
+  progressSegmentActiveColor?: string
+  progressSegmentInactiveColor?: string
 }
 
 export type ActivityTokenReceivedEvent = {
@@ -107,7 +111,7 @@ function assertIOS(name: string) {
 function normalizeConfig(config?: LiveActivityConfig) {
   if (config === undefined) return config
 
-  const { padding, imageSize, ...base } = config
+  const { padding, imageSize, progressSegmentActiveColor, progressSegmentInactiveColor, ...base } = config
   type NormalizedConfig = LiveActivityConfig & {
     paddingDetails?: Padding
     imageWidth?: number
@@ -115,7 +119,11 @@ function normalizeConfig(config?: LiveActivityConfig) {
     imageWidthPercent?: number
     imageHeightPercent?: number
   }
-  const normalized: NormalizedConfig = { ...base }
+  const normalized: NormalizedConfig = { 
+    ...base,
+    progressSegmentActiveColor,
+    progressSegmentInactiveColor
+  }
 
   // Normalize padding: keep number in padding, object in paddingDetails
   if (typeof padding === 'number') {
