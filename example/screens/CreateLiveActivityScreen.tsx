@@ -51,6 +51,11 @@ export default function CreateLiveActivityScreen() {
   const [paddingRight, setPaddingRight] = useState('')
   const [paddingVertical, setPaddingVertical] = useState('')
   const [paddingHorizontal, setPaddingHorizontal] = useState('')
+  const [currentStep, setCurrentStep] = useState('')
+  const [totalSteps, setTotalSteps] = useState('')
+  const [passStepProgress, setPassStepProgress] = useState(false)
+  const [segmentActiveColor, setSegmentActiveColor] = useState('#22C55E')
+  const [segmentInactiveColor, setSegmentInactiveColor] = useState('#E5E7EB')
 
   const onChangeProgress = useCallback(
     (text: string) => {
@@ -156,6 +161,8 @@ export default function CreateLiveActivityScreen() {
       progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
+      currentStep: passStepProgress ? toNum(currentStep) : undefined,
+      totalSteps: passStepProgress ? toNum(totalSteps) : undefined,
     }
 
     try {
@@ -167,6 +174,8 @@ export default function CreateLiveActivityScreen() {
         imageAlign,
         contentFit,
         padding: computePadding(),
+        progressSegmentActiveColor: passStepProgress ? segmentActiveColor : undefined,
+        progressSegmentInactiveColor: passStepProgress ? segmentInactiveColor : undefined,
       })
       if (id) setActivityID(id)
     } catch (e) {
@@ -207,6 +216,8 @@ export default function CreateLiveActivityScreen() {
       progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
+      currentStep: passStepProgress ? toNum(currentStep) : undefined,
+      totalSteps: passStepProgress ? toNum(totalSteps) : undefined,
     }
     try {
       activityId && LiveActivity.updateActivity(activityId, state)
@@ -457,6 +468,59 @@ export default function CreateLiveActivityScreen() {
               placeholder="Progress (0-1)"
               value={progress.toString()}
               editable={passProgress}
+            />
+            <View style={styles.spacer} />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Show step progress:</Text>
+              <Switch onValueChange={() => setPassStepProgress(toggle)} value={passStepProgress} />
+            </View>
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Current Step:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={(t) => onChangeNumeric(t, setCurrentStep)}
+              keyboardType="number-pad"
+              placeholder="Current step (e.g., 2)"
+              value={currentStep}
+              editable={passStepProgress}
+              testID="input-current-step"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Total Steps:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={(t) => onChangeNumeric(t, setTotalSteps)}
+              keyboardType="number-pad"
+              placeholder="Total steps (e.g., 4)"
+              value={totalSteps}
+              editable={passStepProgress}
+              testID="input-total-steps"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Active segment color:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={setSegmentActiveColor}
+              placeholder="e.g., #22C55E"
+              value={segmentActiveColor}
+              editable={passStepProgress}
+              autoCapitalize="none"
+              testID="input-segment-active-color"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Inactive segment color:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={setSegmentInactiveColor}
+              placeholder="e.g., #E5E7EB"
+              value={segmentInactiveColor}
+              editable={passStepProgress}
+              autoCapitalize="none"
+              testID="input-segment-inactive-color"
             />
           </>
         )}

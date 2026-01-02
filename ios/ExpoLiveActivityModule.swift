@@ -25,6 +25,12 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var dynamicIslandImageName: String?
+
+    @Field
+    var currentStep: Int?
+
+    @Field
+    var totalSteps: Int?
   }
 
   struct LiveActivityConfig: Record {
@@ -75,6 +81,12 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var contentFit: String?
+
+    @Field
+    var progressSegmentActiveColor: String?
+
+    @Field
+    var progressSegmentInactiveColor: String?
 
     struct PaddingDetails: Record {
       @Field var top: Int?
@@ -249,14 +261,20 @@ public class ExpoLiveActivityModule: Module {
           imageWidthPercent: config.imageWidthPercent,
           imageHeightPercent: config.imageHeightPercent,
           imageAlign: config.imageAlign,
-          contentFit: config.contentFit
+          contentFit: config.contentFit,
+          progressSegmentActiveColor: config.progressSegmentActiveColor,
+          progressSegmentInactiveColor: config.progressSegmentInactiveColor
         )
 
         let initialState = LiveActivityAttributes.ContentState(
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          imageName: nil,
+          dynamicIslandImageName: nil,
+          currentStep: state.currentStep,
+          totalSteps: state.totalSteps
         )
 
         let activity = try Activity.request(
@@ -292,7 +310,11 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          imageName: nil,
+          dynamicIslandImageName: nil,
+          currentStep: state.currentStep,
+          totalSteps: state.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -319,7 +341,11 @@ public class ExpoLiveActivityModule: Module {
           title: state.title,
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
-          progress: state.progressBar?.progress
+          progress: state.progressBar?.progress,
+          imageName: nil,
+          dynamicIslandImageName: nil,
+          currentStep: state.currentStep,
+          totalSteps: state.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))
