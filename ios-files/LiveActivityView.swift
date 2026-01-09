@@ -55,9 +55,9 @@ import ActivityKit
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
-      let defaultHeight: CGFloat = 64
-      let defaultWidth: CGFloat = 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, isSmallView: Bool = false) -> some View {
+      let defaultHeight: CGFloat = isSmallView ? 32 : 64
+      let defaultWidth: CGFloat = isSmallView ? 32 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -211,7 +211,7 @@ import ActivityKit
         HStack(alignment: .center, spacing: 8) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
-              smallAlignedImage(imageName: imageName, horizontalAlignment: .leading)
+              alignedImage(imageName: imageName, horizontalAlignment: .leading, isSmallView: true)
             }
           }
 
@@ -239,7 +239,7 @@ import ActivityKit
 
           if hasImage, !isLeftImage {
             if let imageName = contentState.imageName {
-              smallAlignedImage(imageName: imageName, horizontalAlignment: .trailing)
+              alignedImage(imageName: imageName, horizontalAlignment: .trailing, isSmallView: true)
             }
           }
         }
@@ -344,16 +344,55 @@ import ActivityKit
 
     // MARK: - Small View Helpers
     @ViewBuilder
-    private func smallAlignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
-      let defaultHeight: CGFloat = 32 // Smaller default for Apple Watch
-      let defaultWidth: CGFloat = 32
-      let containerHeight = imageContainerSize?.height ?? defaultHeight
-      let containerWidth = imageContainerSize?.width ?? defaultWidth
+    private func smallTimer(endDate: Double) -> some View {
+      let timerType = attributes.timerType ?? .digital
+      if timerType == .digital {
+        Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
+          .font(.system(size: 11, weight: .medium))
+          .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+      } else {
+        ProgressView(
+          timerInterval: Date.toTimerInterval(miliseconds: endDate),
+          countsDown: false,
+          label: { EmptyView() },
+          currentValueLabel: { EmptyView() }
+        )
+        .progressViewStyle(.circular)
+        .scaleEffect(0.7)
+        .tint(progressViewTint)
+      }
+    }
 
-      let computedHeight: CGFloat? = {
-        if let percent = attributes.imageHeightPercent {
-          let clamped = min(max(percent, 0), 100) / 100.0
-          return containerHeight * clamped * 0.5 // Scale down for small view
+    @ViewBuilder
+    private func smallProgress(progress: Double) -> some View {
+      ProgressView(value: progress)
+        .progressViewStyle(.circular)
+        .scaleEffect(0.7)
+        .tint(progressViewTint)
+    }
+  }
+
+  @available(iOS 18.0, *)
+  private struct LiveActivityView_iOS18<Small: View, Medium: View>: View {
+    let contentState: LiveActivityAttributes.ContentState
+    let attributes: LiveActivityAttributes
+    @Binding var imageContainerSize: CGSize?
+
+    let smallView: () -> Small
+    let mediumView: () -> Medium
+
+    @Environment(\.activityFamily) private var activityFamily
+
+    var body: some View {
+      switch activityFamily {
+      case .small:
+        smallView()
+      case .medium:
+        mediumView()
+      @unknown default:
+        mediumView()
+      }
+    }
   }
 
 #endif
