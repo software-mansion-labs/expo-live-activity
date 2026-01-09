@@ -115,7 +115,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-@available(iOS 16.1, *)
+@available(iOS 18.0, *)
 public struct LiveActivityWidget: Widget {
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
@@ -189,6 +189,7 @@ public struct LiveActivityWidget: Widget {
         }
       }
     }
+    .supplementalActivityFamilies([.small])
   }
 
   public init() {}

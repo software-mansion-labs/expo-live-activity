@@ -2,6 +2,7 @@ import SwiftUI
 import WidgetKit
 
 #if canImport(ActivityKit)
+import ActivityKit
 
   struct ConditionalForegroundViewModifier: ViewModifier {
     let color: String?
@@ -155,6 +156,101 @@ import WidgetKit
     }
 
     var body: some View {
+      if #available(iOS 18.0, *) {
+        LiveActivityView_iOS18(
+          contentState: contentState,
+          attributes: attributes,
+          imageContainerSize: $imageContainerSize,
+          smallView: { smallView },
+          mediumView: { mediumView }
+        )
+      } else {
+        // iOS 17: brak activityFamily w env -> zawsze medium
+        mediumView
+      }
+    }
+
+    // MARK: - Small View (Apple Watch)
+    @ViewBuilder
+    private var smallView: some View {
+      let defaultPadding = 12 // Smaller padding for Apple Watch
+
+      let top = CGFloat(
+        attributes.paddingDetails?.top
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      ) * 0.6 // Scale down padding for small view
+
+      let bottom = CGFloat(
+        attributes.paddingDetails?.bottom
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      ) * 0.6
+
+      let leading = CGFloat(
+        attributes.paddingDetails?.left
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      ) * 0.6
+
+      let trailing = CGFloat(
+        attributes.paddingDetails?.right
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      ) * 0.6
+
+      VStack(alignment: .leading, spacing: 4) {
+        let position = attributes.imagePosition ?? "right"
+        let isLeftImage = position.hasPrefix("left")
+        let hasImage = contentState.imageName != nil
+
+        HStack(alignment: .center, spacing: 8) {
+          if hasImage, isLeftImage {
+            if let imageName = contentState.imageName {
+              smallAlignedImage(imageName: imageName, horizontalAlignment: .leading)
+            }
+          }
+
+          VStack(alignment: .leading, spacing: 2) {
+            Text(contentState.title)
+              .font(.system(size: 14, weight: .semibold))
+              .lineLimit(1)
+              .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
+
+            if let subtitle = contentState.subtitle {
+              Text(subtitle)
+                .font(.system(size: 12))
+                .lineLimit(1)
+                .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
+            }
+
+            // Timer or Progress for small view
+            if let date = contentState.timerEndDateInMilliseconds {
+              smallTimer(endDate: date)
+            } else if let progress = contentState.progress {
+              smallProgress(progress: progress)
+            }
+          }
+          .layoutPriority(1)
+
+          if hasImage, !isLeftImage {
+            if let imageName = contentState.imageName {
+              smallAlignedImage(imageName: imageName, horizontalAlignment: .trailing)
+            }
+          }
+        }
+      }
+      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
+      .preferredColorScheme(.light)
+    }
+
+    // MARK: - Medium View (Lock Screen)
+    @ViewBuilder
+    private var mediumView: some View {
       let defaultPadding = 24
 
       let top = CGFloat(
@@ -245,6 +341,19 @@ import WidgetKit
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
+
+    // MARK: - Small View Helpers
+    @ViewBuilder
+    private func smallAlignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
+      let defaultHeight: CGFloat = 32 // Smaller default for Apple Watch
+      let defaultWidth: CGFloat = 32
+      let containerHeight = imageContainerSize?.height ?? defaultHeight
+      let containerWidth = imageContainerSize?.width ?? defaultWidth
+
+      let computedHeight: CGFloat? = {
+        if let percent = attributes.imageHeightPercent {
+          let clamped = min(max(percent, 0), 100) / 100.0
+          return containerHeight * clamped * 0.5 // Scale down for small view
   }
 
 #endif
