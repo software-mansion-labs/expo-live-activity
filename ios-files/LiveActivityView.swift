@@ -34,6 +34,23 @@ import WidgetKit
     #endif
   }
 
+  struct SegmentedProgressView: View {
+    let currentStep: Int
+    let totalSteps: Int
+    let activeColor: Color
+    let inactiveColor: Color
+
+    var body: some View {
+      HStack(spacing: 4) {
+        ForEach(0..<totalSteps, id: \.self) { index in
+          RoundedRectangle(cornerRadius: 2)
+            .fill(index < currentStep ? activeColor : inactiveColor)
+            .frame(height: 4)
+        }
+      }
+    }
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
@@ -241,6 +258,18 @@ import WidgetKit
               .tint(progressViewTint)
               .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
           }
+        }
+
+        if let currentStep = contentState.currentStep, let totalSteps = contentState.totalSteps, totalSteps > 0 {
+          let activeColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
+          let inactiveColor = attributes.progressSegmentInactiveColor.map { Color(hex: $0) } ?? Color.gray.opacity(0.3)
+
+          SegmentedProgressView(
+            currentStep: currentStep,
+            totalSteps: totalSteps,
+            activeColor: activeColor,
+            inactiveColor: inactiveColor
+          )
         }
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
