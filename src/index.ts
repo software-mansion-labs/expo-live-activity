@@ -119,10 +119,10 @@ function normalizeConfig(config?: LiveActivityConfig) {
     imageWidthPercent?: number
     imageHeightPercent?: number
   }
-  const normalized: NormalizedConfig = { 
+  const normalized: NormalizedConfig = {
     ...base,
     progressSegmentActiveColor,
-    progressSegmentInactiveColor
+    progressSegmentInactiveColor,
   }
 
   // Normalize padding: keep number in padding, object in paddingDetails
