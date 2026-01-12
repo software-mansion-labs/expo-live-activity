@@ -55,9 +55,9 @@ import ActivityKit
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
-      let defaultHeight: CGFloat = 64
-      let defaultWidth: CGFloat = 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = true) -> some View {
+      let defaultHeight: CGFloat = mobile ? 41 : 64
+      let defaultWidth: CGFloat = mobile ? 41 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -75,7 +75,7 @@ import ActivityKit
           return nil
         } else {
           // Mimic CSS: this works against CSS but provides a better default behavior.
-          // When no width/height is set, use a default size (64pt)
+          // When no width/height is set, use a default size (64 / 41pt)
           // Width will adjust automatically base on aspect ratio
           return defaultHeight
         }
@@ -89,7 +89,8 @@ import ActivityKit
         } else if let size = attributes.imageWidth {
           return CGFloat(size)
         } else {
-          return nil // Keep aspect fit based on height
+          // When no width is set, use default width to ensure image is visible
+          return defaultWidth
         }
       }()
 
@@ -206,19 +207,18 @@ import ActivityKit
         let position = attributes.imagePosition ?? "right"
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
-        let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && contentState.subtitle == nil)
-        let isTimerDisplayed = contentState.timerEndDateInMilliseconds != nil
-
         let isSubtitleDisplayed = contentState.subtitle != nil
+        let isTimerShownAsText = attributes.timerType == .digital && contentState.timerEndDateInMilliseconds != nil
+        let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && !isSubtitleDisplayed && !isTimerShownAsText)
+
 
         VStack(alignment: .leading, spacing: isProgressBarDisplayed ? 0 : nil) {
 
           HStack(alignment: .center, spacing: 8) {
 
-            if hasImage, isLeftImage {
+            if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
                 alignedImage(imageName: imageName, horizontalAlignment: .leading)
-                .frame(width: 41, height: 41)
                 .layoutPriority(0)
               }
             }
@@ -236,46 +236,64 @@ import ActivityKit
                   .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
               }
 
-              if let date = contentState.timerEndDateInMilliseconds {
+              if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
                 smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
               }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
 
-            if hasImage, !isLeftImage {
+            if hasImage, !isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .trailing)
-                .frame(width: 41, height: 41)
-                .layoutPriority(0)
+                Image.dynamic(assetNameOrPath: imageName)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 23, height: 23)
+                  .layoutPriority(0)
               }
             }
           }
 
-          if let progress = contentState.progress {
-            styledLinearProgressView {
-              ProgressView(value: progress)
+          if isTimerShownAsText, let date = contentState.timerEndDateInMilliseconds {
+            HStack() {
+              if let imageName = contentState.imageName, hasImage, isLeftImage {
+                Image.dynamic(assetNameOrPath: imageName)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 23, height: 23)
+                  .layoutPriority(0)
+                Spacer()
+              }
+              smallTimer(endDate: date, isSubtitleDisplayed: false).frame(maxWidth: .infinity, alignment: isLeftImage ? .trailing : .leading)
+              if let imageName = contentState.imageName, hasImage, !isLeftImage {
+                Spacer()
+                Image.dynamic(assetNameOrPath: imageName)
+                  .resizable()
+                  .scaledToFit()
+                  .frame(width: 23, height: 23)
+                  .layoutPriority(0)
+              }
             }
-          } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed {
-            styledLinearProgressView {
-              ProgressView(
-                timerInterval: Date.toTimerInterval(miliseconds: date),
-                countsDown: false,
-                label: { EmptyView() },
-                currentValueLabel: { EmptyView() }
-              )
+            .frame(maxWidth: .infinity)
+          } else {
+            if let progress = contentState.progress {
+              styledLinearProgressView {
+                ProgressView(value: progress)
+              }
+            } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed {
+              styledLinearProgressView {
+                ProgressView(
+                  timerInterval: Date.toTimerInterval(miliseconds: date),
+                  countsDown: false,
+                  label: { EmptyView() },
+                  currentValueLabel: { EmptyView() }
+                )
+              }
             }
           }
 
         }
         .preferredColorScheme(.light)      
-
-            // if hasImage, isLeftImage {
-            //   if let imageName = contentState.imageName {
-            //     alignedImage(imageName: imageName, horizontalAlignment: .leading)
-            //   }
-            // }
-
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
       .preferredColorScheme(.light)
