@@ -55,9 +55,9 @@ import ActivityKit
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, isSmallView: Bool = false) -> some View {
-      let defaultHeight: CGFloat = isSmallView ? 32 : 64
-      let defaultWidth: CGFloat = isSmallView ? 32 : 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
+      let defaultHeight: CGFloat = 64
+      let defaultWidth: CGFloat = 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -165,7 +165,7 @@ import ActivityKit
           mediumView: { mediumView }
         )
       } else {
-        // iOS 17: brak activityFamily w env -> zawsze medium
+        // iOS 17: missing activityFamily in environment -> always medium
         mediumView
       }
     }
@@ -173,35 +173,34 @@ import ActivityKit
     // MARK: - Small View (Apple Watch)
     @ViewBuilder
     private var smallView: some View {
-      let defaultPadding = 12 // Smaller padding for Apple Watch
-
+      let defaultPadding = 8
       let top = CGFloat(
         attributes.paddingDetails?.top
           ?? attributes.paddingDetails?.vertical
           ?? attributes.padding
           ?? defaultPadding
-      ) * 0.6 // Scale down padding for small view
+      )
 
       let bottom = CGFloat(
         attributes.paddingDetails?.bottom
           ?? attributes.paddingDetails?.vertical
           ?? attributes.padding
           ?? defaultPadding
-      ) * 0.6
+      )
 
       let leading = CGFloat(
         attributes.paddingDetails?.left
           ?? attributes.paddingDetails?.horizontal
           ?? attributes.padding
           ?? defaultPadding
-      ) * 0.6
+      )
 
       let trailing = CGFloat(
         attributes.paddingDetails?.right
           ?? attributes.paddingDetails?.horizontal
           ?? attributes.padding
           ?? defaultPadding
-      ) * 0.6
+      )
 
       VStack(alignment: .leading, spacing: 4) {
         let position = attributes.imagePosition ?? "right"
@@ -211,11 +210,11 @@ import ActivityKit
         HStack(alignment: .center, spacing: 8) {
           if hasImage, isLeftImage {
             if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .leading, isSmallView: true)
+              alignedImage(imageName: imageName, horizontalAlignment: .leading)
             }
           }
 
-          VStack(alignment: .leading, spacing: 2) {
+          VStack(alignment: .leading, spacing: 1) {
             Text(contentState.title)
               .font(.system(size: 14, weight: .semibold))
               .lineLimit(1)
@@ -223,23 +222,24 @@ import ActivityKit
 
             if let subtitle = contentState.subtitle {
               Text(subtitle)
-                .font(.system(size: 12))
+                .font(.system(size: 14, weight: .semibold))
                 .lineLimit(1)
-                .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
+                .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
             }
 
-            // Timer or Progress for small view
             if let date = contentState.timerEndDateInMilliseconds {
               smallTimer(endDate: date)
             } else if let progress = contentState.progress {
               smallProgress(progress: progress)
             }
           }
-          .layoutPriority(1)
+          .layoutPriority(0)
 
           if hasImage, !isLeftImage {
             if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .trailing, isSmallView: true)
+              alignedImage(imageName: imageName, horizontalAlignment: .trailing)
+              .frame(width: 41, height: 41)
+              .layoutPriority(1)
             }
           }
         }
@@ -320,7 +320,7 @@ import ActivityKit
             }
           }.layoutPriority(1)
 
-          if hasImage, !isLeftImage { // right side (default)
+          if hasImage, !isLeftImage {
             if let imageName = contentState.imageName {
               alignedImage(imageName: imageName, horizontalAlignment: .trailing)
             }
@@ -348,8 +348,9 @@ import ActivityKit
       let timerType = attributes.timerType ?? .digital
       if timerType == .digital {
         Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-          .font(.system(size: 11, weight: .medium))
+          .font(.system(size: 13, weight: .medium))
           .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+          .padding(.top, 3)
       } else {
         ProgressView(
           timerInterval: Date.toTimerInterval(miliseconds: endDate),
