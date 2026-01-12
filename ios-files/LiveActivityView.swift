@@ -165,12 +165,12 @@ import ActivityKit
           mediumView: { mediumView }
         )
       } else {
-        // iOS 17: missing activityFamily in environment -> always medium
+        // iOS 17: missing activityFamily in environment -> default to medium
         mediumView
       }
     }
 
-    // MARK: - Small View (Apple Watch)
+    // Small View (Apple Watch)
     @ViewBuilder
     private var smallView: some View {
       let defaultPadding = 8
@@ -207,48 +207,68 @@ import ActivityKit
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
 
-        HStack(alignment: .center, spacing: 8) {
-          if hasImage, isLeftImage {
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .leading)
-            }
-          }
+        VStack(alignment: .leading ) {
 
-          VStack(alignment: .leading, spacing: 1) {
-            Text(contentState.title)
-              .font(.system(size: 14, weight: .semibold))
-              .lineLimit(1)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-
-            if let subtitle = contentState.subtitle {
-              Text(subtitle)
-                .font(.system(size: 14, weight: .semibold))
+          HStack(alignment: .center, spacing: 8) {
+            VStack(alignment: .leading, spacing: 1) {
+              Text(contentState.title)
+                .font(.system(size: 13, weight: .semibold))
                 .lineLimit(1)
                 .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-            }
 
-            if let date = contentState.timerEndDateInMilliseconds {
-              smallTimer(endDate: date)
-            } else if let progress = contentState.progress {
-              smallProgress(progress: progress)
+              if let subtitle = contentState.subtitle {
+                Text(subtitle)
+                  .font(.system(size: 13, weight: .semibold))
+                  .lineLimit(1)
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
+              }
+
+              if let date = contentState.timerEndDateInMilliseconds {
+                smallTimer(endDate: date)
+              }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .layoutPriority(1)
+
+            if hasImage, !isLeftImage {
+              if let imageName = contentState.imageName {
+                alignedImage(imageName: imageName, horizontalAlignment: .trailing)
+                .frame(width: 41, height: 41)
+                .layoutPriority(0)
+              }
             }
           }
-          .layoutPriority(0)
 
-          if hasImage, !isLeftImage {
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .trailing)
-              .frame(width: 41, height: 41)
-              .layoutPriority(1)
+          if let progress = contentState.progress {
+            styledLinearProgressView {
+              ProgressView(value: progress)
+            }
+          } else if let date = contentState.timerEndDateInMilliseconds {
+            styledLinearProgressView {
+              ProgressView(
+                timerInterval: Date.toTimerInterval(miliseconds: date),
+                countsDown: false,
+                label: { EmptyView() },
+                currentValueLabel: { EmptyView() }
+              )
             }
           }
+
         }
+        .preferredColorScheme(.light)      
+
+            // if hasImage, isLeftImage {
+            //   if let imageName = contentState.imageName {
+            //     alignedImage(imageName: imageName, horizontalAlignment: .leading)
+            //   }
+            // }
+
       }
       .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
       .preferredColorScheme(.light)
     }
 
-    // MARK: - Medium View (Lock Screen)
+    // Medium View (Lock Screen)
     @ViewBuilder
     private var mediumView: some View {
       let defaultPadding = 24
@@ -344,6 +364,15 @@ import ActivityKit
 
     // MARK: - Small View Helpers
     @ViewBuilder
+    private func styledLinearProgressView<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+      content()
+        .progressViewStyle(.linear)
+        .frame(height: 15)
+        .scaleEffect(x: 1, y: 2, anchor: .center)
+        .tint(progressViewTint)
+    }
+
+    @ViewBuilder
     private func smallTimer(endDate: Double) -> some View {
       let timerType = attributes.timerType ?? .digital
       if timerType == .digital {
@@ -351,25 +380,7 @@ import ActivityKit
           .font(.system(size: 13, weight: .medium))
           .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
           .padding(.top, 3)
-      } else {
-        ProgressView(
-          timerInterval: Date.toTimerInterval(miliseconds: endDate),
-          countsDown: false,
-          label: { EmptyView() },
-          currentValueLabel: { EmptyView() }
-        )
-        .progressViewStyle(.circular)
-        .scaleEffect(0.7)
-        .tint(progressViewTint)
       }
-    }
-
-    @ViewBuilder
-    private func smallProgress(progress: Double) -> some View {
-      ProgressView(value: progress)
-        .progressViewStyle(.circular)
-        .scaleEffect(0.7)
-        .tint(progressViewTint)
     }
   }
 
