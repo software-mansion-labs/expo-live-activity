@@ -206,13 +206,26 @@ import ActivityKit
         let position = attributes.imagePosition ?? "right"
         let isLeftImage = position.hasPrefix("left")
         let hasImage = contentState.imageName != nil
+        let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && contentState.subtitle == nil)
+        let isTimerDisplayed = contentState.timerEndDateInMilliseconds != nil
 
-        VStack(alignment: .leading ) {
+        let isSubtitleDisplayed = contentState.subtitle != nil
+
+        VStack(alignment: .leading, spacing: isProgressBarDisplayed ? 0 : nil) {
 
           HStack(alignment: .center, spacing: 8) {
-            VStack(alignment: .leading, spacing: 1) {
+
+            if hasImage, isLeftImage {
+              if let imageName = contentState.imageName {
+                alignedImage(imageName: imageName, horizontalAlignment: .leading)
+                .frame(width: 41, height: 41)
+                .layoutPriority(0)
+              }
+            }
+
+            VStack(alignment: .leading, spacing: 0) {
               Text(contentState.title)
-                .font(.system(size: 13, weight: .semibold))
+                .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .semibold))
                 .lineLimit(1)
                 .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
 
@@ -224,7 +237,7 @@ import ActivityKit
               }
 
               if let date = contentState.timerEndDateInMilliseconds {
-                smallTimer(endDate: date)
+                smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
               }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -243,7 +256,7 @@ import ActivityKit
             styledLinearProgressView {
               ProgressView(value: progress)
             }
-          } else if let date = contentState.timerEndDateInMilliseconds {
+          } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed {
             styledLinearProgressView {
               ProgressView(
                 timerInterval: Date.toTimerInterval(miliseconds: date),
@@ -370,17 +383,17 @@ import ActivityKit
         .frame(height: 15)
         .scaleEffect(x: 1, y: 2, anchor: .center)
         .tint(progressViewTint)
+        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
     }
 
     @ViewBuilder
-    private func smallTimer(endDate: Double) -> some View {
-      let timerType = attributes.timerType ?? .digital
-      if timerType == .digital {
+    private func smallTimer(endDate: Double, isSubtitleDisplayed: Bool) -> some View {
+
         Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-          .font(.system(size: 13, weight: .medium))
+          .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .medium))
           .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          .padding(.top, 3)
-      }
+          .padding(.top, isSubtitleDisplayed ? 3 : 0)
+      
     }
   }
 
