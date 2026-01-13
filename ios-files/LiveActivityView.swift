@@ -55,9 +55,9 @@ import ActivityKit
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = true) -> some View {
-      let defaultHeight: CGFloat = mobile ? 41 : 64
-      let defaultWidth: CGFloat = mobile ? 41 : 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
+      let defaultHeight: CGFloat = mobile ? 28 : 64
+      let defaultWidth: CGFloat = mobile ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -89,9 +89,22 @@ import ActivityKit
         } else if let size = attributes.imageWidth {
           return CGFloat(size)
         } else {
-          // When no width is set, use default width to ensure image is visible
-          return defaultWidth
+          return nil // Keep aspect fit based on height
         }
+      }()
+
+      let resolvedHeight = computedHeight ?? defaultHeight
+
+      let resolvedWidth: CGFloat? = {
+        if let w = computedWidth { return w }
+
+        if let uiImage = UIImage.dynamic(assetNameOrPath: imageName) {
+          let h = max(uiImage.size.height, 1)
+          let ratio = uiImage.size.width / h
+          return resolvedHeight * ratio
+        }
+
+        return nil
       }()
 
       return ZStack(alignment: .center) {
@@ -99,26 +112,26 @@ import ActivityKit
           let fit = attributes.contentFit ?? "contain"
           switch fit {
           case "contain":
-            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: resolvedWidth, height: resolvedHeight)
           case "fill":
             Image.dynamic(assetNameOrPath: imageName).resizable().frame(
-              width: computedWidth,
-              height: computedHeight
+              width: resolvedWidth,
+              height: resolvedHeight
             )
           case "none":
-            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: resolvedWidth, height: resolvedHeight)
           case "scale-down":
             if let uiImage = UIImage.dynamic(assetNameOrPath: imageName) {
               // Determine the target box. When width/height are nil, we use image's intrinsic dimension for comparison.
-              let targetHeight = computedHeight ?? uiImage.size.height
-              let targetWidth = computedWidth ?? uiImage.size.width
+              let targetHeight = resolvedHeight
+              let targetWidth = resolvedWidth ?? uiImage.size.width
               let shouldScaleDown = uiImage.size.height > targetHeight || uiImage.size.width > targetWidth
 
               if shouldScaleDown {
                 Image(uiImage: uiImage)
                   .resizable()
                   .scaledToFit()
-                  .frame(width: computedWidth, height: computedHeight)
+                  .frame(width: resolvedWidth, height: resolvedHeight)
               } else {
                 Image(uiImage: uiImage)
                   .renderingMode(.original)
@@ -129,8 +142,8 @@ import ActivityKit
             }
           case "cover":
             Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
-              width: computedWidth,
-              height: computedHeight
+              width: resolvedWidth,
+              height: resolvedHeight
             ).clipped()
           default:
             DebugLog("⚠️[ExpoLiveActivity] Unknown contentFit '\(fit)'")
@@ -218,8 +231,7 @@ import ActivityKit
 
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .leading)
-                .layoutPriority(0)
+                alignedImage(imageName: imageName, horizontalAlignment: .leading, mobile: true)
               }
             }
 
@@ -240,16 +252,11 @@ import ActivityKit
                 smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
               }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
             .layoutPriority(1)
-
+            
             if hasImage, !isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
-                Image.dynamic(assetNameOrPath: imageName)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 23, height: 23)
-                  .layoutPriority(0)
+                alignedImage(imageName: imageName, horizontalAlignment: .trailing, mobile: true)
               }
             }
           }
