@@ -42,7 +42,7 @@ import WidgetKit
 
     var body: some View {
       HStack(spacing: 4) {
-        ForEach(0..<totalSteps, id: \.self) { index in
+        ForEach(0 ..< totalSteps, id: \.self) { index in
           RoundedRectangle(cornerRadius: 2)
             .fill(index < currentStep ? activeColor : inactiveColor)
             .frame(height: 4)
