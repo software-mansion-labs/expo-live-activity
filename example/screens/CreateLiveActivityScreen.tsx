@@ -151,7 +151,7 @@ export default function CreateLiveActivityScreen() {
       : passElapsedTimer
         ? {
             elapsedTimer: {
-              startDate: Date.now() - parseInt(elapsedTimerMinutesAgo, 10) * 60 * 1000,
+              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
             },
           }
         : {
@@ -208,7 +208,7 @@ export default function CreateLiveActivityScreen() {
       : passElapsedTimer
         ? {
             elapsedTimer: {
-              startDate: Date.now() - parseInt(elapsedTimerMinutesAgo, 10) * 60 * 1000,
+              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
             },
           }
         : {

@@ -135,7 +135,7 @@ The `state` object should include:
   progressBar: { // Only one property (date, progress, or elapsedTimer) is available at a time
     date?: number; // Set as epoch time in milliseconds. This is used as an end date in a countdown timer.
     progress?: number; // Set amount of progress in the progress bar (0-1)
-    elapsedTimer?: { // NEW: Count UP timer (elapsed time from start)
+    elapsedTimer?: { // Count up timer (elapsed time from start)
       startDate: number; // Epoch time in milliseconds when the timer started
     };
   };
@@ -223,10 +223,7 @@ const elapsedTimerState: LiveActivity.LiveActivityState = {
 const activityId = LiveActivity.startActivity(elapsedTimerState, config)
 ```
 
-The elapsed timer will automatically update every second. The `format` option controls how the time is displayed:
-
-- `'friendly'` (default): Shows "7min 27sec" or "1hr 23min" for longer durations
-- `'digital'`: Shows "07:27" or "1:23:45" for longer durations
+The elapsed timer will automatically update every second based on the `startDate` you provide.
 
 Subscribing to push token changes:
 
