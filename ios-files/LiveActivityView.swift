@@ -55,6 +55,18 @@ import ActivityKit
       }
     }
 
+    private var hasImage: Bool {
+      contentState.imageName != nil
+    }
+
+    private var isLeftImage: Bool {
+      (attributes.imagePosition ?? "right").hasPrefix("left")
+    }
+
+    private var isStretch: Bool {
+      (attributes.imagePosition ?? "right").contains("Stretch")
+    }
+
     private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
       let defaultHeight: CGFloat = mobile ? 28 : 64
       let defaultWidth: CGFloat = mobile ? 28 : 64
@@ -187,39 +199,9 @@ import ActivityKit
     // Small View (Apple Watch)
     @ViewBuilder
     private var smallView: some View {
-      let defaultPadding = 8
-      let top = CGFloat(
-        attributes.paddingDetails?.top
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let bottom = CGFloat(
-        attributes.paddingDetails?.bottom
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let leading = CGFloat(
-        attributes.paddingDetails?.left
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let trailing = CGFloat(
-        attributes.paddingDetails?.right
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
+      let padding = resolvedPadding(defaultPadding: 8)
 
       VStack(alignment: .leading, spacing: 4) {
-        let position = attributes.imagePosition ?? "right"
-        let isLeftImage = position.hasPrefix("left")
-        let hasImage = contentState.imageName != nil
         let isSubtitleDisplayed = contentState.subtitle != nil
         let isTimerShownAsText = attributes.timerType == .digital && contentState.timerEndDateInMilliseconds != nil
         let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && !isSubtitleDisplayed && !isTimerShownAsText)
@@ -299,51 +281,18 @@ import ActivityKit
             }
           }
 
-        }
-        .preferredColorScheme(.light)      
+        }   
       }
-      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
+      .padding(padding)
       .preferredColorScheme(.light)
     }
 
     // Medium View (Lock Screen)
     @ViewBuilder
     private var mediumView: some View {
-      let defaultPadding = 24
-
-      let top = CGFloat(
-        attributes.paddingDetails?.top
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let bottom = CGFloat(
-        attributes.paddingDetails?.bottom
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let leading = CGFloat(
-        attributes.paddingDetails?.left
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let trailing = CGFloat(
-        attributes.paddingDetails?.right
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
+      let padding = resolvedPadding(defaultPadding: 24)
 
       VStack(alignment: .leading) {
-        let position = attributes.imagePosition ?? "right"
-        let isStretch = position.contains("Stretch")
-        let isLeftImage = position.hasPrefix("left")
-        let hasImage = contentState.imageName != nil
         let effectiveStretch = isStretch && hasImage
 
         HStack(alignment: .center) {
@@ -397,10 +346,37 @@ import ActivityKit
           }
         }
       }
-      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
+      .padding(padding)
     }
 
-    // MARK: - Small View Helpers
+    private func resolvedPadding(defaultPadding: Int) -> EdgeInsets {
+      let top = CGFloat(
+        attributes.paddingDetails?.top
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+      let bottom = CGFloat(
+        attributes.paddingDetails?.bottom
+          ?? attributes.paddingDetails?.vertical
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+      let leading = CGFloat(
+        attributes.paddingDetails?.left
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+      let trailing = CGFloat(
+        attributes.paddingDetails?.right
+          ?? attributes.paddingDetails?.horizontal
+          ?? attributes.padding
+          ?? defaultPadding
+      )
+      return EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing)
+    }
+
     @ViewBuilder
     private func styledLinearProgressView<Content: View>(@ViewBuilder content: () -> Content) -> some View {
       content()
