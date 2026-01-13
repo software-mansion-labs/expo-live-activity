@@ -115,10 +115,10 @@ public struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-@available(iOS 18.0, *)
+@available(iOS 16.2, *)
 public struct LiveActivityWidget: Widget {
   public var body: some WidgetConfiguration {
-    ActivityConfiguration(for: LiveActivityAttributes.self) { context in
+    let baseConfiguration = ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       LiveActivityView(contentState: context.state, attributes: context.attributes)
         .activityBackgroundTint(
           context.attributes.backgroundColor.map { Color(hex: $0) }
@@ -189,7 +189,12 @@ public struct LiveActivityWidget: Widget {
         }
       }
     }
-    .supplementalActivityFamilies([.small])
+    
+    if #available(iOS 18.0, *) {
+      return baseConfiguration.supplementalActivityFamilies([.small])
+    } else {
+      return baseConfiguration
+    }
   }
 
   public init() {}
