@@ -189,7 +189,7 @@ public struct LiveActivityWidget: Widget {
         }
       }
     }
-    
+
     if #available(iOS 18.0, *) {
       return baseConfiguration.supplementalActivityFamilies([.small])
     } else {

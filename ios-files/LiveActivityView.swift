@@ -2,7 +2,7 @@ import SwiftUI
 import WidgetKit
 
 #if canImport(ActivityKit)
-import ActivityKit
+  import ActivityKit
 
   struct ConditionalForegroundViewModifier: ViewModifier {
     let color: String?
@@ -206,11 +206,8 @@ import ActivityKit
         let isTimerShownAsText = attributes.timerType == .digital && contentState.timerEndDateInMilliseconds != nil
         let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && !isSubtitleDisplayed && !isTimerShownAsText)
 
-
         VStack(alignment: .leading, spacing: isProgressBarDisplayed ? 0 : nil) {
-
           HStack(alignment: .center, spacing: 8) {
-
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
                 alignedImage(imageName: imageName, horizontalAlignment: .leading, mobile: true)
@@ -235,7 +232,7 @@ import ActivityKit
               }
             }
             .layoutPriority(1)
-            
+
             if hasImage, !isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
                 alignedImage(imageName: imageName, horizontalAlignment: .trailing, mobile: true)
@@ -244,7 +241,7 @@ import ActivityKit
           }
 
           if isTimerShownAsText, let date = contentState.timerEndDateInMilliseconds {
-            HStack() {
+            HStack {
               if let imageName = contentState.imageName, hasImage, isLeftImage {
                 Image.dynamic(assetNameOrPath: imageName)
                   .resizable()
@@ -280,8 +277,7 @@ import ActivityKit
               }
             }
           }
-
-        }   
+        }
       }
       .padding(padding)
       .preferredColorScheme(.light)
@@ -389,12 +385,10 @@ import ActivityKit
 
     @ViewBuilder
     private func smallTimer(endDate: Double, isSubtitleDisplayed: Bool) -> some View {
-
-        Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-          .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .medium))
-          .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          .padding(.top, isSubtitleDisplayed ? 3 : 0)
-      
+      Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
+        .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .medium))
+        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
+        .padding(.top, isSubtitleDisplayed ? 3 : 0)
     }
   }
 

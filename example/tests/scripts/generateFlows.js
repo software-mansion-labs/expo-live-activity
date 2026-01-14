@@ -7,7 +7,6 @@ fs.mkdirSync(`${mainPath}/generated`, { recursive: true })
 
 for (const test of configs) {
   const { id, title, config, basic } = test
-  const configJson = JSON.stringify(config).replace(/'/g, "''")
   // Prefix basic tests with "basic-" for easy filtering
   const filename = basic ? `basic-${id}` : id
 
