@@ -58,7 +58,7 @@ import WidgetKit
                 Text(subtitle)
                   .font(.system(size: 13, weight: .semibold))
                   .lineLimit(1)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
               }
 
               if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
