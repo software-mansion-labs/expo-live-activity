@@ -67,9 +67,9 @@ import WidgetKit
       (attributes.imagePosition ?? "right").contains("Stretch")
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
-      let defaultHeight: CGFloat = mobile ? 28 : 64
-      let defaultWidth: CGFloat = mobile ? 28 : 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, smallView: Bool = false) -> some View {
+      let defaultHeight: CGFloat = smallView ? 28 : 64
+      let defaultWidth: CGFloat = smallView ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -210,7 +210,7 @@ import WidgetKit
           HStack(alignment: .center, spacing: 8) {
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .leading, mobile: true)
+                alignedImage(imageName: imageName, horizontalAlignment: .leading, smallView: true)
               }
             }
 
@@ -235,7 +235,7 @@ import WidgetKit
 
             if hasImage, !isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .trailing, mobile: true)
+                alignedImage(imageName: imageName, horizontalAlignment: .trailing, smallView: true)
               }
             }
           }
@@ -280,7 +280,6 @@ import WidgetKit
         }
       }
       .padding(padding)
-      .preferredColorScheme(.light)
     }
 
     // Medium View (Lock Screen)
