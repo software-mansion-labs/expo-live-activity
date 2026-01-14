@@ -166,7 +166,7 @@ export default function CreateLiveActivityScreen() {
     const state: LiveActivityState = {
       title,
       subtitle: passSubtitle ? subtitle : undefined,
-      progressBar: progressState,
+      progressBar: passStepProgress ? undefined : progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
       currentStep: passStepProgress ? toNum(currentStep) : undefined,
@@ -227,7 +227,7 @@ export default function CreateLiveActivityScreen() {
     const state: LiveActivityState = {
       title,
       subtitle: passSubtitle ? subtitle : undefined,
-      progressBar: progressState,
+      progressBar: passStepProgress ? undefined : progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
       currentStep: passStepProgress ? toNum(currentStep) : undefined,
@@ -438,6 +438,7 @@ export default function CreateLiveActivityScreen() {
                   setPassDate(toggle)
                   setPassProgress(false)
                   setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={passDate}
               />
@@ -461,6 +462,7 @@ export default function CreateLiveActivityScreen() {
                   setTimerTypeDigital(toggle)
                   setPassProgress(false)
                   setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={isTimerTypeDigital}
               />
@@ -474,6 +476,7 @@ export default function CreateLiveActivityScreen() {
                   setPassDate(false)
                   setTimerTypeDigital(false)
                   setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={passProgress}
               />
@@ -495,6 +498,7 @@ export default function CreateLiveActivityScreen() {
                   setPassDate(false)
                   setPassProgress(false)
                   setTimerTypeDigital(false)
+                  setPassStepProgress(false)
                 }}
                 value={passElapsedTimer}
               />
@@ -516,7 +520,21 @@ export default function CreateLiveActivityScreen() {
             <View style={styles.spacer} />
             <View style={styles.labelWithSwitch}>
               <Text style={styles.label}>Show step progress:</Text>
-              <Switch onValueChange={() => setPassStepProgress(toggle)} value={passStepProgress} />
+              <Switch
+                onValueChange={() => {
+                  setPassStepProgress((prev) => {
+                    const next = !prev
+                    if (next) {
+                      setPassDate(false)
+                      setPassProgress(false)
+                      setPassElapsedTimer(false)
+                      setTimerTypeDigital(false)
+                    }
+                    return next
+                  })
+                }}
+                value={passStepProgress}
+              />
             </View>
             <View style={styles.labelWithSwitch}>
               <Text style={styles.label}>Current Step:</Text>
