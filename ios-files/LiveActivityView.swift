@@ -67,9 +67,49 @@ import WidgetKit
       (attributes.imagePosition ?? "right").contains("Stretch")
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, smallView: Bool = false) -> some View {
-      let defaultHeight: CGFloat = smallView ? 28 : 64
-      let defaultWidth: CGFloat = smallView ? 28 : 64
+    var body: some View {
+      if #available(iOS 18.0, *) {
+        LiveActivityView_iOS18(
+          contentState: contentState,
+          attributes: attributes,
+          imageContainerSize: $imageContainerSize,
+          smallView: { 
+            LiveActivitySmallView(
+              contentState: contentState,
+              attributes: attributes,
+              imageContainerSize: $imageContainerSize,
+              alignedImage: { imageName, horizontalAlignment, mobile in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              }
+            )
+          },
+          mediumView: { 
+            LiveActivityMediumView(
+              contentState: contentState,
+              attributes: attributes,
+              imageContainerSize: $imageContainerSize,
+              alignedImage: { imageName, horizontalAlignment, mobile in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              }
+            )
+          }
+        )
+      } else {
+        // iOS 17: missing activityFamily in environment -> default to medium
+        LiveActivityMediumView(
+          contentState: contentState,
+          attributes: attributes,
+          imageContainerSize: $imageContainerSize,
+          alignedImage: { imageName, horizontalAlignment, mobile in
+            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+          }
+        )
+      }
+    }
+
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
+      let defaultHeight: CGFloat = mobile ? 28 : 64
+      let defaultWidth: CGFloat = mobile ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -179,215 +219,6 @@ import WidgetKit
             }
         }
       )
-    }
-
-    var body: some View {
-      if #available(iOS 18.0, *) {
-        LiveActivityView_iOS18(
-          contentState: contentState,
-          attributes: attributes,
-          imageContainerSize: $imageContainerSize,
-          smallView: { smallView },
-          mediumView: { mediumView }
-        )
-      } else {
-        // iOS 17: missing activityFamily in environment -> default to medium
-        mediumView
-      }
-    }
-
-    // Small View (Apple Watch)
-    @ViewBuilder
-    private var smallView: some View {
-      let padding = resolvedPadding(defaultPadding: 8)
-
-      VStack(alignment: .leading, spacing: 4) {
-        let isSubtitleDisplayed = contentState.subtitle != nil
-        let isTimerShownAsText = attributes.timerType == .digital && contentState.timerEndDateInMilliseconds != nil
-        let isProgressBarDisplayed = contentState.progress != nil || (contentState.timerEndDateInMilliseconds != nil && !isSubtitleDisplayed && !isTimerShownAsText)
-
-        VStack(alignment: .leading, spacing: isProgressBarDisplayed ? 0 : nil) {
-          HStack(alignment: .center, spacing: 8) {
-            if hasImage, isLeftImage, !isTimerShownAsText {
-              if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .leading, smallView: true)
-              }
-            }
-
-            VStack(alignment: .leading, spacing: 0) {
-              Text(contentState.title)
-                .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .semibold))
-                .lineLimit(1)
-                .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-
-              if let subtitle = contentState.subtitle {
-                Text(subtitle)
-                  .font(.system(size: 13, weight: .semibold))
-                  .lineLimit(1)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-              }
-
-              if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
-                smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
-              }
-            }
-            .layoutPriority(1)
-
-            if hasImage, !isLeftImage, !isTimerShownAsText {
-              if let imageName = contentState.imageName {
-                alignedImage(imageName: imageName, horizontalAlignment: .trailing, smallView: true)
-              }
-            }
-          }
-
-          if isTimerShownAsText, let date = contentState.timerEndDateInMilliseconds {
-            HStack {
-              if let imageName = contentState.imageName, hasImage, isLeftImage {
-                Image.dynamic(assetNameOrPath: imageName)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 23, height: 23)
-                  .layoutPriority(0)
-                Spacer()
-              }
-              smallTimer(endDate: date, isSubtitleDisplayed: false).frame(maxWidth: .infinity, alignment: isLeftImage ? .trailing : .leading)
-              if let imageName = contentState.imageName, hasImage, !isLeftImage {
-                Spacer()
-                Image.dynamic(assetNameOrPath: imageName)
-                  .resizable()
-                  .scaledToFit()
-                  .frame(width: 23, height: 23)
-                  .layoutPriority(0)
-              }
-            }
-            .frame(maxWidth: .infinity)
-          } else {
-            if let progress = contentState.progress {
-              styledLinearProgressView {
-                ProgressView(value: progress)
-              }
-            } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed {
-              styledLinearProgressView {
-                ProgressView(
-                  timerInterval: Date.toTimerInterval(miliseconds: date),
-                  countsDown: false,
-                  label: { EmptyView() },
-                  currentValueLabel: { EmptyView() }
-                )
-              }
-            }
-          }
-        }
-      }
-      .padding(padding)
-    }
-
-    // Medium View (Lock Screen)
-    @ViewBuilder
-    private var mediumView: some View {
-      let padding = resolvedPadding(defaultPadding: 24)
-
-      VStack(alignment: .leading) {
-        let effectiveStretch = isStretch && hasImage
-
-        HStack(alignment: .center) {
-          if hasImage, isLeftImage {
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .leading)
-            }
-          }
-
-          VStack(alignment: .leading, spacing: 2) {
-            Text(contentState.title)
-              .font(.title2)
-              .fontWeight(.semibold)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-
-            if let subtitle = contentState.subtitle {
-              Text(subtitle)
-                .font(.title3)
-                .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
-            }
-
-            if effectiveStretch {
-              if let date = contentState.timerEndDateInMilliseconds {
-                ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
-                  .tint(progressViewTint)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-              } else if let progress = contentState.progress {
-                ProgressView(value: progress)
-                  .tint(progressViewTint)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-              }
-            }
-          }.layoutPriority(1)
-
-          if hasImage, !isLeftImage {
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .trailing)
-            }
-          }
-        }
-
-        if !effectiveStretch {
-          if let date = contentState.timerEndDateInMilliseconds {
-            ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
-              .tint(progressViewTint)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          } else if let progress = contentState.progress {
-            ProgressView(value: progress)
-              .tint(progressViewTint)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          }
-        }
-      }
-      .padding(padding)
-    }
-
-    private func resolvedPadding(defaultPadding: Int) -> EdgeInsets {
-      let top = CGFloat(
-        attributes.paddingDetails?.top
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-      let bottom = CGFloat(
-        attributes.paddingDetails?.bottom
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-      let leading = CGFloat(
-        attributes.paddingDetails?.left
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-      let trailing = CGFloat(
-        attributes.paddingDetails?.right
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-      return EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing)
-    }
-
-    @ViewBuilder
-    private func styledLinearProgressView<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-      content()
-        .progressViewStyle(.linear)
-        .frame(height: 15)
-        .scaleEffect(x: 1, y: 2, anchor: .center)
-        .tint(progressViewTint)
-        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-    }
-
-    @ViewBuilder
-    private func smallTimer(endDate: Double, isSubtitleDisplayed: Bool) -> some View {
-      Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-        .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .medium))
-        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-        .padding(.top, isSubtitleDisplayed ? 3 : 0)
     }
   }
 
