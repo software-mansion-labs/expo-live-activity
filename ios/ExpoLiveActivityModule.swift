@@ -22,6 +22,12 @@ public class ExpoLiveActivityModule: Module {
       @Field
       var elapsedTimer: ElapsedTimer?
 
+      @Field
+      var currentStep: Int?
+
+      @Field
+      var totalSteps: Int?
+
       struct ElapsedTimer: Record {
         @Field
         var startDate: Double?
@@ -33,12 +39,6 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var dynamicIslandImageName: String?
-
-    @Field
-    var currentStep: Int?
-
-    @Field
-    var totalSteps: Int?
   }
 
   struct LiveActivityConfig: Record {
@@ -280,8 +280,8 @@ public class ExpoLiveActivityModule: Module {
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
-          currentStep: state.currentStep,
-          totalSteps: state.totalSteps
+          currentStep: state.progressBar?.currentStep,
+          totalSteps: state.progressBar?.totalSteps
         )
 
         let activity = try Activity.request(
@@ -319,8 +319,8 @@ public class ExpoLiveActivityModule: Module {
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
-          currentStep: state.currentStep,
-          totalSteps: state.totalSteps
+          currentStep: state.progressBar?.currentStep,
+          totalSteps: state.progressBar?.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
@@ -349,8 +349,8 @@ public class ExpoLiveActivityModule: Module {
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
-          currentStep: state.currentStep,
-          totalSteps: state.totalSteps
+          currentStep: state.progressBar?.currentStep,
+          totalSteps: state.progressBar?.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
         await activity.update(ActivityContent(state: newState, staleDate: nil))

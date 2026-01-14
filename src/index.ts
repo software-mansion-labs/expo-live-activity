@@ -16,16 +16,29 @@ type ProgressBarType =
       date?: number
       progress?: undefined
       elapsedTimer?: undefined
+      currentStep?: undefined
+      totalSteps?: undefined
     }
   | {
       date?: undefined
       progress?: number
       elapsedTimer?: undefined
+      currentStep?: undefined
+      totalSteps?: undefined
     }
   | {
       date?: undefined
       progress?: undefined
       elapsedTimer?: ElapsedTimer
+      currentStep?: undefined
+      totalSteps?: undefined
+    }
+  | {
+      date?: undefined
+      progress?: undefined
+      elapsedTimer?: undefined
+      currentStep?: number
+      totalSteps?: number
     }
 
 export type LiveActivityState = {
@@ -34,8 +47,6 @@ export type LiveActivityState = {
   progressBar?: ProgressBarType
   imageName?: string
   dynamicIslandImageName?: string
-  currentStep?: number
-  totalSteps?: number
 }
 
 export type NativeLiveActivityState = {

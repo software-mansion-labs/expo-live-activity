@@ -147,30 +147,44 @@ export default function CreateLiveActivityScreen() {
     paddingHorizontal,
   ])
 
+  const computeProgressBar = (): LiveActivityState['progressBar'] => {
+    if (passStepProgress) {
+      return {
+        currentStep: toNum(currentStep),
+        totalSteps: toNum(totalSteps),
+      }
+    }
+
+    if (passDate) {
+      return { date: date.getTime() }
+    }
+
+    if (passElapsedTimer) {
+      return {
+        elapsedTimer: {
+          startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
+        },
+      }
+    }
+
+    if (passProgress) {
+      const value = parseFloat(progress)
+      return Number.isFinite(value) ? { progress: value } : undefined
+    }
+
+    return undefined
+  }
+
   const startActivity = () => {
     Keyboard.dismiss()
-    const progressState = passDate
-      ? {
-          date: date.getTime(),
-        }
-      : passElapsedTimer
-        ? {
-            elapsedTimer: {
-              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
-            },
-          }
-        : {
-            progress: passProgress ? parseFloat(progress) : undefined,
-          }
+    const progressState = computeProgressBar()
 
     const state: LiveActivityState = {
       title,
       subtitle: passSubtitle ? subtitle : undefined,
-      progressBar: passStepProgress ? undefined : progressState,
+      progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
-      currentStep: passStepProgress ? toNum(currentStep) : undefined,
-      totalSteps: passStepProgress ? toNum(totalSteps) : undefined,
     }
 
     try {
@@ -210,28 +224,14 @@ export default function CreateLiveActivityScreen() {
   }
 
   const updateActivity = () => {
-    const progressState = passDate
-      ? {
-          date: date.getTime(),
-        }
-      : passElapsedTimer
-        ? {
-            elapsedTimer: {
-              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
-            },
-          }
-        : {
-            progress: passProgress ? parseFloat(progress) : undefined,
-          }
+    const progressState = computeProgressBar()
 
     const state: LiveActivityState = {
       title,
       subtitle: passSubtitle ? subtitle : undefined,
-      progressBar: passStepProgress ? undefined : progressState,
+      progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
-      currentStep: passStepProgress ? toNum(currentStep) : undefined,
-      totalSteps: passStepProgress ? toNum(totalSteps) : undefined,
     }
     try {
       activityId && LiveActivity.updateActivity(activityId, state)

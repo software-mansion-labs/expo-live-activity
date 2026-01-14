@@ -176,7 +176,6 @@ import WidgetKit
       let defaultPadding = 24
 
       let hasSegmentedProgress = contentState.currentStep != nil
-        && contentState.totalSteps != nil
         && (contentState.totalSteps ?? 0) > 0
 
       let segmentActiveColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
