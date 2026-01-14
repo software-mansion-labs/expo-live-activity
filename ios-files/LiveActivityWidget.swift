@@ -115,7 +115,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
   }
 }
 
-@available(iOS 16.2, *)
+@available(iOS 16.1, *)
 public struct LiveActivityWidget: Widget {
   public var body: some WidgetConfiguration {
     let baseConfiguration = ActivityConfiguration(for: LiveActivityAttributes.self) { context in

@@ -87,7 +87,7 @@ import ActivityKit
           return nil
         } else {
           // Mimic CSS: this works against CSS but provides a better default behavior.
-          // When no width/height is set, use a default size (64 / 41pt)
+          // When no width/height is set, use a default size (64 / 28pt)
           // Width will adjust automatically base on aspect ratio
           return defaultHeight
         }

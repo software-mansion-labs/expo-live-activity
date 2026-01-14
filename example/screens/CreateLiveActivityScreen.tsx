@@ -30,7 +30,7 @@ export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>()
   const [title, onChangeTitle] = useState('Title')
   const [subtitle, onChangeSubtitle] = useState('This is a subtitle')
-  const [imageName, onChangeImageName] = useState('logo-island')
+  const [imageName, onChangeImageName] = useState('logo')
   const [date, setDate] = useState(new Date(Date.now() + 5 * 60 * 1000))
   const [isTimerTypeDigital, setTimerTypeDigital] = useState(false)
   const [progress, setProgress] = useState('0.5')
