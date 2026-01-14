@@ -38,6 +38,8 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
+  const [passElapsedTimer, setPassElapsedTimer] = useState(false)
+  const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')
   const [imageWidth, setImageWidth] = useState('')
   const [imageHeight, setImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
@@ -149,11 +151,17 @@ export default function CreateLiveActivityScreen() {
     Keyboard.dismiss()
     const progressState = passDate
       ? {
-          date: passDate ? date.getTime() : undefined,
+          date: date.getTime(),
         }
-      : {
-          progress: passProgress ? parseFloat(progress) : undefined,
-        }
+      : passElapsedTimer
+        ? {
+            elapsedTimer: {
+              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
+            },
+          }
+        : {
+            progress: passProgress ? parseFloat(progress) : undefined,
+          }
 
     const state: LiveActivityState = {
       title,
@@ -204,11 +212,17 @@ export default function CreateLiveActivityScreen() {
   const updateActivity = () => {
     const progressState = passDate
       ? {
-          date: passDate ? date.getTime() : undefined,
+          date: date.getTime(),
         }
-      : {
-          progress: passProgress ? parseFloat(progress) : undefined,
-        }
+      : passElapsedTimer
+        ? {
+            elapsedTimer: {
+              startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
+            },
+          }
+        : {
+            progress: passProgress ? parseFloat(progress) : undefined,
+          }
 
     const state: LiveActivityState = {
       title,
@@ -418,11 +432,12 @@ export default function CreateLiveActivityScreen() {
         {Platform.OS === 'ios' && (
           <>
             <View style={styles.labelWithSwitch}>
-              <Text style={styles.label}>Set Live Activity timer:</Text>
+              <Text style={styles.label}>Countdown timer:</Text>
               <Switch
                 onValueChange={() => {
                   setPassDate(toggle)
                   setPassProgress(false)
+                  setPassElapsedTimer(false)
                 }}
                 value={passDate}
               />
@@ -445,6 +460,7 @@ export default function CreateLiveActivityScreen() {
                 onValueChange={() => {
                   setTimerTypeDigital(toggle)
                   setPassProgress(false)
+                  setPassElapsedTimer(false)
                 }}
                 value={isTimerTypeDigital}
               />
@@ -457,6 +473,7 @@ export default function CreateLiveActivityScreen() {
                   setPassProgress(toggle)
                   setPassDate(false)
                   setTimerTypeDigital(false)
+                  setPassElapsedTimer(false)
                 }}
                 value={passProgress}
               />
@@ -469,6 +486,33 @@ export default function CreateLiveActivityScreen() {
               value={progress.toString()}
               editable={passProgress}
             />
+            <View style={styles.spacer} />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Elapsed timer:</Text>
+              <Switch
+                onValueChange={() => {
+                  setPassElapsedTimer(toggle)
+                  setPassDate(false)
+                  setPassProgress(false)
+                  setTimerTypeDigital(false)
+                }}
+                value={passElapsedTimer}
+              />
+            </View>
+            {passElapsedTimer && (
+              <>
+                <View style={styles.labelWithSwitch}>
+                  <Text style={styles.label}>Minutes ago started:</Text>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setElapsedTimerMinutesAgo}
+                  keyboardType="number-pad"
+                  placeholder="Minutes ago (e.g. 5)"
+                  value={elapsedTimerMinutesAgo}
+                />
+              </>
+            )}
             <View style={styles.spacer} />
             <View style={styles.labelWithSwitch}>
               <Text style={styles.label}>Show step progress:</Text>
