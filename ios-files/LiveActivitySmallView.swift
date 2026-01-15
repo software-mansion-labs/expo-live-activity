@@ -9,7 +9,7 @@ import WidgetKit
     let attributes: LiveActivityAttributes
     @Binding var imageContainerSize: CGSize?
     let alignedImage: (String, HorizontalAlignment, Bool) -> AnyView
-    
+
     private var hasImage: Bool {
       contentState.imageName != nil
     }
@@ -33,7 +33,7 @@ import WidgetKit
     private var shouldShowProgressBar: Bool {
       let hasProgress = contentState.progress != nil
       let hasTimer = contentState.timerEndDateInMilliseconds != nil
-      return hasProgress || (hasTimer && !isSubtitleDisplayed && !isTimerShownAsText)
+      return hasProgress || (hasTimer && !isSubtitleDisplayed && !isTimerShownAsText) || contentState.hasSegmentedProgress
     }
 
     var body: some View {
@@ -42,7 +42,7 @@ import WidgetKit
       let _ = contentState.logSegmentedProgressWarningIfNeeded()
 
       VStack(alignment: .leading, spacing: 4) {
-        VStack(alignment: .leading, spacing: shouldShowProgressBar || contentState.hasSegmentedProgress ? 0 : nil) {
+        VStack(alignment: .leading, spacing: shouldShowProgressBar ? 0 : nil) {
           HStack(alignment: .center, spacing: 8) {
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
@@ -99,9 +99,9 @@ import WidgetKit
             .frame(maxWidth: .infinity)
           } else {
             if contentState.hasSegmentedProgress,
-                let currentStep = contentState.currentStep,
-                let totalSteps = contentState.totalSteps,
-                totalSteps > 0
+               let currentStep = contentState.currentStep,
+               let totalSteps = contentState.totalSteps,
+               totalSteps > 0
             {
               SegmentedProgressView(
                 currentStep: currentStep,

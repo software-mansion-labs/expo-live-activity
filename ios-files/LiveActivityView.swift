@@ -91,7 +91,7 @@ import WidgetKit
           contentState: contentState,
           attributes: attributes,
           imageContainerSize: $imageContainerSize,
-          smallView: { 
+          smallView: {
             LiveActivitySmallView(
               contentState: contentState,
               attributes: attributes,
@@ -101,7 +101,7 @@ import WidgetKit
               }
             )
           },
-          mediumView: { 
+          mediumView: {
             LiveActivityMediumView(
               contentState: contentState,
               attributes: attributes,

@@ -9,7 +9,7 @@ import WidgetKit
     let attributes: LiveActivityAttributes
     @Binding var imageContainerSize: CGSize?
     let alignedImage: (String, HorizontalAlignment, Bool) -> AnyView
- 
+
     private var hasImage: Bool {
       contentState.imageName != nil
     }
@@ -32,7 +32,6 @@ import WidgetKit
 
     var body: some View {
       let padding = attributes.resolvedPadding(defaultPadding: 24)
-
 
       let _ = contentState.logSegmentedProgressWarningIfNeeded()
 
@@ -89,9 +88,9 @@ import WidgetKit
 
         if !effectiveStretch {
           if contentState.hasSegmentedProgress,
-              let currentStep = contentState.currentStep,
-              let totalSteps = contentState.totalSteps,
-              totalSteps > 0
+             let currentStep = contentState.currentStep,
+             let totalSteps = contentState.totalSteps,
+             totalSteps > 0
           {
             SegmentedProgressView(
               currentStep: currentStep,
