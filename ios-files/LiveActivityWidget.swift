@@ -11,6 +11,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var imageName: String?
     var dynamicIslandImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
+    var currentStep: Int?
+    var totalSteps: Int?
 
     public init(
       title: String,
@@ -19,7 +21,9 @@ public struct LiveActivityAttributes: ActivityAttributes {
       progress: Double? = nil,
       imageName: String? = nil,
       dynamicIslandImageName: String? = nil,
-      elapsedTimerStartDateInMilliseconds: Double? = nil
+      elapsedTimerStartDateInMilliseconds: Double? = nil,
+      currentStep: Int? = nil,
+      totalSteps: Int? = nil
     ) {
       self.title = title
       self.subtitle = subtitle
@@ -28,6 +32,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.imageName = imageName
       self.dynamicIslandImageName = dynamicIslandImageName
       self.elapsedTimerStartDateInMilliseconds = elapsedTimerStartDateInMilliseconds
+      self.currentStep = currentStep
+      self.totalSteps = totalSteps
     }
   }
 
@@ -48,6 +54,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
   var imageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
+  var progressSegmentActiveColor: String?
+  var progressSegmentInactiveColor: String?
 
   public init(
     name: String,
@@ -66,7 +74,9 @@ public struct LiveActivityAttributes: ActivityAttributes {
     imageWidthPercent: Double? = nil,
     imageHeightPercent: Double? = nil,
     imageAlign: String? = nil,
-    contentFit: String? = nil
+    contentFit: String? = nil,
+    progressSegmentActiveColor: String? = nil,
+    progressSegmentInactiveColor: String? = nil
   ) {
     self.name = name
     self.backgroundColor = backgroundColor
@@ -85,6 +95,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
     self.imageHeightPercent = imageHeightPercent
     self.imageAlign = imageAlign
     self.contentFit = contentFit
+    self.progressSegmentActiveColor = progressSegmentActiveColor
+    self.progressSegmentInactiveColor = progressSegmentInactiveColor
   }
 
   public enum DynamicIslandTimerType: String, Codable {

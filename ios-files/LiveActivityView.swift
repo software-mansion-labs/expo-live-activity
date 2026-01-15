@@ -34,6 +34,24 @@ import WidgetKit
     #endif
   }
 
+  struct SegmentedProgressView: View {
+    let currentStep: Int
+    let totalSteps: Int
+    let activeColor: Color
+    let inactiveColor: Color
+
+    var body: some View {
+      let clampedCurrentStep = min(max(currentStep, 0), totalSteps)
+      HStack(spacing: 4) {
+        ForEach(0 ..< totalSteps, id: \.self) { index in
+          RoundedRectangle(cornerRadius: 2)
+            .fill(index < clampedCurrentStep ? activeColor : inactiveColor)
+            .frame(height: 4)
+        }
+      }
+    }
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
@@ -157,6 +175,22 @@ import WidgetKit
     var body: some View {
       let defaultPadding = 24
 
+      let hasSegmentedProgress = contentState.currentStep != nil
+        && (contentState.totalSteps ?? 0) > 0
+
+      let segmentActiveColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
+      let segmentInactiveColor = attributes.progressSegmentInactiveColor.map { Color(hex: $0) } ?? Color.gray.opacity(0.3)
+
+      #if DEBUG
+        if hasSegmentedProgress,
+           contentState.elapsedTimerStartDateInMilliseconds != nil
+           || contentState.timerEndDateInMilliseconds != nil
+           || contentState.progress != nil
+        {
+          DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
+        }
+      #endif
+
       let top = CGFloat(
         attributes.paddingDetails?.top
           ?? attributes.paddingDetails?.vertical
@@ -212,7 +246,18 @@ import WidgetKit
             }
 
             if effectiveStretch {
-              if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
+              if hasSegmentedProgress,
+                 let currentStep = contentState.currentStep,
+                 let totalSteps = contentState.totalSteps,
+                 totalSteps > 0
+              {
+                SegmentedProgressView(
+                  currentStep: currentStep,
+                  totalSteps: totalSteps,
+                  activeColor: segmentActiveColor,
+                  inactiveColor: segmentInactiveColor
+                )
+              } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
                 ElapsedTimerText(
                   startTimeMilliseconds: startDate,
                   color: attributes.progressViewLabelColor.map { Color(hex: $0) }
@@ -239,7 +284,18 @@ import WidgetKit
         }
 
         if !effectiveStretch {
-          if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
+          if hasSegmentedProgress,
+             let currentStep = contentState.currentStep,
+             let totalSteps = contentState.totalSteps,
+             totalSteps > 0
+          {
+            SegmentedProgressView(
+              currentStep: currentStep,
+              totalSteps: totalSteps,
+              activeColor: segmentActiveColor,
+              inactiveColor: segmentInactiveColor
+            )
+          } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
             ElapsedTimerText(
               startTimeMilliseconds: startDate,
               color: attributes.progressViewLabelColor.map { Color(hex: $0) }

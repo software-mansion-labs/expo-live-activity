@@ -10,6 +10,8 @@ struct LiveActivityAttributes: ActivityAttributes {
     var imageName: String?
     var dynamicIslandImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
+    var currentStep: Int?
+    var totalSteps: Int?
   }
 
   var name: String
@@ -29,6 +31,8 @@ struct LiveActivityAttributes: ActivityAttributes {
   var imageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
+  var progressSegmentActiveColor: String?
+  var progressSegmentInactiveColor: String?
 
   enum DynamicIslandTimerType: String, Codable {
     case circular
