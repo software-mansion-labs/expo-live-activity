@@ -39,8 +39,24 @@ import WidgetKit
     var body: some View {
       let padding = attributes.resolvedPadding(defaultPadding: 8)
 
+      let hasSegmentedProgress = contentState.currentStep != nil
+        && (contentState.totalSteps ?? 0) > 0
+
+      let segmentActiveColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
+      let segmentInactiveColor = attributes.progressSegmentInactiveColor.map { Color(hex: $0) } ?? Color.gray.opacity(0.3)
+
+      #if DEBUG
+        if hasSegmentedProgress,
+           contentState.elapsedTimerStartDateInMilliseconds != nil
+           || contentState.timerEndDateInMilliseconds != nil
+           || contentState.progress != nil
+        {
+          DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
+        }
+      #endif
+
       VStack(alignment: .leading, spacing: 4) {
-        VStack(alignment: .leading, spacing: shouldShowProgressBar ? 0 : nil) {
+        VStack(alignment: .leading, spacing: shouldShowProgressBar || hasSegmentedProgress ? 0 : nil) {
           HStack(alignment: .center, spacing: 8) {
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
@@ -96,7 +112,20 @@ import WidgetKit
             }
             .frame(maxWidth: .infinity)
           } else {
-            if let progress = contentState.progress {
+            if hasSegmentedProgress,
+                let currentStep = contentState.currentStep,
+                let totalSteps = contentState.totalSteps,
+                totalSteps > 0
+            {
+              styledLinearProgressView {
+                SegmentedProgressView(
+                  currentStep: currentStep,
+                  totalSteps: totalSteps,
+                  activeColor: segmentActiveColor,
+                  inactiveColor: segmentInactiveColor
+                )
+              }
+            } else if let progress = contentState.progress {
               styledLinearProgressView {
                 ProgressView(value: progress)
               }
