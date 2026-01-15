@@ -38,6 +38,8 @@ export default function CreateLiveActivityScreen() {
   const [passImage, setPassImage] = useState(true)
   const [passDate, setPassDate] = useState(true)
   const [passProgress, setPassProgress] = useState(false)
+  const [passElapsedTimer, setPassElapsedTimer] = useState(false)
+  const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')
   const [imageWidth, setImageWidth] = useState('')
   const [imageHeight, setImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
@@ -51,6 +53,11 @@ export default function CreateLiveActivityScreen() {
   const [paddingRight, setPaddingRight] = useState('')
   const [paddingVertical, setPaddingVertical] = useState('')
   const [paddingHorizontal, setPaddingHorizontal] = useState('')
+  const [currentStep, setCurrentStep] = useState('')
+  const [totalSteps, setTotalSteps] = useState('')
+  const [passStepProgress, setPassStepProgress] = useState(false)
+  const [segmentActiveColor, setSegmentActiveColor] = useState('#22C55E')
+  const [segmentInactiveColor, setSegmentInactiveColor] = useState('#E5E7EB')
 
   const onChangeProgress = useCallback(
     (text: string) => {
@@ -140,15 +147,37 @@ export default function CreateLiveActivityScreen() {
     paddingHorizontal,
   ])
 
+  const computeProgressBar = (): LiveActivityState['progressBar'] => {
+    if (passStepProgress) {
+      return {
+        currentStep: toNum(currentStep),
+        totalSteps: toNum(totalSteps),
+      }
+    }
+
+    if (passDate) {
+      return { date: date.getTime() }
+    }
+
+    if (passElapsedTimer) {
+      return {
+        elapsedTimer: {
+          startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
+        },
+      }
+    }
+
+    if (passProgress) {
+      const value = parseFloat(progress)
+      return Number.isFinite(value) ? { progress: value } : undefined
+    }
+
+    return undefined
+  }
+
   const startActivity = () => {
     Keyboard.dismiss()
-    const progressState = passDate
-      ? {
-          date: passDate ? date.getTime() : undefined,
-        }
-      : {
-          progress: passProgress ? parseFloat(progress) : undefined,
-        }
+    const progressState = computeProgressBar()
 
     const state: LiveActivityState = {
       title,
@@ -167,6 +196,8 @@ export default function CreateLiveActivityScreen() {
         imageAlign,
         contentFit,
         padding: computePadding(),
+        progressSegmentActiveColor: passStepProgress ? segmentActiveColor : undefined,
+        progressSegmentInactiveColor: passStepProgress ? segmentInactiveColor : undefined,
       })
       if (id) setActivityID(id)
     } catch (e) {
@@ -193,13 +224,7 @@ export default function CreateLiveActivityScreen() {
   }
 
   const updateActivity = () => {
-    const progressState = passDate
-      ? {
-          date: passDate ? date.getTime() : undefined,
-        }
-      : {
-          progress: passProgress ? parseFloat(progress) : undefined,
-        }
+    const progressState = computeProgressBar()
 
     const state: LiveActivityState = {
       title,
@@ -407,11 +432,13 @@ export default function CreateLiveActivityScreen() {
         {Platform.OS === 'ios' && (
           <>
             <View style={styles.labelWithSwitch}>
-              <Text style={styles.label}>Set Live Activity timer:</Text>
+              <Text style={styles.label}>Countdown timer:</Text>
               <Switch
                 onValueChange={() => {
                   setPassDate(toggle)
                   setPassProgress(false)
+                  setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={passDate}
               />
@@ -434,6 +461,8 @@ export default function CreateLiveActivityScreen() {
                 onValueChange={() => {
                   setTimerTypeDigital(toggle)
                   setPassProgress(false)
+                  setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={isTimerTypeDigital}
               />
@@ -446,6 +475,8 @@ export default function CreateLiveActivityScreen() {
                   setPassProgress(toggle)
                   setPassDate(false)
                   setTimerTypeDigital(false)
+                  setPassElapsedTimer(false)
+                  setPassStepProgress(false)
                 }}
                 value={passProgress}
               />
@@ -457,6 +488,101 @@ export default function CreateLiveActivityScreen() {
               placeholder="Progress (0-1)"
               value={progress.toString()}
               editable={passProgress}
+            />
+            <View style={styles.spacer} />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Elapsed timer:</Text>
+              <Switch
+                onValueChange={() => {
+                  setPassElapsedTimer(toggle)
+                  setPassDate(false)
+                  setPassProgress(false)
+                  setTimerTypeDigital(false)
+                  setPassStepProgress(false)
+                }}
+                value={passElapsedTimer}
+              />
+            </View>
+            {passElapsedTimer && (
+              <>
+                <View style={styles.labelWithSwitch}>
+                  <Text style={styles.label}>Minutes ago started:</Text>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  onChangeText={setElapsedTimerMinutesAgo}
+                  keyboardType="number-pad"
+                  placeholder="Minutes ago (e.g. 5)"
+                  value={elapsedTimerMinutesAgo}
+                />
+              </>
+            )}
+            <View style={styles.spacer} />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Show step progress:</Text>
+              <Switch
+                onValueChange={() => {
+                  setPassStepProgress((prev) => {
+                    const next = !prev
+                    if (next) {
+                      setPassDate(false)
+                      setPassProgress(false)
+                      setPassElapsedTimer(false)
+                      setTimerTypeDigital(false)
+                    }
+                    return next
+                  })
+                }}
+                value={passStepProgress}
+              />
+            </View>
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Current Step:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={(t) => onChangeNumeric(t, setCurrentStep)}
+              keyboardType="number-pad"
+              placeholder="Current step (e.g., 2)"
+              value={currentStep}
+              editable={passStepProgress}
+              testID="input-current-step"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Total Steps:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={(t) => onChangeNumeric(t, setTotalSteps)}
+              keyboardType="number-pad"
+              placeholder="Total steps (e.g., 4)"
+              value={totalSteps}
+              editable={passStepProgress}
+              testID="input-total-steps"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Active segment color:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={setSegmentActiveColor}
+              placeholder="e.g., #22C55E"
+              value={segmentActiveColor}
+              editable={passStepProgress}
+              autoCapitalize="none"
+              testID="input-segment-active-color"
+            />
+            <View style={styles.labelWithSwitch}>
+              <Text style={styles.label}>Inactive segment color:</Text>
+            </View>
+            <TextInput
+              style={passStepProgress ? styles.input : styles.disabledInput}
+              onChangeText={setSegmentInactiveColor}
+              placeholder="e.g., #E5E7EB"
+              value={segmentInactiveColor}
+              editable={passStepProgress}
+              autoCapitalize="none"
+              testID="input-segment-inactive-color"
             />
           </>
         )}

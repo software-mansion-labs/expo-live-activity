@@ -35,6 +35,24 @@ import WidgetKit
     #endif
   }
 
+  struct SegmentedProgressView: View {
+    let currentStep: Int
+    let totalSteps: Int
+    let activeColor: Color
+    let inactiveColor: Color
+
+    var body: some View {
+      let clampedCurrentStep = min(max(currentStep, 0), totalSteps)
+      HStack(spacing: 4) {
+        ForEach(0 ..< totalSteps, id: \.self) { index in
+          RoundedRectangle(cornerRadius: 2)
+            .fill(index < clampedCurrentStep ? activeColor : inactiveColor)
+            .frame(height: 4)
+        }
+      }
+    }
+  }
+
   struct LiveActivityView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes

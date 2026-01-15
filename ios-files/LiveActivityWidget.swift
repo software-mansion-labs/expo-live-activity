@@ -10,6 +10,9 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+    var elapsedTimerStartDateInMilliseconds: Double?
+    var currentStep: Int?
+    var totalSteps: Int?
 
     public init(
       title: String,
@@ -17,7 +20,10 @@ public struct LiveActivityAttributes: ActivityAttributes {
       timerEndDateInMilliseconds: Double? = nil,
       progress: Double? = nil,
       imageName: String? = nil,
-      dynamicIslandImageName: String? = nil
+      dynamicIslandImageName: String? = nil,
+      elapsedTimerStartDateInMilliseconds: Double? = nil,
+      currentStep: Int? = nil,
+      totalSteps: Int? = nil
     ) {
       self.title = title
       self.subtitle = subtitle
@@ -25,6 +31,9 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.progress = progress
       self.imageName = imageName
       self.dynamicIslandImageName = dynamicIslandImageName
+      self.elapsedTimerStartDateInMilliseconds = elapsedTimerStartDateInMilliseconds
+      self.currentStep = currentStep
+      self.totalSteps = totalSteps
     }
   }
 
@@ -45,6 +54,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
   var imageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
+  var progressSegmentActiveColor: String?
+  var progressSegmentInactiveColor: String?
 
   public init(
     name: String,
@@ -63,7 +74,9 @@ public struct LiveActivityAttributes: ActivityAttributes {
     imageWidthPercent: Double? = nil,
     imageHeightPercent: Double? = nil,
     imageAlign: String? = nil,
-    contentFit: String? = nil
+    contentFit: String? = nil,
+    progressSegmentActiveColor: String? = nil,
+    progressSegmentInactiveColor: String? = nil
   ) {
     self.name = name
     self.backgroundColor = backgroundColor
@@ -82,6 +95,8 @@ public struct LiveActivityAttributes: ActivityAttributes {
     self.imageHeightPercent = imageHeightPercent
     self.imageAlign = imageAlign
     self.contentFit = contentFit
+    self.progressSegmentActiveColor = progressSegmentActiveColor
+    self.progressSegmentInactiveColor = progressSegmentInactiveColor
   }
 
   public enum DynamicIslandTimerType: String, Codable {
@@ -141,7 +156,17 @@ public struct LiveActivityWidget: Widget {
           }
         }
         DynamicIslandExpandedRegion(.bottom) {
-          if let date = context.state.timerEndDateInMilliseconds {
+          if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
+            ElapsedTimerText(
+              startTimeMilliseconds: startDate,
+              color: context.attributes.progressViewTint.map { Color(hex: $0) } ?? .white
+            )
+            .font(.title2)
+            .fontWeight(.semibold)
+            .padding(.top, 5)
+            .padding(.horizontal, 5)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
+          } else if let date = context.state.timerEndDateInMilliseconds {
             dynamicIslandExpandedBottom(
               endDate: date, progressViewTint: context.attributes.progressViewTint
             )
@@ -162,7 +187,18 @@ public struct LiveActivityWidget: Widget {
             .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } compactTrailing: {
-        if let date = context.state.timerEndDateInMilliseconds {
+        if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
+          ElapsedTimerText(
+            startTimeMilliseconds: startDate,
+            color: nil
+          )
+          .font(.system(size: 15))
+          .minimumScaleFactor(0.8)
+          .fontWeight(.semibold)
+          .frame(maxWidth: 60)
+          .multilineTextAlignment(.trailing)
+          .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
@@ -175,7 +211,15 @@ public struct LiveActivityWidget: Widget {
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
-        if let date = context.state.timerEndDateInMilliseconds {
+        if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
+          ElapsedTimerText(
+            startTimeMilliseconds: startDate,
+            color: context.attributes.progressViewTint.map { Color(hex: $0) }
+          )
+          .font(.system(size: 11))
+          .minimumScaleFactor(0.6)
+          .applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let date = context.state.timerEndDateInMilliseconds {
           compactTimer(
             endDate: date,
             timerType: context.attributes.timerType ?? .circular,
@@ -276,5 +320,29 @@ public struct LiveActivityWidget: Widget {
       .foregroundStyle(.white)
       .tint(progressViewTint.map { Color(hex: $0) })
       .padding(.top, 5)
+  }
+}
+
+// MARK: - Elapsed Timer View
+
+struct ElapsedTimerText: View {
+  let startTimeMilliseconds: Double
+  let color: Color?
+
+  private var startTime: Date {
+    Date(timeIntervalSince1970: startTimeMilliseconds / 1000)
+  }
+
+  var body: some View {
+    // Use Text with timerInterval for Live Activities - iOS handles the updates automatically
+    // The range goes from startTime to a far future date, with countsDown: false to count UP
+    Text(
+      timerInterval: startTime ... Date.distantFuture,
+      pauseTime: nil,
+      countsDown: false,
+      showsHours: true
+    )
+    .monospacedDigit()
+    .foregroundStyle(color ?? .primary)
   }
 }

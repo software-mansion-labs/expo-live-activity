@@ -7,14 +7,38 @@ type Voidable<T> = T | void
 
 export type DynamicIslandTimerType = 'circular' | 'digital'
 
+export type ElapsedTimer = {
+  startDate: number // milliseconds timestamp (past time when timer started)
+}
+
 type ProgressBarType =
   | {
       date?: number
       progress?: undefined
+      elapsedTimer?: undefined
+      currentStep?: undefined
+      totalSteps?: undefined
     }
   | {
       date?: undefined
       progress?: number
+      elapsedTimer?: undefined
+      currentStep?: undefined
+      totalSteps?: undefined
+    }
+  | {
+      date?: undefined
+      progress?: undefined
+      elapsedTimer?: ElapsedTimer
+      currentStep?: undefined
+      totalSteps?: undefined
+    }
+  | {
+      date?: undefined
+      progress?: undefined
+      elapsedTimer?: undefined
+      currentStep?: number
+      totalSteps?: number
     }
 
 export type LiveActivityState = {
@@ -70,6 +94,8 @@ export type LiveActivityConfig = {
   imageAlign?: ImageAlign
   imageSize?: ImageSize
   contentFit?: ImageContentFit
+  progressSegmentActiveColor?: string
+  progressSegmentInactiveColor?: string
 }
 
 export type ActivityTokenReceivedEvent = {
@@ -107,7 +133,7 @@ function assertIOS(name: string) {
 function normalizeConfig(config?: LiveActivityConfig) {
   if (config === undefined) return config
 
-  const { padding, imageSize, ...base } = config
+  const { padding, imageSize, progressSegmentActiveColor, progressSegmentInactiveColor, ...base } = config
   type NormalizedConfig = LiveActivityConfig & {
     paddingDetails?: Padding
     imageWidth?: number
@@ -115,7 +141,11 @@ function normalizeConfig(config?: LiveActivityConfig) {
     imageWidthPercent?: number
     imageHeightPercent?: number
   }
-  const normalized: NormalizedConfig = { ...base }
+  const normalized: NormalizedConfig = {
+    ...base,
+    progressSegmentActiveColor,
+    progressSegmentInactiveColor,
+  }
 
   // Normalize padding: keep number in padding, object in paddingDetails
   if (typeof padding === 'number') {
