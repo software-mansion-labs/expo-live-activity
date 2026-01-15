@@ -34,21 +34,7 @@ import WidgetKit
       let padding = attributes.resolvedPadding(defaultPadding: 24)
 
 
-      let hasSegmentedProgress = contentState.currentStep != nil
-        && (contentState.totalSteps ?? 0) > 0
-
-      let segmentActiveColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
-      let segmentInactiveColor = attributes.progressSegmentInactiveColor.map { Color(hex: $0) } ?? Color.gray.opacity(0.3)
-
-      #if DEBUG
-        if hasSegmentedProgress,
-           contentState.elapsedTimerStartDateInMilliseconds != nil
-           || contentState.timerEndDateInMilliseconds != nil
-           || contentState.progress != nil
-        {
-          DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
-        }
-      #endif
+      let _ = contentState.logSegmentedProgressWarningIfNeeded()
 
       VStack(alignment: .leading) {
         HStack(alignment: .center) {
@@ -71,7 +57,7 @@ import WidgetKit
             }
 
             if effectiveStretch {
-              if hasSegmentedProgress,
+              if contentState.hasSegmentedProgress,
                  let currentStep = contentState.currentStep,
                  let totalSteps = contentState.totalSteps,
                  totalSteps > 0
@@ -79,8 +65,8 @@ import WidgetKit
                 SegmentedProgressView(
                   currentStep: currentStep,
                   totalSteps: totalSteps,
-                  activeColor: segmentActiveColor,
-                  inactiveColor: segmentInactiveColor
+                  activeColor: attributes.segmentActiveColor,
+                  inactiveColor: attributes.segmentInactiveColor
                 )
               } else if let date = contentState.timerEndDateInMilliseconds {
                 ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
@@ -102,7 +88,7 @@ import WidgetKit
         }
 
         if !effectiveStretch {
-          if hasSegmentedProgress,
+          if contentState.hasSegmentedProgress,
               let currentStep = contentState.currentStep,
               let totalSteps = contentState.totalSteps,
               totalSteps > 0
@@ -110,8 +96,8 @@ import WidgetKit
             SegmentedProgressView(
               currentStep: currentStep,
               totalSteps: totalSteps,
-              activeColor: segmentActiveColor,
-              inactiveColor: segmentInactiveColor
+              activeColor: attributes.segmentActiveColor,
+              inactiveColor: attributes.segmentInactiveColor
             )
           } else if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
