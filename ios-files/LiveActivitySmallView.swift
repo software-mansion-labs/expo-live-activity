@@ -37,21 +37,10 @@ import WidgetKit
     }
 
     var body: some View {
-      GeometryReader { proxy in
-        let w = proxy.size.width
-        let h = proxy.size.height
+      let padding = attributes.resolvedPadding(defaultPadding: 8)
 
-        // CarPlay Live Activity views don't have fixed dimensions (unlike Apple Watch),
-        // because the system may scale them to fit the vehicle display.
-        // These width/height thresholds are derived from the CarPlay live activities test sizes listed in the documentation.
-        let carPlayView = w > 200
-        let carPlayTallView = carPlayView && h > 90
-
-        let defaultPadding = carPlayTallView ? 14 : 8
-        let padding = attributes.resolvedPadding(defaultPadding: defaultPadding)
-
-        VStack(alignment: .leading, spacing: 4) {
-          VStack(alignment: .leading, spacing: shouldShowProgressBar ? 0 : nil) {
+      VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: shouldShowProgressBar ? 0 : nil) {
           HStack(alignment: .center, spacing: 8) {
             if hasImage, isLeftImage, !isTimerShownAsText {
               if let imageName = contentState.imageName {
@@ -69,10 +58,10 @@ import WidgetKit
                 Text(subtitle)
                   .font(.system(size: 13, weight: .semibold))
                   .lineLimit(1)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
               }
 
-              if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText, !carPlayTallView {
+              if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
                 smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
               }
             }
@@ -111,33 +100,21 @@ import WidgetKit
               styledLinearProgressView {
                 ProgressView(value: progress)
               }
-            } else if let date = contentState.timerEndDateInMilliseconds, (!isSubtitleDisplayed || carPlayTallView){
-              HStack(spacing: 8) {
-                styledLinearProgressView {
-                  ProgressView(
-                    timerInterval: Date.toTimerInterval(miliseconds: date),
-                    countsDown: false,
-                    label: { EmptyView() },
-                    currentValueLabel: { EmptyView() }
-                  )
-                }
-
-                if carPlayTallView {
-                  Text(timerInterval: Date.toTimerInterval(miliseconds: date))
-                    .font(.system(size: 13))
-                    .lineLimit(1)
-                    .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-                }
+            } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed {
+              styledLinearProgressView {
+                ProgressView(
+                  timerInterval: Date.toTimerInterval(miliseconds: date),
+                  countsDown: false,
+                  label: { EmptyView() },
+                  currentValueLabel: { EmptyView() }
+                )
               }
-              .background(Color.red)
-
             }
           }
         }
-        }
-        .padding(padding)
-        .preferredColorScheme(.light)
       }
+      .padding(padding)
+      .preferredColorScheme(.light)
     }
 
     @ViewBuilder
