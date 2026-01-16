@@ -67,6 +67,13 @@ import WidgetKit
                   activeColor: attributes.segmentActiveColor,
                   inactiveColor: attributes.segmentInactiveColor
                 )
+              } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
+                ElapsedTimerText(
+                  startTimeMilliseconds: startDate,
+                  color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+                )
+                .font(.title3)
+                .fontWeight(.medium)
               } else if let date = contentState.timerEndDateInMilliseconds {
                 ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
                   .tint(progressViewTint)
@@ -98,6 +105,15 @@ import WidgetKit
               activeColor: attributes.segmentActiveColor,
               inactiveColor: attributes.segmentInactiveColor
             )
+          } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
+            ElapsedTimerText(
+              startTimeMilliseconds: startDate,
+              color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+            )
+            .font(.title2)
+            .fontWeight(.semibold)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 4)
           } else if let date = contentState.timerEndDateInMilliseconds {
             ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
               .tint(progressViewTint)

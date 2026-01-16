@@ -10,6 +10,8 @@ import WidgetKit
     @Binding var imageContainerSize: CGSize?
     let alignedImage: (String, HorizontalAlignment, Bool) -> AnyView
 
+    private let fixedImageSize: CGFloat = 23
+
     private var hasImage: Bool {
       contentState.imageName != nil
     }
@@ -52,18 +54,28 @@ import WidgetKit
 
             VStack(alignment: .leading, spacing: 0) {
               Text(contentState.title)
-                .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .semibold))
+                .font(isSubtitleDisplayed ? .footnote : .callout)
+                .fontWeight(.semibold)
                 .lineLimit(1)
                 .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
 
               if let subtitle = contentState.subtitle {
                 Text(subtitle)
-                  .font(.system(size: 13, weight: .semibold))
+                  .font(.footnote)
+                  .fontWeight(.semibold)
                   .lineLimit(1)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
+                  .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
               }
 
-              if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
+              if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
+                ElapsedTimerText(
+                  startTimeMilliseconds: startDate,
+                  color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+                )
+                .font(isSubtitleDisplayed ? .footnote : .callout)
+                .fontWeight(.medium)
+                .padding(.top, isSubtitleDisplayed ? 3 : 0)
+              } else if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText {
                 smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed)
               }
             }
@@ -82,7 +94,7 @@ import WidgetKit
                 Image.dynamic(assetNameOrPath: imageName)
                   .resizable()
                   .scaledToFit()
-                  .frame(width: 23, height: 23)
+                  .frame(width: fixedImageSize, height: fixedImageSize)
                   .layoutPriority(0)
                 Spacer()
               }
@@ -92,7 +104,7 @@ import WidgetKit
                 Image.dynamic(assetNameOrPath: imageName)
                   .resizable()
                   .scaledToFit()
-                  .frame(width: 23, height: 23)
+                  .frame(width: fixedImageSize, height: fixedImageSize)
                   .layoutPriority(0)
               }
             }
@@ -143,7 +155,8 @@ import WidgetKit
     @ViewBuilder
     private func smallTimer(endDate: Double, isSubtitleDisplayed: Bool) -> some View {
       Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-        .font(.system(size: isSubtitleDisplayed ? 13 : 16, weight: .medium))
+        .font(isSubtitleDisplayed ? .footnote : .callout)
+        .fontWeight(.medium)
         .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
         .padding(.top, isSubtitleDisplayed ? 3 : 0)
     }
