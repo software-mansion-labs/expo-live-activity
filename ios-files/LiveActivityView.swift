@@ -72,9 +72,61 @@ import WidgetKit
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment) -> some View {
-      let defaultHeight: CGFloat = 64
-      let defaultWidth: CGFloat = 64
+    private var hasImage: Bool {
+      contentState.imageName != nil
+    }
+
+    private var isLeftImage: Bool {
+      (attributes.imagePosition ?? "right").hasPrefix("left")
+    }
+
+    private var isStretch: Bool {
+      (attributes.imagePosition ?? "right").contains("Stretch")
+    }
+
+    var body: some View {
+      if #available(iOS 18.0, *) {
+        LiveActivityView_iOS18(
+          contentState: contentState,
+          attributes: attributes,
+          imageContainerSize: $imageContainerSize,
+          smallView: {
+            LiveActivitySmallView(
+              contentState: contentState,
+              attributes: attributes,
+              imageContainerSize: $imageContainerSize,
+              alignedImage: { imageName, horizontalAlignment, mobile in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              }
+            )
+          },
+          mediumView: {
+            LiveActivityMediumView(
+              contentState: contentState,
+              attributes: attributes,
+              imageContainerSize: $imageContainerSize,
+              alignedImage: { imageName, horizontalAlignment, mobile in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              }
+            )
+          }
+        )
+      } else {
+        // iOS 17: missing activityFamily in environment -> default to medium
+        LiveActivityMediumView(
+          contentState: contentState,
+          attributes: attributes,
+          imageContainerSize: $imageContainerSize,
+          alignedImage: { imageName, horizontalAlignment, mobile in
+            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+          }
+        )
+      }
+    }
+
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
+      let defaultHeight: CGFloat = mobile ? 28 : 64
+      let defaultWidth: CGFloat = mobile ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
       let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
@@ -92,7 +144,7 @@ import WidgetKit
           return nil
         } else {
           // Mimic CSS: this works against CSS but provides a better default behavior.
-          // When no width/height is set, use a default size (64pt)
+          // When no width/height is set, use a default size (64 / 28pt)
           // Width will adjust automatically base on aspect ratio
           return defaultHeight
         }
@@ -110,31 +162,45 @@ import WidgetKit
         }
       }()
 
+      let resolvedHeight = computedHeight ?? defaultHeight
+
+      let resolvedWidth: CGFloat? = {
+        if let w = computedWidth { return w }
+
+        if let uiImage = UIImage.dynamic(assetNameOrPath: imageName) {
+          let h = max(uiImage.size.height, 1)
+          let ratio = uiImage.size.width / h
+          return resolvedHeight * ratio
+        }
+
+        return nil
+      }()
+
       return ZStack(alignment: .center) {
         Group {
           let fit = attributes.contentFit ?? "contain"
           switch fit {
           case "contain":
-            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFit().frame(width: resolvedWidth, height: resolvedHeight)
           case "fill":
             Image.dynamic(assetNameOrPath: imageName).resizable().frame(
-              width: computedWidth,
-              height: computedHeight
+              width: resolvedWidth,
+              height: resolvedHeight
             )
           case "none":
-            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: computedWidth, height: computedHeight)
+            Image.dynamic(assetNameOrPath: imageName).renderingMode(.original).frame(width: resolvedWidth, height: resolvedHeight)
           case "scale-down":
             if let uiImage = UIImage.dynamic(assetNameOrPath: imageName) {
               // Determine the target box. When width/height are nil, we use image's intrinsic dimension for comparison.
-              let targetHeight = computedHeight ?? uiImage.size.height
-              let targetWidth = computedWidth ?? uiImage.size.width
+              let targetHeight = resolvedHeight
+              let targetWidth = resolvedWidth ?? uiImage.size.width
               let shouldScaleDown = uiImage.size.height > targetHeight || uiImage.size.width > targetWidth
 
               if shouldScaleDown {
                 Image(uiImage: uiImage)
                   .resizable()
                   .scaledToFit()
-                  .frame(width: computedWidth, height: computedHeight)
+                  .frame(width: resolvedWidth, height: resolvedHeight)
               } else {
                 Image(uiImage: uiImage)
                   .renderingMode(.original)
@@ -145,8 +211,8 @@ import WidgetKit
             }
           case "cover":
             Image.dynamic(assetNameOrPath: imageName).resizable().scaledToFill().frame(
-              width: computedWidth,
-              height: computedHeight
+              width: resolvedWidth,
+              height: resolvedHeight
             ).clipped()
           default:
             DebugLog("⚠️[ExpoLiveActivity] Unknown contentFit '\(fit)'")
@@ -171,151 +237,28 @@ import WidgetKit
         }
       )
     }
+  }
+
+  @available(iOS 18.0, *)
+  private struct LiveActivityView_iOS18<Small: View, Medium: View>: View {
+    let contentState: LiveActivityAttributes.ContentState
+    let attributes: LiveActivityAttributes
+    @Binding var imageContainerSize: CGSize?
+
+    let smallView: () -> Small
+    let mediumView: () -> Medium
+
+    @Environment(\.activityFamily) private var activityFamily
 
     var body: some View {
-      let defaultPadding = 24
-
-      let hasSegmentedProgress = contentState.currentStep != nil
-        && (contentState.totalSteps ?? 0) > 0
-
-      let segmentActiveColor = attributes.progressSegmentActiveColor.map { Color(hex: $0) } ?? Color.blue
-      let segmentInactiveColor = attributes.progressSegmentInactiveColor.map { Color(hex: $0) } ?? Color.gray.opacity(0.3)
-
-      #if DEBUG
-        if hasSegmentedProgress,
-           contentState.elapsedTimerStartDateInMilliseconds != nil
-           || contentState.timerEndDateInMilliseconds != nil
-           || contentState.progress != nil
-        {
-          DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
-        }
-      #endif
-
-      let top = CGFloat(
-        attributes.paddingDetails?.top
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let bottom = CGFloat(
-        attributes.paddingDetails?.bottom
-          ?? attributes.paddingDetails?.vertical
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let leading = CGFloat(
-        attributes.paddingDetails?.left
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      let trailing = CGFloat(
-        attributes.paddingDetails?.right
-          ?? attributes.paddingDetails?.horizontal
-          ?? attributes.padding
-          ?? defaultPadding
-      )
-
-      VStack(alignment: .leading) {
-        let position = attributes.imagePosition ?? "right"
-        let isStretch = position.contains("Stretch")
-        let isLeftImage = position.hasPrefix("left")
-        let hasImage = contentState.imageName != nil
-        let effectiveStretch = isStretch && hasImage
-
-        HStack(alignment: .center) {
-          if hasImage, isLeftImage {
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .leading)
-            }
-          }
-
-          VStack(alignment: .leading, spacing: 2) {
-            Text(contentState.title)
-              .font(.title2)
-              .fontWeight(.semibold)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.titleColor))
-
-            if let subtitle = contentState.subtitle {
-              Text(subtitle)
-                .font(.title3)
-                .modifier(ConditionalForegroundViewModifier(color: attributes.subtitleColor))
-            }
-
-            if effectiveStretch {
-              if hasSegmentedProgress,
-                 let currentStep = contentState.currentStep,
-                 let totalSteps = contentState.totalSteps,
-                 totalSteps > 0
-              {
-                SegmentedProgressView(
-                  currentStep: currentStep,
-                  totalSteps: totalSteps,
-                  activeColor: segmentActiveColor,
-                  inactiveColor: segmentInactiveColor
-                )
-              } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
-                ElapsedTimerText(
-                  startTimeMilliseconds: startDate,
-                  color: attributes.progressViewLabelColor.map { Color(hex: $0) }
-                )
-                .font(.title3)
-                .fontWeight(.medium)
-              } else if let date = contentState.timerEndDateInMilliseconds {
-                ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
-                  .tint(progressViewTint)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-              } else if let progress = contentState.progress {
-                ProgressView(value: progress)
-                  .tint(progressViewTint)
-                  .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-              }
-            }
-          }.layoutPriority(1)
-
-          if hasImage, !isLeftImage { // right side (default)
-            if let imageName = contentState.imageName {
-              alignedImage(imageName: imageName, horizontalAlignment: .trailing)
-            }
-          }
-        }
-
-        if !effectiveStretch {
-          if hasSegmentedProgress,
-             let currentStep = contentState.currentStep,
-             let totalSteps = contentState.totalSteps,
-             totalSteps > 0
-          {
-            SegmentedProgressView(
-              currentStep: currentStep,
-              totalSteps: totalSteps,
-              activeColor: segmentActiveColor,
-              inactiveColor: segmentInactiveColor
-            )
-          } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
-            ElapsedTimerText(
-              startTimeMilliseconds: startDate,
-              color: attributes.progressViewLabelColor.map { Color(hex: $0) }
-            )
-            .font(.title2)
-            .fontWeight(.semibold)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, 4)
-          } else if let date = contentState.timerEndDateInMilliseconds {
-            ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
-              .tint(progressViewTint)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          } else if let progress = contentState.progress {
-            ProgressView(value: progress)
-              .tint(progressViewTint)
-              .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-          }
-        }
+      switch activityFamily {
+      case .small:
+        smallView()
+      case .medium:
+        mediumView()
+      @unknown default:
+        mediumView()
       }
-      .padding(EdgeInsets(top: top, leading: leading, bottom: bottom, trailing: trailing))
     }
   }
 
