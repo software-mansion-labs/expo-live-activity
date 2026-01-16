@@ -138,7 +138,7 @@ import WidgetKit
                   ProgressView(value: progress)
                 }
               } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed || carPlayView {
-                HStack(spacing: 8) {
+                HStack(spacing: 4) {
                   styledLinearProgressView {
                     ProgressView(
                       timerInterval: Date.toTimerInterval(miliseconds: date),
@@ -150,18 +150,13 @@ import WidgetKit
                   .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
 
                   if carPlayView, isSubtitleDisplayed {
-                    // Calculate if timer will show hours (HH:MM:SS) or just minutes (MM:SS)
-                    // This isn't ideal, but ProgressView is very stubborn about laying out horizontally alongside a timer
-                    let remainingSeconds = (date - Date().timeIntervalSince1970 * 1000) / 1000
-                    let showsHours = remainingSeconds >= 3600 || remainingSeconds <= -3600
-                    let timerWidth: CGFloat = showsHours ? 60 : 40
-
                     Text(timerInterval: Date.toTimerInterval(miliseconds: date))
                       .font(.footnote)
                       .monospacedDigit()
                       .lineLimit(1)
                       .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-                      .frame(width: timerWidth, alignment: .trailing)
+                      .multilineTextAlignment(.trailing)
+                      .frame(maxWidth: 60, alignment: .trailing)
                   }
                 }
               }
