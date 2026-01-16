@@ -1,9 +1,6 @@
 import SwiftUI
 import WidgetKit
 
-#if canImport(ActivityKit)
-  import ActivityKit
-
   struct LiveActivityMediumView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
@@ -128,5 +125,3 @@ import WidgetKit
       .padding(padding)
     }
   }
-
-#endif

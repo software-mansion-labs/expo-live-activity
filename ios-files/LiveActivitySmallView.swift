@@ -1,9 +1,6 @@
 import SwiftUI
 import WidgetKit
 
-#if canImport(ActivityKit)
-  import ActivityKit
-
   struct LiveActivitySmallView: View {
     let contentState: LiveActivityAttributes.ContentState
     let attributes: LiveActivityAttributes
@@ -161,5 +158,3 @@ import WidgetKit
         .padding(.top, isSubtitleDisplayed ? 3 : 0)
     }
   }
-
-#endif
