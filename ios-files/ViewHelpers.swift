@@ -11,6 +11,45 @@ func resizableImage(imageName: String, height: CGFloat?, width: CGFloat?) -> som
     .frame(width: width, height: height)
 }
 
+@ViewBuilder
+func fixedSizeImage(name: String, size: CGFloat) -> some View {
+  Image.dynamic(assetNameOrPath: name)
+    .resizable()
+    .scaledToFit()
+    .frame(width: size, height: size)
+    .layoutPriority(0)
+}
+
+@ViewBuilder
+func smallTimerText(
+  endDate: Double,
+  isSubtitleDisplayed: Bool,
+  carPlayView: Bool = false,
+  labelColor: String?
+) -> some View {
+  Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
+    .font(carPlayView
+      ? (isSubtitleDisplayed ? .footnote : .title2)
+      : (isSubtitleDisplayed ? .footnote : .callout))
+    .fontWeight(carPlayView && !isSubtitleDisplayed ? .semibold : .medium)
+    .modifier(ConditionalForegroundViewModifier(color: labelColor))
+    .padding(.top, isSubtitleDisplayed ? 3 : 0)
+}
+
+@ViewBuilder
+func styledLinearProgressView<Content: View>(
+  tint: Color?,
+  labelColor: String?,
+  @ViewBuilder content: () -> Content
+) -> some View {
+  content()
+    .progressViewStyle(.linear)
+    .frame(height: 15)
+    .scaleEffect(x: 1, y: 2, anchor: .center)
+    .tint(tint)
+    .modifier(ConditionalForegroundViewModifier(color: labelColor))
+}
+
 private struct ContainerSizeKey: PreferenceKey {
   static var defaultValue: CGSize?
   static func reduce(value: inout CGSize?, nextValue: () -> CGSize?) {

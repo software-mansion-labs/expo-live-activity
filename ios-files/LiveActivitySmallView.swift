@@ -93,7 +93,7 @@ import WidgetKit
                   .fontWeight(carPlayView && !isSubtitleDisplayed ? .semibold : .medium)
                   .padding(.top, isSubtitleDisplayed ? 3 : 0)
                 } else if let date = contentState.timerEndDateInMilliseconds, !isTimerShownAsText, !(carPlayView && isSubtitleDisplayed) {
-                  smallTimer(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed, carPlayView: carPlayView)
+                  smallTimerText(endDate: date, isSubtitleDisplayed: isSubtitleDisplayed, carPlayView: carPlayView, labelColor: attributes.progressViewLabelColor)
                 }
               }
               .layoutPriority(1)
@@ -114,7 +114,7 @@ import WidgetKit
                   fixedSizeImage(name: imageName, size: fixedImageSize)
                   Spacer()
                 }
-                smallTimer(endDate: date, isSubtitleDisplayed: false, carPlayView: carPlayView).frame(maxWidth: .infinity, alignment: isLeftImage ? .trailing : .leading)
+                smallTimerText(endDate: date, isSubtitleDisplayed: false, carPlayView: carPlayView, labelColor: attributes.progressViewLabelColor).frame(maxWidth: .infinity, alignment: isLeftImage ? .trailing : .leading)
                 if let imageName = contentState.imageName, hasImage, !isLeftImage {
                   Spacer()
                   fixedSizeImage(name: imageName, size: fixedImageSize)
@@ -134,12 +134,12 @@ import WidgetKit
                   inactiveColor: attributes.segmentInactiveColor
                 )
               } else if let progress = contentState.progress {
-                styledLinearProgressView {
+                styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
                   ProgressView(value: progress)
                 }
               } else if let date = contentState.timerEndDateInMilliseconds, !isSubtitleDisplayed || carPlayView {
                 HStack(spacing: 4) {
-                  styledLinearProgressView {
+                  styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
                     ProgressView(
                       timerInterval: Date.toTimerInterval(miliseconds: date),
                       countsDown: false,
@@ -166,36 +166,6 @@ import WidgetKit
         .padding(padding)
         .preferredColorScheme(.light)
       }
-    }
-
-    @ViewBuilder
-    private func styledLinearProgressView<Content: View>(@ViewBuilder content: () -> Content) -> some View {
-      content()
-        .progressViewStyle(.linear)
-        .frame(height: 15)
-        .scaleEffect(x: 1, y: 2, anchor: .center)
-        .tint(progressViewTint)
-        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-    }
-
-    @ViewBuilder
-    private func smallTimer(endDate: Double, isSubtitleDisplayed: Bool, carPlayView: Bool = false) -> some View {
-      Text(timerInterval: Date.toTimerInterval(miliseconds: endDate))
-        .font(carPlayView
-          ? (isSubtitleDisplayed ? .footnote : .title2)
-          : (isSubtitleDisplayed ? .footnote : .callout))
-        .fontWeight(carPlayView && !isSubtitleDisplayed ? .semibold : .medium)
-        .modifier(ConditionalForegroundViewModifier(color: attributes.progressViewLabelColor))
-        .padding(.top, isSubtitleDisplayed ? 3 : 0)
-    }
-
-    @ViewBuilder
-    private func fixedSizeImage(name: String, size: CGFloat) -> some View {
-      Image.dynamic(assetNameOrPath: name)
-        .resizable()
-        .scaledToFit()
-        .frame(width: size, height: size)
-        .layoutPriority(0)
     }
   }
 
