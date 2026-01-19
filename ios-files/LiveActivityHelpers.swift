@@ -13,7 +13,7 @@ extension LiveActivityAttributes.ContentState {
          || timerEndDateInMilliseconds != nil
          || progress != nil
       {
-        _ = DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
+        DebugLog("⚠️[ExpoLiveActivity] Both segmented and regular progress provided; showing segmented")
       }
     #endif
   }

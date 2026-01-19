@@ -18,6 +18,8 @@ import WidgetKit
   struct DebugLog: View {
     #if DEBUG
       private let message: String
+
+      @discardableResult
       init(_ message: String) {
         self.message = message
         print(message)
@@ -29,6 +31,7 @@ import WidgetKit
           .foregroundStyle(.red)
       }
     #else
+      @discardableResult
       init(_: String) {}
       var body: some View { EmptyView() }
     #endif
