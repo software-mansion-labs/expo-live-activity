@@ -10,6 +10,12 @@ import WidgetKit
     @Binding var imageContainerSize: CGSize?
     let alignedImage: (String, HorizontalAlignment, Bool) -> AnyView
 
+    // CarPlay Live Activity views don't have fixed dimensions (unlike Apple Watch),
+    // because the system may scale them to fit the vehicle display.
+    // These thresholds are derived from the CarPlay live activities test sizes listed in the documentation.
+    private let carPlayWidthThreshold: CGFloat = 200
+    private let carPlayTallHeightThreshold: CGFloat = 90
+
     private var hasImage: Bool {
       contentState.imageName != nil
     }
@@ -41,11 +47,8 @@ import WidgetKit
         let w = proxy.size.width
         let h = proxy.size.height
 
-        // CarPlay Live Activity views don't have fixed dimensions (unlike Apple Watch),
-        // because the system may scale them to fit the vehicle display.
-        // These width/height thresholds are derived from the CarPlay live activities test sizes listed in the documentation.
-        let carPlayView = w > 200
-        let carPlayTallView = carPlayView && h > 90
+        let carPlayView = w > carPlayWidthThreshold
+        let carPlayTallView = carPlayView && h > carPlayTallHeightThreshold
 
         let padding = attributes.resolvedPadding(defaultPadding: carPlayView ? 14 : 8)
 
@@ -107,7 +110,6 @@ import WidgetKit
                 }
               }
             }
-
             if isTimerShownAsText, let date = contentState.timerEndDateInMilliseconds {
               HStack {
                 if let imageName = contentState.imageName, hasImage, isLeftImage {
@@ -131,8 +133,9 @@ import WidgetKit
                   currentStep: currentStep,
                   totalSteps: totalSteps,
                   activeColor: attributes.segmentActiveColor,
-                  inactiveColor: attributes.segmentInactiveColor
-                )
+                  inactiveColor: attributes.segmentInactiveColor,
+                  height: 6
+                ).padding(.bottom, 6)
               } else if let progress = contentState.progress {
                 styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
                   ProgressView(value: progress)
@@ -164,7 +167,6 @@ import WidgetKit
           }
         }
         .padding(padding)
-        .preferredColorScheme(.light)
       }
     }
   }

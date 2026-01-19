@@ -39,6 +39,7 @@ import WidgetKit
     let totalSteps: Int
     let activeColor: Color
     let inactiveColor: Color
+    var height: CGFloat = 4
 
     var body: some View {
       let clampedCurrentStep = min(max(currentStep, 0), totalSteps)
@@ -46,7 +47,7 @@ import WidgetKit
         ForEach(0 ..< totalSteps, id: \.self) { index in
           RoundedRectangle(cornerRadius: 2)
             .fill(index < clampedCurrentStep ? activeColor : inactiveColor)
-            .frame(height: 4)
+            .frame(height: height)
         }
       }
     }
