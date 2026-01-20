@@ -44,10 +44,12 @@ func styledLinearProgressView<Content: View>(
 ) -> some View {
   content()
     .progressViewStyle(.linear)
-    .frame(height: 15)
-    .scaleEffect(x: 1, y: 2, anchor: .center)
     .tint(tint)
+    .frame(height: 8.0)
+    .scaleEffect(x: 1, y: 2, anchor: .center)
+    .clipShape(RoundedRectangle(cornerRadius: 10))
     .modifier(ConditionalForegroundViewModifier(color: labelColor))
+    .padding(.bottom, 6)
 }
 
 private struct ContainerSizeKey: PreferenceKey {
