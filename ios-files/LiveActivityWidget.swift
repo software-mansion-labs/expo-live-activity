@@ -10,6 +10,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+    var smallImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
     var currentStep: Int?
     var totalSteps: Int?
@@ -21,6 +22,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       progress: Double? = nil,
       imageName: String? = nil,
       dynamicIslandImageName: String? = nil,
+      smallImageName: String? = nil,
       elapsedTimerStartDateInMilliseconds: Double? = nil,
       currentStep: Int? = nil,
       totalSteps: Int? = nil
@@ -31,6 +33,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.progress = progress
       self.imageName = imageName
       self.dynamicIslandImageName = dynamicIslandImageName
+      self.smallImageName = smallImageName
       self.elapsedTimerStartDateInMilliseconds = elapsedTimerStartDateInMilliseconds
       self.currentStep = currentStep
       self.totalSteps = totalSteps
@@ -52,6 +55,10 @@ public struct LiveActivityAttributes: ActivityAttributes {
   var imageHeight: Int?
   var imageWidthPercent: Double?
   var imageHeightPercent: Double?
+  var smallImageWidth: Int?
+  var smallImageHeight: Int?
+  var smallImageWidthPercent: Double?
+  var smallImageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
   var progressSegmentActiveColor: String?
@@ -73,6 +80,10 @@ public struct LiveActivityAttributes: ActivityAttributes {
     imageHeight: Int? = nil,
     imageWidthPercent: Double? = nil,
     imageHeightPercent: Double? = nil,
+    smallImageWidth: Int? = nil,
+    smallImageHeight: Int? = nil,
+    smallImageWidthPercent: Double? = nil,
+    smallImageHeightPercent: Double? = nil,
     imageAlign: String? = nil,
     contentFit: String? = nil,
     progressSegmentActiveColor: String? = nil,
@@ -93,6 +104,10 @@ public struct LiveActivityAttributes: ActivityAttributes {
     self.imageHeight = imageHeight
     self.imageWidthPercent = imageWidthPercent
     self.imageHeightPercent = imageHeightPercent
+    self.smallImageWidth = smallImageWidth
+    self.smallImageHeight = smallImageHeight
+    self.smallImageWidthPercent = smallImageWidthPercent
+    self.smallImageHeightPercent = smallImageHeightPercent
     self.imageAlign = imageAlign
     self.contentFit = contentFit
     self.progressSegmentActiveColor = progressSegmentActiveColor

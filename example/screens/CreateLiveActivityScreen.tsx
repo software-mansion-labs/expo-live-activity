@@ -42,6 +42,9 @@ export default function CreateLiveActivityScreen() {
   const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')
   const [imageWidth, setImageWidth] = useState('')
   const [imageHeight, setImageHeight] = useState('')
+  const [smallImageName, onChangeSmallImageName] = useState('')
+  const [smallImageWidth, setSmallImageWidth] = useState('')
+  const [smallImageHeight, setSmallImageHeight] = useState('')
   const [imagePosition, setImagePosition] = useState<ImagePosition>('right')
   const [imageAlign, setImageAlign] = useState<ImageAlign>('center')
   const [contentFit, setContentFit] = useState<ImageContentFit>('contain')
@@ -100,6 +103,20 @@ export default function CreateLiveActivityScreen() {
     }
   }, [])
 
+  const onChangeSmallImageWidthText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setSmallImageWidth(text)
+    }
+  }, [])
+
+  const onChangeSmallImageHeightText = useCallback((text: string) => {
+    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+      const dotCount = (text.match(/\./g) || []).length
+      if (dotCount <= 1) setSmallImageHeight(text)
+    }
+  }, [])
+
   const computeImageSize = useCallback((): LiveActivityConfig['imageSize'] | undefined => {
     const wRaw = imageWidth.trim()
     const hRaw = imageHeight.trim()
@@ -117,6 +134,24 @@ export default function CreateLiveActivityScreen() {
 
     return { width: w, height: h }
   }, [imageWidth, imageHeight])
+
+  const computeSmallImageSize = useCallback((): LiveActivityConfig['smallImageSize'] | undefined => {
+    const wRaw = smallImageWidth.trim()
+    const hRaw = smallImageHeight.trim()
+    if (wRaw === '' && hRaw === '') return undefined
+
+    const parseDim = (raw: string) => {
+      if (raw === '') return undefined
+      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as any
+      const n = parseInt(raw, 10)
+      return isNaN(n) ? undefined : (n as any)
+    }
+
+    const w = parseDim(wRaw)
+    const h = parseDim(hRaw)
+
+    return { width: w, height: h }
+  }, [smallImageWidth, smallImageHeight])
 
   const computePadding = useCallback(() => {
     if (!showPaddingDetails) {
@@ -185,6 +220,7 @@ export default function CreateLiveActivityScreen() {
       progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
+      smallImageName: smallImageName.trim() !== '' ? smallImageName : undefined,
     }
 
     try {
@@ -192,6 +228,7 @@ export default function CreateLiveActivityScreen() {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
         imageSize: computeImageSize(),
+        smallImageSize: computeSmallImageSize(),
         imagePosition,
         imageAlign,
         contentFit,
@@ -214,6 +251,7 @@ export default function CreateLiveActivityScreen() {
       },
       imageName,
       dynamicIslandImageName,
+      smallImageName: smallImageName.trim() !== '' ? smallImageName : undefined,
     }
     try {
       activityId && LiveActivity.stopActivity(activityId, state)
@@ -232,6 +270,7 @@ export default function CreateLiveActivityScreen() {
       progressBar: progressState,
       imageName: passImage ? imageName : undefined,
       dynamicIslandImageName,
+      smallImageName: smallImageName.trim() !== '' ? smallImageName : undefined,
     }
     try {
       activityId && LiveActivity.updateActivity(activityId, state)
@@ -301,6 +340,38 @@ export default function CreateLiveActivityScreen() {
           testID="input-image-height"
           placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageHeight}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Small view image (optional):</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeSmallImageName}
+          autoCapitalize="none"
+          placeholder="Small view image (optional)"
+          value={smallImageName}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Small view image width (pt or %):</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeSmallImageWidthText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="e.g. 20 or 30% or empty"
+          value={smallImageWidth}
+        />
+        <View style={styles.labelWithSwitch}>
+          <Text style={styles.label}>Small view image height (pt or %):</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeSmallImageHeightText}
+          keyboardType="default"
+          autoCapitalize="none"
+          placeholder="e.g. 20 or 30% or empty"
+          value={smallImageHeight}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>

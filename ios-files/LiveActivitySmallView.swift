@@ -16,8 +16,12 @@ import WidgetKit
     private let carPlayWidthThreshold: CGFloat = 200
     private let carPlayTallHeightThreshold: CGFloat = 90
 
+    private var resolvedImageName: String? {
+      contentState.smallImageName ?? contentState.imageName
+    }
+
     private var hasImage: Bool {
-      contentState.imageName != nil
+      resolvedImageName != nil
     }
 
     private var isLeftImage: Bool {
@@ -59,7 +63,7 @@ import WidgetKit
         VStack(alignment: .leading, spacing: 4) {
           VStack(alignment: .leading, spacing: shouldShowProgressBar ? 0 : nil) {
             HStack(alignment: .center, spacing: 8) {
-              if hasImage, isLeftImage, !isTimerShownAsText, let imageName = contentState.imageName {
+              if hasImage, isLeftImage, !isTimerShownAsText, let imageName = resolvedImageName {
                 if carPlayView, !carPlayTallView {
                   fixedSizeImage(name: imageName, size: fixedImageSize)
                   Spacer()
@@ -101,7 +105,7 @@ import WidgetKit
               }
               .layoutPriority(1)
 
-              if hasImage, !isLeftImage, !isTimerShownAsText, let imageName = contentState.imageName {
+              if hasImage, !isLeftImage, !isTimerShownAsText, let imageName = resolvedImageName {
                 if carPlayView, !carPlayTallView {
                   Spacer()
                   fixedSizeImage(name: imageName, size: fixedImageSize)
@@ -112,12 +116,12 @@ import WidgetKit
             }
             if isTimerShownAsText, let date = contentState.timerEndDateInMilliseconds {
               HStack {
-                if let imageName = contentState.imageName, hasImage, isLeftImage {
+                if let imageName = resolvedImageName, hasImage, isLeftImage {
                   fixedSizeImage(name: imageName, size: fixedImageSize)
                   Spacer()
                 }
                 smallTimerText(endDate: date, isSubtitleDisplayed: false, carPlayView: carPlayView, labelColor: attributes.progressViewLabelColor).frame(maxWidth: .infinity, alignment: isLeftImage ? .trailing : .leading)
-                if let imageName = contentState.imageName, hasImage, !isLeftImage {
+                if let imageName = resolvedImageName, hasImage, !isLeftImage {
                   Spacer()
                   fixedSizeImage(name: imageName, size: fixedImageSize)
                 }
