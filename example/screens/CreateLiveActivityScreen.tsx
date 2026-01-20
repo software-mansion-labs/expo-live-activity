@@ -319,13 +319,14 @@ export default function CreateLiveActivityScreen() {
           </Text>
         </View>
         <TextInput
-          style={styles.input}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeImageWidthText}
           keyboardType="default"
           autoCapitalize="none"
           testID="input-image-width"
           placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageWidth}
+          editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label} testID="input-image-height-label">
@@ -333,45 +334,49 @@ export default function CreateLiveActivityScreen() {
           </Text>
         </View>
         <TextInput
-          style={styles.input}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeImageHeightText}
           keyboardType="default"
           autoCapitalize="none"
           testID="input-image-height"
           placeholder="e.g. 80 or 50% or empty (default 64pt)"
           value={imageHeight}
+          editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Small view image (optional):</Text>
         </View>
         <TextInput
-          style={styles.input}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeSmallImageName}
           autoCapitalize="none"
           placeholder="Small view image (optional)"
           value={smallImageName}
+          editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Small view image width (pt or %):</Text>
         </View>
         <TextInput
-          style={styles.input}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeSmallImageWidthText}
           keyboardType="default"
           autoCapitalize="none"
           placeholder="e.g. 20 or 30% or empty"
           value={smallImageWidth}
+          editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Small view image height (pt or %):</Text>
         </View>
         <TextInput
-          style={styles.input}
+          style={passImage ? styles.input : styles.disabledInput}
           onChangeText={onChangeSmallImageHeightText}
           keyboardType="default"
           autoCapitalize="none"
           placeholder="e.g. 20 or 30% or empty"
           value={smallImageHeight}
+          editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
           <Text style={styles.label}>Image position:</Text>
@@ -379,6 +384,7 @@ export default function CreateLiveActivityScreen() {
         <Dropdown
           value={imagePosition}
           onChange={(v) => setImagePosition(v as ImagePosition)}
+          disabled={!passImage}
           options={[
             { label: 'Left', value: 'left' },
             { label: 'Right', value: 'right' },
@@ -393,6 +399,7 @@ export default function CreateLiveActivityScreen() {
         <Dropdown
           value={imageAlign}
           onChange={(v) => setImageAlign(v as 'top' | 'center' | 'bottom')}
+          disabled={!passImage}
           options={[
             { label: 'Top', value: 'top' },
             { label: 'Center', value: 'center' },
@@ -407,6 +414,7 @@ export default function CreateLiveActivityScreen() {
           value={contentFit}
           onChange={(v) => setContentFit(v as ImageContentFit)}
           testID="dropdown-content-fit"
+          disabled={!passImage}
           options={[
             { label: 'Cover', value: 'cover' },
             { label: 'Contain', value: 'contain' },
@@ -756,6 +764,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
+  dropdownHeaderDisabled: {
+    height: 45,
+    borderWidth: 1,
+    borderColor: '#DEDEDE',
+    backgroundColor: '#ECECEC',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  dropdownTextDisabled: {
+    color: 'gray',
+  },
   dropdownList: {
     borderWidth: 1,
     borderColor: 'gray',
@@ -785,11 +807,13 @@ function Dropdown({
   onChange,
   options,
   testID,
+  disabled,
 }: {
   value: string
   onChange: (val: string) => void
   options: DropdownOption[]
   testID?: string
+  disabled?: boolean
 }) {
   const [open, setOpen] = useState(false)
   const selected = options.find((o) => o.value === value) ?? options[0]
@@ -797,7 +821,8 @@ function Dropdown({
   return (
     <View style={styles.dropdown} testID={testID}>
       <Pressable
-        style={styles.dropdownHeader}
+        style={disabled ? styles.dropdownHeaderDisabled : styles.dropdownHeader}
+        disabled={disabled}
         onPress={() => {
           if (Platform.OS === 'ios') {
             const labels = options.map((o) => o.label)
@@ -817,10 +842,10 @@ function Dropdown({
           }
         }}
       >
-        <Text>{selected.label}</Text>
-        <Text>{open ? '▲' : '▼'}</Text>
+        <Text style={disabled ? styles.dropdownTextDisabled : undefined}>{selected.label}</Text>
+        <Text style={disabled ? styles.dropdownTextDisabled : undefined}>{open ? '▲' : '▼'}</Text>
       </Pressable>
-      {Platform.OS !== 'ios' && open && (
+      {Platform.OS !== 'ios' && open && !disabled && (
         <View style={styles.dropdownList}>
           {options.map((opt) => (
             <Pressable

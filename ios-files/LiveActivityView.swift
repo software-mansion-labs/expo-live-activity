@@ -99,8 +99,8 @@ import WidgetKit
               contentState: contentState,
               attributes: attributes,
               imageContainerSize: $imageContainerSize,
-              alignedImage: { imageName, horizontalAlignment, mobile in
-                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              alignedImage: { imageName, horizontalAlignment, isSmallView in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
               }
             )
           },
@@ -109,8 +109,8 @@ import WidgetKit
               contentState: contentState,
               attributes: attributes,
               imageContainerSize: $imageContainerSize,
-              alignedImage: { imageName, horizontalAlignment, mobile in
-                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              alignedImage: { imageName, horizontalAlignment, isSmallView in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
               }
             )
           }
@@ -121,25 +121,25 @@ import WidgetKit
           contentState: contentState,
           attributes: attributes,
           imageContainerSize: $imageContainerSize,
-          alignedImage: { imageName, horizontalAlignment, mobile in
-            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+          alignedImage: { imageName, horizontalAlignment, isSmallView in
+            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
           }
         )
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
-      let defaultHeight: CGFloat = mobile ? 28 : 64
-      let defaultWidth: CGFloat = mobile ? 28 : 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, isSmallView: Bool = false) -> some View {
+      let defaultHeight: CGFloat = isSmallView ? 28 : 64
+      let defaultWidth: CGFloat = isSmallView ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
-      
-      // For small view (mobile), check small-specific dimensions first, then fall back to global
-      let imageWidth = mobile ? (attributes.smallImageWidth ?? attributes.imageWidth) : attributes.imageWidth
-      let imageHeight = mobile ? (attributes.smallImageHeight ?? attributes.imageHeight) : attributes.imageHeight
-      let imageWidthPercent = mobile ? (attributes.smallImageWidthPercent ?? attributes.imageWidthPercent) : attributes.imageWidthPercent
-      let imageHeightPercent = mobile ? (attributes.smallImageHeightPercent ?? attributes.imageHeightPercent) : attributes.imageHeightPercent
-      
+
+      // For small view, check small-specific dimensions first, then fall back to global
+      let imageWidth = isSmallView ? (attributes.smallImageWidth ?? attributes.imageWidth) : attributes.imageWidth
+      let imageHeight = isSmallView ? (attributes.smallImageHeight ?? attributes.imageHeight) : attributes.imageHeight
+      let imageWidthPercent = isSmallView ? (attributes.smallImageWidthPercent ?? attributes.imageWidthPercent) : attributes.imageWidthPercent
+      let imageHeightPercent = isSmallView ? (attributes.smallImageHeightPercent ?? attributes.imageHeightPercent) : attributes.imageHeightPercent
+
       let hasWidthConstraint = (imageWidthPercent != nil) || (imageWidth != nil)
 
       let computedHeight: CGFloat? = {

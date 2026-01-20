@@ -135,7 +135,8 @@ function assertIOS(name: string) {
 function normalizeConfig(config?: LiveActivityConfig) {
   if (config === undefined) return config
 
-  const { padding, imageSize, smallImageSize, progressSegmentActiveColor, progressSegmentInactiveColor, ...base } = config
+  const { padding, imageSize, smallImageSize, progressSegmentActiveColor, progressSegmentInactiveColor, ...base } =
+    config
   type NormalizedConfig = LiveActivityConfig & {
     paddingDetails?: Padding
     imageWidth?: number
