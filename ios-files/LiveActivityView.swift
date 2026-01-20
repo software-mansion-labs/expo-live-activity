@@ -18,6 +18,8 @@ import WidgetKit
   struct DebugLog: View {
     #if DEBUG
       private let message: String
+
+      @discardableResult
       init(_ message: String) {
         self.message = message
         print(message)
@@ -29,6 +31,7 @@ import WidgetKit
           .foregroundStyle(.red)
       }
     #else
+      @discardableResult
       init(_: String) {}
       var body: some View { EmptyView() }
     #endif
@@ -39,6 +42,7 @@ import WidgetKit
     let totalSteps: Int
     let activeColor: Color
     let inactiveColor: Color
+    var height: CGFloat = 4
 
     var body: some View {
       let clampedCurrentStep = min(max(currentStep, 0), totalSteps)
@@ -46,7 +50,7 @@ import WidgetKit
         ForEach(0 ..< totalSteps, id: \.self) { index in
           RoundedRectangle(cornerRadius: 2)
             .fill(index < clampedCurrentStep ? activeColor : inactiveColor)
-            .frame(height: 4)
+            .frame(height: height)
         }
       }
     }
