@@ -160,7 +160,7 @@ The `config` object should include:
    padding?: Padding // number | {top?: number bottom?: number ...}
    imagePosition?: ImagePosition; // 'left' | 'right';
    imageAlign?: ImageAlign; // 'top' | 'center' | 'bottom'
-   imageSize?: ImageSize // { width: number|`${number}%`, height: number|`${number}%` } | undefined (defaults to 64pt)
+   imageSize?: ImageSize // { width?: number|`${number}%`, height?: number|`${number}%` } | undefined (defaults to 64pt)
    contentFit?: ImageContentFit; // 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
 };
 ```

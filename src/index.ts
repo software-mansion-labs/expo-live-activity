@@ -75,8 +75,8 @@ export type ImageAlign = 'top' | 'center' | 'bottom'
 
 export type ImageDimension = number | `${number}%`
 export type ImageSize = {
-  width: ImageDimension
-  height: ImageDimension
+  width?: ImageDimension
+  height?: ImageDimension
 }
 
 export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down'
