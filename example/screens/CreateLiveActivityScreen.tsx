@@ -117,41 +117,20 @@ export default function CreateLiveActivityScreen() {
     }
   }, [])
 
-  const computeImageSize = useCallback((): LiveActivityConfig['imageSize'] | undefined => {
-    const wRaw = imageWidth.trim()
-    const hRaw = imageHeight.trim()
-    if (wRaw === '' && hRaw === '') return undefined
+  const computeImageSize = useCallback((wRaw: string, hRaw: string): LiveActivityConfig['imageSize'] => {
+    const w = wRaw.trim()
+    const h = hRaw.trim()
+    if (w === '' && h === '') return undefined
 
     const parseDim = (raw: string) => {
       if (raw === '') return undefined
-      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as any
+      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as `${number}%`
       const n = parseInt(raw, 10)
-      return isNaN(n) ? undefined : (n as any)
+      return isNaN(n) ? undefined : n
     }
 
-    const w = parseDim(wRaw)
-    const h = parseDim(hRaw)
-
-    return { width: w, height: h }
-  }, [imageWidth, imageHeight])
-
-  const computeSmallImageSize = useCallback((): LiveActivityConfig['smallImageSize'] | undefined => {
-    const wRaw = smallImageWidth.trim()
-    const hRaw = smallImageHeight.trim()
-    if (wRaw === '' && hRaw === '') return undefined
-
-    const parseDim = (raw: string) => {
-      if (raw === '') return undefined
-      if (/^\d+(?:\.\d+)?%$/.test(raw)) return raw as any
-      const n = parseInt(raw, 10)
-      return isNaN(n) ? undefined : (n as any)
-    }
-
-    const w = parseDim(wRaw)
-    const h = parseDim(hRaw)
-
-    return { width: w, height: h }
-  }, [smallImageWidth, smallImageHeight])
+    return { width: parseDim(w), height: parseDim(h) } as LiveActivityConfig['imageSize']
+  }, [])
 
   const computePadding = useCallback(() => {
     if (!showPaddingDetails) {
@@ -227,8 +206,8 @@ export default function CreateLiveActivityScreen() {
       const id = LiveActivity.startActivity(state, {
         ...baseActivityConfig,
         timerType: isTimerTypeDigital ? 'digital' : 'circular',
-        imageSize: computeImageSize(),
-        smallImageSize: computeSmallImageSize(),
+        imageSize: computeImageSize(imageWidth, imageHeight),
+        smallImageSize: computeImageSize(smallImageWidth, smallImageHeight),
         imagePosition,
         imageAlign,
         contentFit,
