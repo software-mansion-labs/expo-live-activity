@@ -27,6 +27,9 @@ appId: ${APP_ID}
 - inputText: '${config.imageSize?.height ?? ''}'
 - tapOn:
     id: "input-image-height-label"       
+- scrollUntilVisible:
+    element:
+        id: "dropdown-content-fit"
 - tapOn:
     id: "dropdown-content-fit"
 - tapOn: "${
