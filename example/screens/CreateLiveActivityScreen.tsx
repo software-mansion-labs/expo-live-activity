@@ -25,6 +25,7 @@ import {
 const dynamicIslandImageName = 'logo-island'
 const toggle = (previousState: boolean) => !previousState
 const toNum = (v: string) => (v === '' ? undefined : parseInt(v, 10))
+const DIMENSION_INPUT_REGEX = /^\d*(?:\.\d*)?%?$/
 
 export default function CreateLiveActivityScreen() {
   const [activityId, setActivityID] = useState<string | null>()
@@ -90,28 +91,28 @@ export default function CreateLiveActivityScreen() {
   }, [])
 
   const onChangeImageWidthText = useCallback((text: string) => {
-    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+    if (DIMENSION_INPUT_REGEX.test(text)) {
       const dotCount = (text.match(/\./g) || []).length
       if (dotCount <= 1) setImageWidth(text)
     }
   }, [])
 
   const onChangeImageHeightText = useCallback((text: string) => {
-    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+    if (DIMENSION_INPUT_REGEX.test(text)) {
       const dotCount = (text.match(/\./g) || []).length
       if (dotCount <= 1) setImageHeight(text)
     }
   }, [])
 
   const onChangeSmallImageWidthText = useCallback((text: string) => {
-    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+    if (DIMENSION_INPUT_REGEX.test(text)) {
       const dotCount = (text.match(/\./g) || []).length
       if (dotCount <= 1) setSmallImageWidth(text)
     }
   }, [])
 
   const onChangeSmallImageHeightText = useCallback((text: string) => {
-    if (/^\d*(?:\.\d*)?%?$/.test(text)) {
+    if (DIMENSION_INPUT_REGEX.test(text)) {
       const dotCount = (text.match(/\./g) || []).length
       if (dotCount <= 1) setSmallImageHeight(text)
     }
@@ -129,7 +130,7 @@ export default function CreateLiveActivityScreen() {
       return isNaN(n) ? undefined : n
     }
 
-    return { width: parseDim(w), height: parseDim(h) } as LiveActivityConfig['imageSize']
+    return { width: parseDim(w), height: parseDim(h) }
   }, [])
 
   const computePadding = useCallback(() => {
