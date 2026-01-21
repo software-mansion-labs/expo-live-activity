@@ -344,7 +344,7 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Small view image (optional):</Text>
+          <Text style={styles.label}>Small view image (apple watch / carplay):</Text>
         </View>
         <TextInput
           style={passImage ? styles.input : styles.disabledInput}
