@@ -236,6 +236,11 @@ public class ExpoLiveActivityModule: Module {
       ?? false
   }
 
+  private var silentOnUnsupportedOS: Bool {
+    Bundle.main.object(forInfoDictionaryKey: "ExpoLiveActivity_SilentOnUnsupportedOS") as? Bool
+      ?? false
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoLiveActivity")
 
@@ -253,7 +258,12 @@ public class ExpoLiveActivityModule: Module {
 
     Function("startActivity") {
       (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
-      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
+      guard #available(iOS 16.2, *) else {
+        if silentOnUnsupportedOS {
+          return ""
+        }
+        throw UnsupportedOSException("16.2")
+      }
 
       guard ActivityAuthorizationInfo().areActivitiesEnabled else {
         throw LiveActivitiesNotEnabledException()
@@ -329,7 +339,12 @@ public class ExpoLiveActivityModule: Module {
     }
 
     Function("stopActivity") { (activityId: String, state: LiveActivityState) in
-      guard #available(iOS 16.2, *) else { throw UnsupportedOSException("16.2") }
+      guard #available(iOS 16.2, *) else {
+        if silentOnUnsupportedOS {
+          return
+        }
+        throw UnsupportedOSException("16.2")
+      }
 
       guard
         let activity = Activity<LiveActivityAttributes>.activities.first(where: {
@@ -361,6 +376,9 @@ public class ExpoLiveActivityModule: Module {
 
     Function("updateActivity") { (activityId: String, state: LiveActivityState) in
       guard #available(iOS 16.2, *) else {
+        if silentOnUnsupportedOS {
+          return
+        }
         throw UnsupportedOSException("16.2")
       }
 
