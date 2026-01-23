@@ -39,6 +39,9 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var dynamicIslandImageName: String?
+
+    @Field
+    var smallImageName: String?
   }
 
   struct LiveActivityConfig: Record {
@@ -83,6 +86,18 @@ public class ExpoLiveActivityModule: Module {
 
     @Field
     var imageHeightPercent: Double?
+
+    @Field
+    var smallImageWidth: Int?
+
+    @Field
+    var smallImageHeight: Int?
+
+    @Field
+    var smallImageWidthPercent: Double?
+
+    @Field
+    var smallImageHeightPercent: Double?
 
     @Field
     var imageAlign: String?
@@ -155,6 +170,10 @@ public class ExpoLiveActivityModule: Module {
 
     if let name = state.dynamicIslandImageName {
       newState.dynamicIslandImageName = try await resolveImage(from: name)
+    }
+
+    if let name = state.smallImageName {
+      newState.smallImageName = try await resolveImage(from: name)
     }
   }
 
@@ -268,6 +287,10 @@ public class ExpoLiveActivityModule: Module {
           imageHeight: config.imageHeight,
           imageWidthPercent: config.imageWidthPercent,
           imageHeightPercent: config.imageHeightPercent,
+          smallImageWidth: config.smallImageWidth,
+          smallImageHeight: config.smallImageHeight,
+          smallImageWidthPercent: config.smallImageWidthPercent,
+          smallImageHeightPercent: config.smallImageHeightPercent,
           imageAlign: config.imageAlign,
           contentFit: config.contentFit,
           progressSegmentActiveColor: config.progressSegmentActiveColor,
@@ -279,6 +302,9 @@ public class ExpoLiveActivityModule: Module {
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
+          imageName: state.imageName,
+          dynamicIslandImageName: state.dynamicIslandImageName,
+          smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps
@@ -318,6 +344,9 @@ public class ExpoLiveActivityModule: Module {
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
+          imageName: state.imageName,
+          dynamicIslandImageName: state.dynamicIslandImageName,
+          smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps
@@ -348,6 +377,9 @@ public class ExpoLiveActivityModule: Module {
           subtitle: state.subtitle,
           timerEndDateInMilliseconds: state.progressBar?.date,
           progress: state.progressBar?.progress,
+          imageName: state.imageName,
+          dynamicIslandImageName: state.dynamicIslandImageName,
+          smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps

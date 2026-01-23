@@ -9,6 +9,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     var progress: Double?
     var imageName: String?
     var dynamicIslandImageName: String?
+    var smallImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
     var currentStep: Int?
     var totalSteps: Int?
@@ -29,6 +30,10 @@ struct LiveActivityAttributes: ActivityAttributes {
   var imageHeight: Int?
   var imageWidthPercent: Double?
   var imageHeightPercent: Double?
+  var smallImageWidth: Int?
+  var smallImageHeight: Int?
+  var smallImageWidthPercent: Double?
+  var smallImageHeightPercent: Double?
   var imageAlign: String?
   var contentFit: String?
   var progressSegmentActiveColor: String?

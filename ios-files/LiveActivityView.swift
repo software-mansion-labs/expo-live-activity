@@ -99,8 +99,8 @@ import WidgetKit
               contentState: contentState,
               attributes: attributes,
               imageContainerSize: $imageContainerSize,
-              alignedImage: { imageName, horizontalAlignment, mobile in
-                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              alignedImage: { imageName, horizontalAlignment, isSmallView in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
               }
             )
           },
@@ -109,8 +109,8 @@ import WidgetKit
               contentState: contentState,
               attributes: attributes,
               imageContainerSize: $imageContainerSize,
-              alignedImage: { imageName, horizontalAlignment, mobile in
-                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+              alignedImage: { imageName, horizontalAlignment, isSmallView in
+                AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
               }
             )
           }
@@ -121,27 +121,34 @@ import WidgetKit
           contentState: contentState,
           attributes: attributes,
           imageContainerSize: $imageContainerSize,
-          alignedImage: { imageName, horizontalAlignment, mobile in
-            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, mobile: mobile))
+          alignedImage: { imageName, horizontalAlignment, isSmallView in
+            AnyView(alignedImage(imageName: imageName, horizontalAlignment: horizontalAlignment, isSmallView: isSmallView))
           }
         )
       }
     }
 
-    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, mobile: Bool = false) -> some View {
-      let defaultHeight: CGFloat = mobile ? 28 : 64
-      let defaultWidth: CGFloat = mobile ? 28 : 64
+    private func alignedImage(imageName: String, horizontalAlignment: HorizontalAlignment, isSmallView: Bool = false) -> some View {
+      let defaultHeight: CGFloat = isSmallView ? 28 : 64
+      let defaultWidth: CGFloat = isSmallView ? 28 : 64
       let containerHeight = imageContainerSize?.height
       let containerWidth = imageContainerSize?.width
-      let hasWidthConstraint = (attributes.imageWidthPercent != nil) || (attributes.imageWidth != nil)
+
+      // For small view, check small-specific dimensions first, then fall back to global
+      let imageWidth = isSmallView ? (attributes.smallImageWidth ?? attributes.imageWidth) : attributes.imageWidth
+      let imageHeight = isSmallView ? (attributes.smallImageHeight ?? attributes.imageHeight) : attributes.imageHeight
+      let imageWidthPercent = isSmallView ? (attributes.smallImageWidthPercent ?? attributes.imageWidthPercent) : attributes.imageWidthPercent
+      let imageHeightPercent = isSmallView ? (attributes.smallImageHeightPercent ?? attributes.imageHeightPercent) : attributes.imageHeightPercent
+
+      let hasWidthConstraint = (imageWidthPercent != nil) || (imageWidth != nil)
 
       let computedHeight: CGFloat? = {
-        if let percent = attributes.imageHeightPercent {
+        if let percent = imageHeightPercent {
           let clamped = min(max(percent, 0), 100) / 100.0
           // Use the row height as a base. Fallback to default when row height is not measured yet.
           let base = (containerHeight ?? defaultHeight)
           return base * clamped
-        } else if let size = attributes.imageHeight {
+        } else if let size = imageHeight {
           return CGFloat(size)
         } else if hasWidthConstraint {
           // Mimic CSS: when only width is set, keep height automatic to preserve aspect ratio
@@ -155,11 +162,11 @@ import WidgetKit
       }()
 
       let computedWidth: CGFloat? = {
-        if let percent = attributes.imageWidthPercent {
+        if let percent = imageWidthPercent {
           let clamped = min(max(percent, 0), 100) / 100.0
           let base = (containerWidth ?? defaultWidth)
           return base * clamped
-        } else if let size = attributes.imageWidth {
+        } else if let size = imageWidth {
           return CGFloat(size)
         } else {
           return nil // Keep aspect fit based on height
