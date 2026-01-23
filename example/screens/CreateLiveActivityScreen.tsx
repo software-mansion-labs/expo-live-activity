@@ -90,33 +90,29 @@ export default function CreateLiveActivityScreen() {
     if (/^\d*$/.test(text)) setter(text)
   }, [])
 
-  const onChangeImageWidthText = useCallback((text: string) => {
+  const onChangeDimensionText = useCallback((text: string, setter: (val: string) => void) => {
     if (DIMENSION_INPUT_REGEX.test(text)) {
-      const dotCount = (text.match(/\./g) || []).length
-      if (dotCount <= 1) setImageWidth(text)
+      const dotCount = text.match(/\./g)?.length ?? 0
+      if (dotCount <= 1) setter(text)
     }
   }, [])
 
-  const onChangeImageHeightText = useCallback((text: string) => {
-    if (DIMENSION_INPUT_REGEX.test(text)) {
-      const dotCount = (text.match(/\./g) || []).length
-      if (dotCount <= 1) setImageHeight(text)
-    }
-  }, [])
-
-  const onChangeSmallImageWidthText = useCallback((text: string) => {
-    if (DIMENSION_INPUT_REGEX.test(text)) {
-      const dotCount = (text.match(/\./g) || []).length
-      if (dotCount <= 1) setSmallImageWidth(text)
-    }
-  }, [])
-
-  const onChangeSmallImageHeightText = useCallback((text: string) => {
-    if (DIMENSION_INPUT_REGEX.test(text)) {
-      const dotCount = (text.match(/\./g) || []).length
-      if (dotCount <= 1) setSmallImageHeight(text)
-    }
-  }, [])
+  const onChangeImageWidthText = useCallback(
+    (text: string) => onChangeDimensionText(text, setImageWidth),
+    [onChangeDimensionText]
+  )
+  const onChangeImageHeightText = useCallback(
+    (text: string) => onChangeDimensionText(text, setImageHeight),
+    [onChangeDimensionText]
+  )
+  const onChangeSmallImageWidthText = useCallback(
+    (text: string) => onChangeDimensionText(text, setSmallImageWidth),
+    [onChangeDimensionText]
+  )
+  const onChangeSmallImageHeightText = useCallback(
+    (text: string) => onChangeDimensionText(text, setSmallImageHeight),
+    [onChangeDimensionText]
+  )
 
   const computeImageSize = useCallback((wRaw: string, hRaw: string): LiveActivityConfig['imageSize'] => {
     const w = wRaw.trim()
@@ -324,7 +320,7 @@ export default function CreateLiveActivityScreen() {
           editable={passImage}
         />
         <View style={styles.labelWithSwitch}>
-          <Text style={styles.label}>Small view image (apple watch / carplay):</Text>
+          <Text style={styles.label}>Small view image (Apple Watch / CarPlay):</Text>
         </View>
         <TextInput
           style={passImage ? styles.input : styles.disabledInput}

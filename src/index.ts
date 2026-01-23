@@ -168,15 +168,10 @@ function normalizeConfig(config?: LiveActivityConfig) {
   ): { absolute?: number; percent?: number } => {
     if (value === undefined) return {}
 
-    if (typeof value === 'number') {
-      return { absolute: value }
-    }
-
+    if (typeof value === 'number') return { absolute: value }
     const regExp = /^(100(?:\.0+)?|\d{1,2}(?:\.\d+)?)%$/ // Matches 0.0% to 100.0%
     const match = value.trim().match(regExp)
-    if (match) {
-      return { percent: Number(match[1]) }
-    }
+    if (match) return { percent: Number(match[1]) }
     throw new Error(`${fieldName} percent string must be in format "0%" to "100%"`)
   }
 
