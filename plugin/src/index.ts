@@ -4,6 +4,7 @@ import type { LiveActivityConfigPlugin } from './types'
 import { withConfig } from './withConfig'
 import withPlist from './withPlist'
 import { withPushNotifications } from './withPushNotifications'
+import { withUnsupportedOS } from './withUnsupportedOS'
 import { withWidgetExtensionEntitlements } from './withWidgetExtensionEntitlements'
 import { withXcode } from './withXcode'
 
@@ -38,6 +39,8 @@ const withWidgetsAndLiveActivities: LiveActivityConfigPlugin = (config, props) =
   if (props?.enablePushNotifications) {
     config = withPushNotifications(config)
   }
+
+  config = withUnsupportedOS(config, { silentOnUnsupportedOS: props?.silentOnUnsupportedOS ?? false })
 
   return config
 }
