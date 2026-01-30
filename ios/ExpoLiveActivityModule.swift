@@ -322,14 +322,14 @@ public class ExpoLiveActivityModule: Module {
 
         let activity = try Activity.request(
           attributes: attributes,
-          content: .init(state: initialState, staleDate: nil, relevanceScore: relevanceScore),
+          content: .init(state: initialState, staleDate: nil, relevanceScore: relevanceScore ?? 0.0),
           pushType: pushNotificationsEnabled ? .token : nil
         )
 
         Task {
           var newState = activity.content.state
           try await updateImages(state: state, newState: &newState)
-          await activity.update(ActivityContent(state: newState, staleDate: nil))
+          await activity.update(ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore ?? 0.5))
         }
 
         return activity.id
@@ -368,7 +368,7 @@ public class ExpoLiveActivityModule: Module {
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
-          ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore),
+          ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore ?? 0.5),
           dismissalPolicy: .immediate
         )
       }
@@ -403,7 +403,7 @@ public class ExpoLiveActivityModule: Module {
           totalSteps: state.progressBar?.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
-        await activity.update(ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore))
+        await activity.update(ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore ?? 0.5))
       }
     }
   }
