@@ -85,14 +85,14 @@ import * as LiveActivity from 'expo-live-activity'
 
 ### Managing Live Activities
 
-- **`startActivity(state: LiveActivityState, config?: LiveActivityConfig): string | undefined`**:
-  Start a new Live Activity. Takes a `state` configuration object for initial activity state and an optional `config` object to customize appearance or behavior. It returns the `ID` of the created Live Activity, which should be stored for future reference. If the Live Activity can't be created (eg. on android or iOS lower than 16.2), it will return `undefined`.
+- **`startActivity(state: LiveActivityState, config?: LiveActivityConfig, relevanceScore?: number): string | undefined`**:
+  Start a new Live Activity. Takes a `state` configuration object for initial activity state and an optional `config` object to customize appearance or behavior. It returns the `ID` of the created Live Activity, which should be stored for future reference. If the Live Activity can't be created (eg. on android or iOS lower than 16.2), it will return `undefined`. The `relevanceScore` is score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
 
-- **`updateActivity(id: string, state: LiveActivityState)`**:
-  Update an existing Live Activity. The `state` object should contain updated information. The `activityId` indicates which activity should be updated.
+- **`updateActivity(id: string, state: LiveActivityState, relevanceScore?: number)`**:
+  Update an existing Live Activity. The `state` object should contain updated information. The `id` indicates which activity should be updated. The `relevanceScore` is score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
 
-- **`stopActivity(id: string, state: LiveActivityState)`**:
-  Terminate an ongoing Live Activity. The `state` object should contain the final state of the activity. The `activityId` indicates which activity should be stopped.
+- **`stopActivity(id: string, state: LiveActivityState, relevanceScore?: number)`**:
+  Terminate an ongoing Live Activity. The `state` object should contain the final state of the activity. The `id` indicates which activity should be stopped. The `relevanceScore` is score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
 
 ### Handling Push Notification Tokens
 
