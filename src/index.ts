@@ -204,8 +204,13 @@ function normalizeConfig(config?: LiveActivityConfig) {
  * @param {number} relevanceScore A score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
-export function startActivity(state: LiveActivityState, config?: LiveActivityConfig, relevanceScore?: number): Voidable<string> {
-  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config), relevanceScore)
+export function startActivity(
+  state: LiveActivityState,
+  config?: LiveActivityConfig,
+  relevanceScore?: number
+): Voidable<string> {
+  if (assertIOS('startActivity'))
+    return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config), relevanceScore)
 }
 
 /**
