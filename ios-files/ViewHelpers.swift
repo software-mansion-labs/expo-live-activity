@@ -11,7 +11,6 @@ func resizableImage(imageName: String, height: CGFloat?, width: CGFloat?) -> som
     .frame(width: width, height: height)
 }
 
-@ViewBuilder
 func fixedSizeImage(name: String, size: CGFloat) -> some View {
   Image.dynamic(assetNameOrPath: name)
     .resizable()
@@ -20,7 +19,6 @@ func fixedSizeImage(name: String, size: CGFloat) -> some View {
     .layoutPriority(0)
 }
 
-@ViewBuilder
 func smallTimerText(
   endDate: Double,
   isSubtitleDisplayed: Bool,
@@ -36,7 +34,6 @@ func smallTimerText(
     .padding(.top, isSubtitleDisplayed ? 3 : 0)
 }
 
-@ViewBuilder
 func styledLinearProgressView<Content: View>(
   tint: Color?,
   labelColor: String?,
