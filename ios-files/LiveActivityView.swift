@@ -33,7 +33,9 @@ import WidgetKit
     #else
       @discardableResult
       init(_: String) {}
-      var body: some View { EmptyView() }
+      var body: some View {
+        EmptyView()
+      }
     #endif
   }
 

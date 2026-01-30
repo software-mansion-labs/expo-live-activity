@@ -13,7 +13,6 @@ private let cachedScheme: String? = {
 }()
 
 extension View {
-  @ViewBuilder
   func applyWidgetURL(from urlString: String?) -> some View {
     applyIfPresent(urlString) { view, string in
       applyIfPresent(cachedScheme) { view, scheme in
