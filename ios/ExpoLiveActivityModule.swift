@@ -257,7 +257,7 @@ public class ExpoLiveActivityModule: Module {
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
     Function("startActivity") {
-      (state: LiveActivityState, maybeConfig: LiveActivityConfig?) -> String in
+      (state: LiveActivityState, maybeConfig: LiveActivityConfig?, relevanceScore: Double?) -> String in
       guard #available(iOS 16.2, *) else {
         if silentOnUnsupportedOS {
           return ""
@@ -322,7 +322,7 @@ public class ExpoLiveActivityModule: Module {
 
         let activity = try Activity.request(
           attributes: attributes,
-          content: .init(state: initialState, staleDate: nil),
+          content: .init(state: initialState, staleDate: nil, relevanceScore: relevanceScore),
           pushType: pushNotificationsEnabled ? .token : nil
         )
 
@@ -338,7 +338,7 @@ public class ExpoLiveActivityModule: Module {
       }
     }
 
-    Function("stopActivity") { (activityId: String, state: LiveActivityState) in
+    Function("stopActivity") { (activityId: String, state: LiveActivityState, relevanceScore: Double?) in
       guard #available(iOS 16.2, *) else {
         if silentOnUnsupportedOS {
           return
@@ -368,13 +368,13 @@ public class ExpoLiveActivityModule: Module {
         )
         try await updateImages(state: state, newState: &newState)
         await activity.end(
-          ActivityContent(state: newState, staleDate: nil),
+          ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore),
           dismissalPolicy: .immediate
         )
       }
     }
 
-    Function("updateActivity") { (activityId: String, state: LiveActivityState) in
+    Function("updateActivity") { (activityId: String, state: LiveActivityState, relevanceScore: Double?) in
       guard #available(iOS 16.2, *) else {
         if silentOnUnsupportedOS {
           return
@@ -403,7 +403,7 @@ public class ExpoLiveActivityModule: Module {
           totalSteps: state.progressBar?.totalSteps
         )
         try await updateImages(state: state, newState: &newState)
-        await activity.update(ActivityContent(state: newState, staleDate: nil))
+        await activity.update(ActivityContent(state: newState, staleDate: nil, relevanceScore: relevanceScore))
       }
     }
   }

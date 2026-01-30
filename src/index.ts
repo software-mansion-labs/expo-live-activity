@@ -201,26 +201,29 @@ function normalizeConfig(config?: LiveActivityConfig) {
 /**
  * @param {LiveActivityState} state The state for the live activity.
  * @param {LiveActivityConfig} config Live activity config object.
+ * @param {number} relevanceScore A score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
  * @returns {string} The identifier of the started activity or undefined if creating live activity failed.
  */
-export function startActivity(state: LiveActivityState, config?: LiveActivityConfig): Voidable<string> {
-  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config))
+export function startActivity(state: LiveActivityState, config?: LiveActivityConfig, relevanceScore?: number): Voidable<string> {
+  if (assertIOS('startActivity')) return ExpoLiveActivityModule.startActivity(state, normalizeConfig(config), relevanceScore)
 }
 
 /**
  * @param {string} id The identifier of the activity to stop.
  * @param {LiveActivityState} state The updated state for the live activity.
+ * @param {number} relevanceScore A score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
  */
-export function stopActivity(id: string, state: LiveActivityState) {
-  if (assertIOS('stopActivity')) return ExpoLiveActivityModule.stopActivity(id, state)
+export function stopActivity(id: string, state: LiveActivityState, relevanceScore?: number) {
+  if (assertIOS('stopActivity')) return ExpoLiveActivityModule.stopActivity(id, state, relevanceScore)
 }
 
 /**
  * @param {string} id The identifier of the activity to update.
  * @param {LiveActivityState} state The updated state for the live activity.
+ * @param {number} relevanceScore A score you assign that determines the order in which your Live Activities appear when you start several Live Activities for your app. The relevance score is a number between 0.0 and 1.0, with 1.0 being the highest possible score.
  */
-export function updateActivity(id: string, state: LiveActivityState) {
-  if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state)
+export function updateActivity(id: string, state: LiveActivityState, relevanceScore?: number) {
+  if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state, relevanceScore)
 }
 
 /**
