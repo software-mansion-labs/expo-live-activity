@@ -11,6 +11,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     var dynamicIslandImageName: String?
     var smallImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
+    var elapsedTimerShowsHours: Bool?
     var currentStep: Int?
     var totalSteps: Int?
   }
