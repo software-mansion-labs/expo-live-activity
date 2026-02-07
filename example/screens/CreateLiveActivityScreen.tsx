@@ -37,10 +37,11 @@ export default function CreateLiveActivityScreen() {
   const [progress, setProgress] = useState('0.5')
   const [passSubtitle, setPassSubtitle] = useState(true)
   const [passImage, setPassImage] = useState(true)
-  const [passDate, setPassDate] = useState(true)
+  const [passDate, setPassDate] = useState(false)
   const [passProgress, setPassProgress] = useState(false)
   const [passElapsedTimer, setPassElapsedTimer] = useState(false)
   const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')
+  const [showsHours, setShowsHours] = useState(true)
   const [imageWidth, setImageWidth] = useState('')
   const [imageHeight, setImageHeight] = useState('')
   const [smallImageName, onChangeSmallImageName] = useState('')
@@ -174,6 +175,7 @@ export default function CreateLiveActivityScreen() {
       return {
         elapsedTimer: {
           startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
+          showsHours,
         },
       }
     }
@@ -570,6 +572,10 @@ export default function CreateLiveActivityScreen() {
                   placeholder="Minutes ago (e.g. 5)"
                   value={elapsedTimerMinutesAgo}
                 />
+                <View style={styles.labelWithSwitch}>
+                  <Text style={styles.label}>Show hours:</Text>
+                  <Switch onValueChange={() => setShowsHours(toggle)} value={showsHours} />
+                </View>
               </>
             )}
             <View style={styles.spacer} />
