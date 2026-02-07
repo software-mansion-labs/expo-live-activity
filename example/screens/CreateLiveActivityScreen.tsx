@@ -37,7 +37,7 @@ export default function CreateLiveActivityScreen() {
   const [progress, setProgress] = useState('0.5')
   const [passSubtitle, setPassSubtitle] = useState(true)
   const [passImage, setPassImage] = useState(true)
-  const [passDate, setPassDate] = useState(true)
+  const [passDate, setPassDate] = useState(false)
   const [passProgress, setPassProgress] = useState(false)
   const [passElapsedTimer, setPassElapsedTimer] = useState(false)
   const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')

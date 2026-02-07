@@ -224,6 +224,15 @@ public struct LiveActivityWidget: Widget {
             progress: progress,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let subtitle = context.state.subtitle {
+          Text(subtitle)
+            .font(.system(size: 13))
+            .minimumScaleFactor(0.8)
+            .fontWeight(.semibold)
+            .frame(maxWidth: 60)
+            .multilineTextAlignment(.trailing)
+            .foregroundStyle(.white)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
         if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
@@ -355,7 +364,7 @@ struct ElapsedTimerText: View {
       timerInterval: startTime ... Date.distantFuture,
       pauseTime: nil,
       countsDown: false,
-      showsHours: true
+      showsHours: false
     )
     .monospacedDigit()
     .foregroundStyle(color ?? .primary)
