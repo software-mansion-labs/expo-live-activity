@@ -1,7 +1,7 @@
 ![expo-live-activity by Software Mansion](https://github.com/user-attachments/assets/9f9be263-84ee-4034-a3ca-39c72c189544)
-[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-1?n=1)](https://swm-delivery.com/www/delivery/ck.php?zoneid=zone-gh-expo-live-activity-1&n=1)
-[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-2?n=1)](https://swm-delivery.com/www/delivery/ck.php?zoneid=zone-gh-expo-live-activity-2&n=1)
-[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-3?n=1)](https://swm-delivery.com/www/delivery/ck.php?zoneid=zone-gh-expo-live-activity-3&n=1)
+[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-1?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-expo-live-activity-1&n=1)
+[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-2?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-expo-live-activity-2&n=1)
+[![Ad](https://swm-delivery.com/www/images/zone-gh-expo-live-activity-3?n=1)](https://swm-delivery.com/www/delivery/ck-slug.php?zoneid=zone-gh-expo-live-activity-3&n=1)
 
 > [!WARNING]  
 > This library is in early development stage; breaking changes can be introduced in minor version upgrades.
