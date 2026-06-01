@@ -1,7 +1,7 @@
-![expo-live-activity by Software Mansion](https://github.com/user-attachments/assets/9f9be263-84ee-4034-a3ca-39c72c189544)
-
 > [!WARNING]  
-> This library is in early development stage; breaking changes can be introduced in minor version upgrades.
+> This library is deprecated. Consider other solutions like [expo-widgets](https://docs.expo.dev/versions/latest/sdk/widgets/)
+
+![expo-live-activity by Software Mansion](https://github.com/user-attachments/assets/9f9be263-84ee-4034-a3ca-39c72c189544)
 
 # expo-live-activity
 
