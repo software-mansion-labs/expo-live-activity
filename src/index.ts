@@ -118,6 +118,13 @@ export type ActivityUpdateEvent = {
   activityState: ActivityState
 }
 
+export type RunningActivity = {
+  activityID: string
+  activityName: string
+  activityState: ActivityState
+  activityPushToken?: string
+}
+
 export type LiveActivityModuleEvents = {
   onTokenReceived: (params: ActivityTokenReceivedEvent) => void
   onPushToStartTokenReceived: (params: ActivityPushToStartTokenReceivedEvent) => void
@@ -229,6 +236,15 @@ export function stopActivity(id: string, state: LiveActivityState, relevanceScor
  */
 export function updateActivity(id: string, state: LiveActivityState, relevanceScore?: number) {
   if (assertIOS('updateActivity')) return ExpoLiveActivityModule.updateActivity(id, state, relevanceScore)
+}
+
+/**
+ * Returns all running Live Activities and their current push tokens.
+ * Use this after registering addActivityTokenListener to catch tokens
+ * for activities that were already running before the listener was ready.
+ */
+export function getRunningActivities(): Voidable<RunningActivity[]> {
+  if (assertIOS('getRunningActivities')) return ExpoLiveActivityModule.getRunningActivities()
 }
 
 /**

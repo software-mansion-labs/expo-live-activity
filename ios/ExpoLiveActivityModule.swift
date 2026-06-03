@@ -256,6 +256,35 @@ public class ExpoLiveActivityModule: Module {
 
     Events("onTokenReceived", "onPushToStartTokenReceived", "onStateChange")
 
+    Function("getRunningActivities") { () -> [[String: String]] in
+      guard #available(iOS 16.2, *) else {
+        if self.silentOnUnsupportedOS {
+          return []
+        }
+        throw UnsupportedOSException("16.2")
+      }
+
+      var results: [[String: String]] = []
+
+      for activity in Activity<LiveActivityAttributes>.activities {
+        var entry: [String: String] = [
+          "activityID": activity.id,
+          "activityName": activity.attributes.name,
+          "activityState": String(describing: activity.activityState),
+        ]
+
+        if self.pushNotificationsEnabled, let pushToken = activity.pushToken {
+          entry["activityPushToken"] = pushToken.reduce("") {
+            $0 + String(format: "%02x", $1)
+          }
+        }
+
+        results.append(entry)
+      }
+
+      return results
+    }
+
     Function("startActivity") {
       (state: LiveActivityState, maybeConfig: LiveActivityConfig?, relevanceScore: Double?) -> String in
       guard #available(iOS 16.2, *) else {
