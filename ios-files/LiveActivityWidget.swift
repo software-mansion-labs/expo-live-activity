@@ -12,6 +12,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var dynamicIslandImageName: String?
     var smallImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
+    var elapsedTimerEndDateInMilliseconds: Double?
     var currentStep: Int?
     var totalSteps: Int?
 
@@ -24,6 +25,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       dynamicIslandImageName: String? = nil,
       smallImageName: String? = nil,
       elapsedTimerStartDateInMilliseconds: Double? = nil,
+      elapsedTimerEndDateInMilliseconds: Double? = nil,
       currentStep: Int? = nil,
       totalSteps: Int? = nil
     ) {
@@ -35,6 +37,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.dynamicIslandImageName = dynamicIslandImageName
       self.smallImageName = smallImageName
       self.elapsedTimerStartDateInMilliseconds = elapsedTimerStartDateInMilliseconds
+      self.elapsedTimerEndDateInMilliseconds = elapsedTimerEndDateInMilliseconds
       self.currentStep = currentStep
       self.totalSteps = totalSteps
     }
@@ -342,22 +345,45 @@ public struct LiveActivityWidget: Widget {
 
 struct ElapsedTimerText: View {
   let startTimeMilliseconds: Double
+  var endTimeMilliseconds: Double? = nil
   let color: Color?
 
   private var startTime: Date {
     Date(timeIntervalSince1970: startTimeMilliseconds / 1000)
   }
 
+  private var durationLabel: String? {
+    guard let endMs = endTimeMilliseconds else { return nil }
+    let totalSeconds = Int((endMs - startTimeMilliseconds) / 1000)
+    let hours = totalSeconds / 3600
+    let minutes = (totalSeconds % 3600) / 60
+    let seconds = totalSeconds % 60
+    return hours > 0
+      ? String(format: "%02d:%02d:%02d", hours, minutes, seconds)
+      : String(format: "%d:%02d", minutes, seconds)
+  }
+
   var body: some View {
-    // Use Text with timerInterval for Live Activities - iOS handles the updates automatically
-    // The range goes from startTime to a far future date, with countsDown: false to count UP
-    Text(
-      timerInterval: startTime ... Date.distantFuture,
-      pauseTime: nil,
-      countsDown: false,
-      showsHours: true
-    )
-    .monospacedDigit()
-    .foregroundStyle(color ?? .primary)
+    if let label = durationLabel {
+      HStack {
+        Text(
+          timerInterval: startTime ... Date.distantFuture,
+          pauseTime: nil,
+          countsDown: false
+        )
+        Spacer(minLength: 8)
+        Text(label)
+      }
+      .monospacedDigit()
+      .foregroundStyle(color ?? .primary)
+    } else {
+      Text(
+        timerInterval: startTime ... Date.distantFuture,
+        pauseTime: nil,
+        countsDown: false
+      )
+      .monospacedDigit()
+      .foregroundStyle(color ?? .primary)
+    }
   }
 }

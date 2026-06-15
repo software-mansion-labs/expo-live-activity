@@ -43,7 +43,9 @@ import WidgetKit
     private var shouldShowProgressBar: Bool {
       let hasProgress = contentState.progress != nil
       let hasTimer = contentState.timerEndDateInMilliseconds != nil
-      return hasProgress || (hasTimer && !isSubtitleDisplayed && !isTimerShownAsText) || contentState.hasSegmentedProgress
+      let hasElapsedWithEnd = contentState.elapsedTimerStartDateInMilliseconds != nil
+        && contentState.elapsedTimerEndDateInMilliseconds != nil
+      return hasProgress || (hasTimer && !isSubtitleDisplayed && !isTimerShownAsText) || contentState.hasSegmentedProgress || hasElapsedWithEnd
     }
 
     var body: some View {
@@ -92,6 +94,7 @@ import WidgetKit
                 if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
                   ElapsedTimerText(
                     startTimeMilliseconds: startDate,
+                    endTimeMilliseconds: contentState.elapsedTimerEndDateInMilliseconds,
                     color: attributes.progressViewLabelColor.map { Color(hex: $0) }
                   )
                   .font(carPlayView
@@ -140,6 +143,17 @@ import WidgetKit
                   inactiveColor: attributes.segmentInactiveColor,
                   height: 6
                 ).padding(.bottom, 6)
+              } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds,
+                        let endDate = contentState.elapsedTimerEndDateInMilliseconds
+              {
+                styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
+                  ProgressView(
+                    timerInterval: Date(timeIntervalSince1970: startDate / 1000)...Date(timeIntervalSince1970: endDate / 1000),
+                    countsDown: false,
+                    label: { EmptyView() },
+                    currentValueLabel: { EmptyView() }
+                  )
+                }
               } else if let progress = contentState.progress {
                 styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
                   ProgressView(value: progress)

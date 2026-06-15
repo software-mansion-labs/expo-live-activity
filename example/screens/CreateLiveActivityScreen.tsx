@@ -41,6 +41,8 @@ export default function CreateLiveActivityScreen() {
   const [passProgress, setPassProgress] = useState(false)
   const [passElapsedTimer, setPassElapsedTimer] = useState(false)
   const [elapsedTimerMinutesAgo, setElapsedTimerMinutesAgo] = useState('5')
+  const [passElapsedTimerEndDate, setPassElapsedTimerEndDate] = useState(false)
+  const [elapsedTimerDurationMinutes, setElapsedTimerDurationMinutes] = useState('30')
   const [imageWidth, setImageWidth] = useState('')
   const [imageHeight, setImageHeight] = useState('')
   const [smallImageName, onChangeSmallImageName] = useState('')
@@ -171,11 +173,11 @@ export default function CreateLiveActivityScreen() {
     }
 
     if (passElapsedTimer) {
-      return {
-        elapsedTimer: {
-          startDate: Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000,
-        },
-      }
+      const startDate = Date.now() - (parseInt(elapsedTimerMinutesAgo, 10) || 5) * 60 * 1000
+      const endDate = passElapsedTimerEndDate
+        ? startDate + (parseInt(elapsedTimerDurationMinutes, 10) || 30) * 60 * 1000
+        : undefined
+      return { elapsedTimer: { startDate, endDate } }
     }
 
     if (passProgress) {
@@ -569,6 +571,18 @@ export default function CreateLiveActivityScreen() {
                   keyboardType="number-pad"
                   placeholder="Minutes ago (e.g. 5)"
                   value={elapsedTimerMinutesAgo}
+                />
+                <View style={styles.labelWithSwitch}>
+                  <Text style={styles.label}>Show total duration (endDate):</Text>
+                  <Switch onValueChange={() => setPassElapsedTimerEndDate(toggle)} value={passElapsedTimerEndDate} />
+                </View>
+                <TextInput
+                  style={passElapsedTimerEndDate ? styles.input : styles.disabledInput}
+                  onChangeText={(t) => onChangeNumeric(t, setElapsedTimerDurationMinutes)}
+                  keyboardType="number-pad"
+                  placeholder="Total duration in minutes (e.g. 30)"
+                  value={elapsedTimerDurationMinutes}
+                  editable={passElapsedTimerEndDate}
                 />
               </>
             )}

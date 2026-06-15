@@ -67,6 +67,7 @@ struct LiveActivityMediumView: View {
             } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
               ElapsedTimerText(
                 startTimeMilliseconds: startDate,
+                endTimeMilliseconds: contentState.elapsedTimerEndDateInMilliseconds,
                 color: attributes.progressViewLabelColor.map { Color(hex: $0) }
               )
               .font(.title3)
@@ -105,12 +106,23 @@ struct LiveActivityMediumView: View {
         } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
           ElapsedTimerText(
             startTimeMilliseconds: startDate,
+            endTimeMilliseconds: contentState.elapsedTimerEndDateInMilliseconds,
             color: attributes.progressViewLabelColor.map { Color(hex: $0) }
           )
           .font(.title2)
           .fontWeight(.semibold)
           .frame(maxWidth: .infinity, alignment: .leading)
           .padding(.top, 4)
+          if let endDate = contentState.elapsedTimerEndDateInMilliseconds {
+            styledLinearProgressView(tint: progressViewTint, labelColor: attributes.progressViewLabelColor) {
+              ProgressView(
+                timerInterval: Date(timeIntervalSince1970: startDate / 1000)...Date(timeIntervalSince1970: endDate / 1000),
+                countsDown: false,
+                label: { EmptyView() },
+                currentValueLabel: { EmptyView() }
+              )
+            }
+          }
         } else if let date = contentState.timerEndDateInMilliseconds {
           ProgressView(timerInterval: Date.toTimerInterval(miliseconds: date))
             .tint(progressViewTint)
@@ -122,6 +134,7 @@ struct LiveActivityMediumView: View {
         }
       }
     }
+    .frame(maxWidth: .infinity, alignment: .leading)
     .padding(padding)
   }
 }
