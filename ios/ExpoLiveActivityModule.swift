@@ -31,6 +31,9 @@ public class ExpoLiveActivityModule: Module {
       struct ElapsedTimer: Record {
         @Field
         var startDate: Double?
+
+        @Field
+        var showsHours: Bool?
       }
     }
 
@@ -316,6 +319,7 @@ public class ExpoLiveActivityModule: Module {
           dynamicIslandImageName: state.dynamicIslandImageName,
           smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
+          elapsedTimerShowsHours: state.progressBar?.elapsedTimer?.showsHours,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps
         )
@@ -363,6 +367,7 @@ public class ExpoLiveActivityModule: Module {
           dynamicIslandImageName: state.dynamicIslandImageName,
           smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
+          elapsedTimerShowsHours: state.progressBar?.elapsedTimer?.showsHours,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps
         )
@@ -399,6 +404,7 @@ public class ExpoLiveActivityModule: Module {
           dynamicIslandImageName: state.dynamicIslandImageName,
           smallImageName: state.smallImageName,
           elapsedTimerStartDateInMilliseconds: state.progressBar?.elapsedTimer?.startDate,
+          elapsedTimerShowsHours: state.progressBar?.elapsedTimer?.showsHours,
           currentStep: state.progressBar?.currentStep,
           totalSteps: state.progressBar?.totalSteps
         )

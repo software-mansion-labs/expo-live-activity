@@ -67,7 +67,8 @@ struct LiveActivityMediumView: View {
             } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
               ElapsedTimerText(
                 startTimeMilliseconds: startDate,
-                color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+                color: attributes.progressViewLabelColor.map { Color(hex: $0) },
+                showsHours: contentState.elapsedTimerShowsHours ?? true
               )
               .font(.title3)
               .fontWeight(.medium)
@@ -105,7 +106,8 @@ struct LiveActivityMediumView: View {
         } else if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
           ElapsedTimerText(
             startTimeMilliseconds: startDate,
-            color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+            color: attributes.progressViewLabelColor.map { Color(hex: $0) },
+            showsHours: contentState.elapsedTimerShowsHours ?? true
           )
           .font(.title2)
           .fontWeight(.semibold)

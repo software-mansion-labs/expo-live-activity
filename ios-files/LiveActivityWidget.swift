@@ -12,6 +12,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
     var dynamicIslandImageName: String?
     var smallImageName: String?
     var elapsedTimerStartDateInMilliseconds: Double?
+    var elapsedTimerShowsHours: Bool?
     var currentStep: Int?
     var totalSteps: Int?
 
@@ -24,6 +25,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       dynamicIslandImageName: String? = nil,
       smallImageName: String? = nil,
       elapsedTimerStartDateInMilliseconds: Double? = nil,
+      elapsedTimerShowsHours: Bool? = nil,
       currentStep: Int? = nil,
       totalSteps: Int? = nil
     ) {
@@ -35,6 +37,7 @@ public struct LiveActivityAttributes: ActivityAttributes {
       self.dynamicIslandImageName = dynamicIslandImageName
       self.smallImageName = smallImageName
       self.elapsedTimerStartDateInMilliseconds = elapsedTimerStartDateInMilliseconds
+      self.elapsedTimerShowsHours = elapsedTimerShowsHours
       self.currentStep = currentStep
       self.totalSteps = totalSteps
     }
@@ -174,7 +177,8 @@ public struct LiveActivityWidget: Widget {
           if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
             ElapsedTimerText(
               startTimeMilliseconds: startDate,
-              color: context.attributes.progressViewTint.map { Color(hex: $0) } ?? .white
+              color: context.attributes.progressViewTint.map { Color(hex: $0) } ?? .white,
+              showsHours: context.state.elapsedTimerShowsHours ?? true
             )
             .font(.title2)
             .fontWeight(.semibold)
@@ -205,7 +209,8 @@ public struct LiveActivityWidget: Widget {
         if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
           ElapsedTimerText(
             startTimeMilliseconds: startDate,
-            color: nil
+            color: nil,
+            showsHours: context.state.elapsedTimerShowsHours ?? true
           )
           .font(.system(size: 15))
           .minimumScaleFactor(0.8)
@@ -224,12 +229,22 @@ public struct LiveActivityWidget: Widget {
             progress: progress,
             progressViewTint: context.attributes.progressViewTint
           ).applyWidgetURL(from: context.attributes.deepLinkUrl)
+        } else if let subtitle = context.state.subtitle {
+          Text(subtitle)
+            .font(.system(size: 13))
+            .minimumScaleFactor(0.8)
+            .fontWeight(.semibold)
+            .frame(maxWidth: 60)
+            .multilineTextAlignment(.trailing)
+            .foregroundStyle(.white)
+            .applyWidgetURL(from: context.attributes.deepLinkUrl)
         }
       } minimal: {
         if let startDate = context.state.elapsedTimerStartDateInMilliseconds {
           ElapsedTimerText(
             startTimeMilliseconds: startDate,
-            color: context.attributes.progressViewTint.map { Color(hex: $0) }
+            color: context.attributes.progressViewTint.map { Color(hex: $0) },
+            showsHours: context.state.elapsedTimerShowsHours ?? true
           )
           .font(.system(size: 11))
           .minimumScaleFactor(0.6)
@@ -343,6 +358,7 @@ public struct LiveActivityWidget: Widget {
 struct ElapsedTimerText: View {
   let startTimeMilliseconds: Double
   let color: Color?
+  var showsHours: Bool = true
 
   private var startTime: Date {
     Date(timeIntervalSince1970: startTimeMilliseconds / 1000)
@@ -355,7 +371,7 @@ struct ElapsedTimerText: View {
       timerInterval: startTime ... Date.distantFuture,
       pauseTime: nil,
       countsDown: false,
-      showsHours: true
+      showsHours: showsHours
     )
     .monospacedDigit()
     .foregroundStyle(color ?? .primary)

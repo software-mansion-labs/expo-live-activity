@@ -92,7 +92,8 @@ import WidgetKit
                 if let startDate = contentState.elapsedTimerStartDateInMilliseconds {
                   ElapsedTimerText(
                     startTimeMilliseconds: startDate,
-                    color: attributes.progressViewLabelColor.map { Color(hex: $0) }
+                    color: attributes.progressViewLabelColor.map { Color(hex: $0) },
+                    showsHours: contentState.elapsedTimerShowsHours ?? true
                   )
                   .font(carPlayView
                     ? (isSubtitleDisplayed ? .footnote : .title2)
