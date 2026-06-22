@@ -1,6 +1,7 @@
 import { ConfigPlugin, withXcodeProject } from '@expo/config-plugins'
 import * as path from 'path'
 
+import { addUrlSchemeToInfoPlist } from './lib/addUrlSchemeToInfoPlist'
 import { getWidgetFiles } from './lib/getWidgetFiles'
 import { addBuildPhases } from './xcode/addBuildPhases'
 import { addPbxGroup } from './xcode/addPbxGroup'
@@ -25,6 +26,17 @@ export const withXcode: ConfigPlugin<{
     const targetPath = path.join(platformProjectRoot, targetName)
 
     const widgetFiles = getWidgetFiles(targetPath)
+
+    const scheme =
+      typeof config.scheme === 'string'
+        ? config.scheme
+        : Array.isArray(config.scheme)
+          ? config.scheme[0]
+          : config.ios?.bundleIdentifier
+
+    if (scheme) {
+      addUrlSchemeToInfoPlist(targetPath, scheme)
+    }
 
     const xCConfigurationList = addXCConfigurationList(xcodeProject, {
       targetName,

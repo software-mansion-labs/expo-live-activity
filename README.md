@@ -122,7 +122,7 @@ LiveActivity.startActivity(state, {
 })
 ```
 
-URL scheme will be taken automatically from `scheme` field in `app.json` or fall back to `ios.bundleIdentifier`.
+URL scheme will be taken automatically from `scheme` field in `app.json`/`app.config.js` or fall back to `ios.bundleIdentifier`.
 
 ### State Object Structure
 
